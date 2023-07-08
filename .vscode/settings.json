@@ -1,0 +1,22 @@
+{
+    "phpcs.composerJsonPath": "./composer.json",
+    "phpcs.executablePath": "./vendor/bin/phpcs",
+    "phpcs.ignorePatterns": [
+        "./vendor",
+        "./docker",
+        "./.vscode"
+    ],
+    "php.problems.exclude": {
+        "**/docker/": true,
+        "./vendor/": true
+    },
+    "cSpell.ignorePaths": [
+        "package-lock.json",
+        "node_modules",
+        "vscode-extension",
+        ".git/objects",
+        ".vscode",
+        ".vscode-insiders",
+        "vendor",
+    ]
+}
