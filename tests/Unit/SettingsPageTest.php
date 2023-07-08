@@ -1,17 +1,17 @@
 <?php
 
-namespace JsonLDForWP\Tests\Framework\Unit;
+namespace Spin8\Tests\Unit;
 
-use JsonLDForWP\Framework\MenuPage;
-use JsonLDForWP\Framework\Settings\SettingsPage;
+use Spin8\MenuPage;
+use Spin8\Settings\SettingsPage;
 use Mockery;
-use Tests\TestCase;
+use Spin8\Tests\TestCase;
 
 use function Brain\Monkey\Actions\expectAdded;
 use function Brain\Monkey\Functions\stubs;
 
 /**
- * @coversDefaultClass \JsonLDForWP\Framework\Settings\SettingsPage
+ * @coversDefaultClass \Spin8\Settings\SettingsPage
  */
 class SettingsPageTest extends TestCase {
 

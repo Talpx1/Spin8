@@ -1,6 +1,6 @@
 <?php
 
-namespace JsonLDForWP\Framework;
+namespace Spin8;
 
 class MenuPage {
     protected string $page_title;

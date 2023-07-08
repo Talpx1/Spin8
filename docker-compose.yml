@@ -24,7 +24,10 @@ services:
       - db_user_password
     volumes:
       - wp_data:/var/www/html
-      - ./src/:/var/www/html/${TEST_PLUGIN_PATH:-wp-content/plugins/spin8-test/}vendor/spin8/src/
+      - ./src:/var/www/html/${TEST_PLUGIN_PATH:-wp-content/plugins/spin8-test/}vendor/spin8/src
+      - ./vendor:/var/www/html/${TEST_PLUGIN_PATH:-wp-content/plugins/spin8-test/}vendor/spin8/vendor
+      - ./composer.json:/var/www/html/${TEST_PLUGIN_PATH:-wp-content/plugins/spin8-test/}vendor/spin8/composer.json
+      - ./composer.lock:/var/www/html/${TEST_PLUGIN_PATH:-wp-content/plugins/spin8-test/}vendor/spin8/composer.lock
   #mariadb
   mariadb:
     image: mariadb:${MARIADB_VERSION:-latest}

@@ -1,0 +1,13 @@
+parameters:
+	level: 5
+	paths:
+		- src		
+	excludePaths:
+		- vendor
+		- wpcs
+		- docker
+		- .vscode		
+	
+includes:
+    - vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon
+    - vendor/szepeviktor/phpstan-wordpress/extension.neon

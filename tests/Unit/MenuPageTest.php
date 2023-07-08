@@ -1,16 +1,16 @@
 <?php
 
-namespace JsonLDForWP\Tests\Framework\Unit;
+namespace Spin8\Tests\Unit;
 
-use JsonLDForWP\Framework\MenuPage;
+use Spin8\MenuPage;
 use Mockery;
-use Tests\TestCase;
+use Spin8\Tests\TestCase;
 
 use function Brain\Monkey\Actions\expectAdded;
 use function Brain\Monkey\Functions\stubs;
 
 /**
- * @coversDefaultClass \JsonLDForWP\Framework\MenuPage
+ * @coversDefaultClass \Spin8\MenuPage
  */
 class MenuPageTest extends TestCase {
 

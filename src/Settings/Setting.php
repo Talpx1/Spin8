@@ -1,10 +1,10 @@
 <?php
 
-namespace JsonLDForWP\Framework\Settings;
+namespace Spin8\Settings;
 
-use JsonLDForWP\Framework\Settings\Enums\SettingsGroups;
-use JsonLDForWP\Framework\Settings\Enums\SettingTypes;
-use JsonLDForWP\JsonLDForWP;
+use Spin8\Settings\Enums\SettingsGroups;
+use Spin8\Settings\Enums\SettingTypes;
+use Spin8\Spin8;
 use RuntimeException;
 use TypeError;
 

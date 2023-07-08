@@ -1,6 +1,5 @@
 [ ] enum for all capabilities
 [ ] enum for all settings pages existing in wp
-[ ] enum for possible json ld types
 [ ] settings tabs
 [ ] settings drag and drop
 [ ] create object/array from settings

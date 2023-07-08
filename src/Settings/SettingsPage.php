@@ -1,8 +1,8 @@
 <?php
 
-namespace JsonLDForWP\Framework\Settings;
+namespace Spin8\Settings;
 
-use JsonLDForWP\Framework\MenuPage;
+use Spin8\MenuPage;
 
 class SettingsPage extends MenuPage {
 

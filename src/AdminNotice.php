@@ -1,6 +1,6 @@
 <?php
 
-namespace JsonLDForWP\Framework;
+namespace Spin8;
 
 class AdminNotice {
     private string $text;

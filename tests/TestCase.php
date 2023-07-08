@@ -1,11 +1,14 @@
 <?php
 
-namespace Tests;
+namespace Spin8\Tests;
 
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PDO;
-use Yoast\WPTestUtils\BrainMonkey\TestCase as BrainMonkeyTestCase;
+use Brain\Monkey;
 
-class TestCase extends BrainMonkeyTestCase {
+class TestCase extends \PHPUnit\Framework\TestCase {
+
+    use MockeryPHPUnitIntegration;
 
     /**
      * Faker instance
@@ -33,7 +36,7 @@ class TestCase extends BrainMonkeyTestCase {
     }
 
     public function setUp(): void {
-        parent::set_up();
+        parent::setUp();
         
         self::$db->query(
             "PRAGMA writable_schema = 1;
@@ -45,6 +48,7 @@ class TestCase extends BrainMonkeyTestCase {
     }
 
     public function tearDown(): void {
-        parent::tear_down();
+        Monkey\tearDown();
+        parent::tearDown();
     }
 }

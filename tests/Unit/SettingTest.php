@@ -1,22 +1,22 @@
 <?php
 
-namespace JsonLDForWP\Tests\Framework\Unit;
+namespace Spin8\Tests\Unit;
 
-use JsonLDForWP\Framework\Settings\Enums\SettingsGroups;
-use JsonLDForWP\Framework\Settings\Enums\SettingTypes;
-use JsonLDForWP\Framework\Settings\Setting;
-use JsonLDForWP\Framework\Settings\SettingsPage;
-use JsonLDForWP\Framework\Settings\SettingsSection;
+use Spin8\Settings\Enums\SettingsGroups;
+use Spin8\Settings\Enums\SettingTypes;
+use Spin8\Settings\Setting;
+use Spin8\Settings\SettingsPage;
+use Spin8\Settings\SettingsSection;
 use Mockery;
 use RuntimeException;
-use Tests\TestCase;
+use Spin8\Tests\TestCase;
 use TypeError;
 
 use function Brain\Monkey\Actions\expectAdded;
 use function Brain\Monkey\Functions\stubs;
 
 /**
- * @coversDefaultClass \JsonLDForWP\Framework\Settings\Setting
+ * @coversDefaultClass \Spin8\Settings\Setting
  */
 class SettingTest extends TestCase {
 

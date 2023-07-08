@@ -1,6 +1,6 @@
 <?php
 
-namespace JsonLDForWP\Framework\Settings;
+namespace Spin8\Settings;
 
 class SettingsSection {
 

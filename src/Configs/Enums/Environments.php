@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JsonLDForWP\Framework\Configs\Enums;
+namespace Spin8\Configs\Enums;
 
 enum Environments{
     case TESTING;

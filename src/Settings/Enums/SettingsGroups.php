@@ -1,6 +1,6 @@
 <?php
 
-namespace JsonLDForWP\Framework\Settings\Enums;
+namespace Spin8\Settings\Enums;
 
 enum SettingsGroups: string {
     case GENERAL = 'general';
