@@ -1,0 +1,53 @@
+version: '3.1'
+services:
+  #wordpress
+  wordpress:
+    build:
+      context: ./docker/images/wordpress_with_test_plugin/
+      args:
+        - wp_version=${WORDPRESS_VERSION:-6.2.2}
+        - php_version=${PHP_VERSION:-8.2}
+        - webserver_version=${WEBSERVER_VERSION:-apache}
+    ports:
+      - ${WEBSERVER_PORT:-8080}:80
+    restart: always
+    depends_on:
+      - mariadb
+    environment:
+      - WORDPRESS_DB_HOST=mariadb
+      - WORDPRESS_DB_USER=${DATABASE_USER:-spin8}
+      - WORDPRESS_DB_PASSWORD_FILE=/run/secrets/db_user_password
+      - WORDPRESS_DB_NAME=${DATABASE_NAME:-wp_spin8}
+      - WORDPRESS_TABLE_PREFIX=${DATABASE_TABLE_PREFIX:-wp_}
+      - TEST_PLUGIN_PATH=${TEST_PLUGIN_PATH:-wp-content/plugins/spin8-test/}
+    secrets:
+      - db_user_password
+    volumes:
+      - wp_data:/var/www/html
+      - ./src/:/var/www/html/${TEST_PLUGIN_PATH:-wp-content/plugins/spin8-test/}vendor/spin8/src/
+  #mariadb
+  mariadb:
+    image: mariadb:${MARIADB_VERSION:-latest}
+    ports:
+      - ${DATABASE_PORT:-3306}:3306
+    restart: always
+    environment:
+      - MARIADB_DATABASE=${DATABASE_NAME:-wp_spin8}
+      - MARIADB_USER=${DATABASE_USER:-spin8}
+      - MARIADB_PASSWORD_FILE=/run/secrets/db_user_password
+      - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
+      - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=''
+      - MARIADB_ROOT_HOST=localhost
+    secrets:
+      - db_user_password
+      - db_root_password
+    volumes:
+      - db_data:/var/lib/mysql
+volumes:
+  db_data:
+  wp_data:
+secrets:
+  db_user_password:
+    file: ./docker/secrets/db_user_password.secret.txt
+  db_root_password:
+    file: ./docker/secrets/db_root_password.secret.txt

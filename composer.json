@@ -1,0 +1,35 @@
+{
+    "name": "talp1/spin8",
+    "description": "The Spin8 framework. A framework to help developers to create Wordpress plugins.",
+    "keywords": [
+        "framework",
+        "wordpress",
+        "wordpress-plugin",
+        "spin8"
+    ],
+    "license": "proprietary",
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "Spin8\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Spin8\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Talp1",
+            "homepage": "https://github.com/Talpx1"
+        }
+    ],
+    "require": {
+        "php": ">=8.2"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
