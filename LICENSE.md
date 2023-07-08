@@ -1,0 +1,1 @@
+proprietary with all rights reserved, until i figure out what i want to do with this.
