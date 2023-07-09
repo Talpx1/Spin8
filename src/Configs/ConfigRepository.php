@@ -33,8 +33,8 @@ class ConfigRepository{
     }
 
     public function setConfig(string $file_name, string $config_key, mixed $value): void {
-        if(empty($file_name)) throw new InvalidArgumentException("\$file_name cannot be empty in ".__CLASS__."::".__METHOD__);
-        if(empty($config_key)) throw new InvalidArgumentException("\$config_key cannot be empty in ".__CLASS__."::".__METHOD__);
+        if(empty($file_name)) throw new InvalidArgumentException("\$file_name cannot be empty in ".__METHOD__);
+        if(empty($config_key)) throw new InvalidArgumentException("\$config_key cannot be empty in ".__METHOD__);
 
         $this->configs[$file_name][$config_key] = $value;
     }
@@ -51,7 +51,7 @@ class ConfigRepository{
     }
 
     protected function discoverFiles(): void {
-        $this->config_files = glob(config_path()."*.php");
+        $this->config_files = glob(configPath()."*.php");
     }
 
     public static function __callStatic(string $method, array $args) {

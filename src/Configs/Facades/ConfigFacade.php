@@ -21,8 +21,8 @@ class ConfigFacade{
     }
 
     public static function getOr(string $file_name, string $config_key, mixed $default = null): mixed{
-        if(empty($file_name)) throw new InvalidArgumentException("\$file_name cannot be empty in ".__CLASS__."::".__METHOD__);
-        if(empty($config_key)) throw new InvalidArgumentException("\$config_key cannot be empty in ".__CLASS__."::".__METHOD__);
+        if(empty($file_name)) throw new InvalidArgumentException("\$file_name cannot be empty in ".__METHOD__);
+        if(empty($config_key)) throw new InvalidArgumentException("\$config_key cannot be empty in ".__METHOD__);
 
         if(self::has($file_name, $config_key)) return ConfigRepository::all()[$file_name][$config_key];
         return $default;

@@ -1,10 +1,6 @@
 <?php
 
 use Spin8\Configs\Enums\Environments;
-use Spin8\Configs\Exceptions\ConfigFileMissingException;
-use Spin8\Configs\Exceptions\ConfigFileNotReadableException;
-use Spin8\Configs\Exceptions\ConfigKeyMissing;
-use Spin8\Configs\Exceptions\ConfigKeyMissingException;
 use Spin8\Configs\Facades\ConfigFacade;
 
 /**
@@ -13,10 +9,10 @@ use Spin8\Configs\Facades\ConfigFacade;
  * @param string $path path of the assets inside assets/admin.
  * @param array $data data in key=>value format to pass to the Latte template. Passed data is available in the template using $key.
  */
-function admin_asset(string $path, array $data = []): void {
+function adminAsset(string $path, array $data = []): void {
     if (empty($path)) throw new RuntimeException(sprintf(__("%s needs a valid path. Empty path passed."), __FUNCTION__));
     global $latte;
-    $latte->render(assets_path() . "/admin/$path.latte", $data);
+    $latte->render(assetsPath() . "/admin/$path.latte", $data);
 }
 
 /**
@@ -48,7 +44,7 @@ function slugify(string $string): string {
  * @see https://developer.wordpress.org/reference/functions/do_settings_sections/
  * @see https://developer.wordpress.org/reference/functions/submit_button/
  */
-function build_settings(string $page_slug, string $submit_text = null): void {
+function buildSettings(string $page_slug, string $submit_text = null): void {
     if (isset($_GET['settings-updated'])) add_settings_error(config('plugin', 'name') . '-messages', config('plugin', 'name') . '_message', __('Settings Saved'), 'updated');
     
     settings_errors(config('plugin', 'name') . '_message');
@@ -90,7 +86,7 @@ function isRunningTest(): bool {
  *
  * @return string
  */
-function root_path(): string {    
+function rootPath(): string {    
     return __DIR__ . "/../../../../../";
 }
 
@@ -100,8 +96,8 @@ function root_path(): string {
  *
  * @return string
  */
-function assets_path(): string {
-    return root_path() . "assets/";
+function assetsPath(): string {
+    return rootPath() . "assets/";
 }
 
 /**
@@ -110,8 +106,8 @@ function assets_path(): string {
  *
  * @return string
  */
-function framework_path(): string {
-    return __DIR__ . "/../";
+function frameworkPath(): string {
+    return rootPath() . "vendor/talp1/spin8/framework/";
 }
 
 /**
@@ -120,8 +116,8 @@ function framework_path(): string {
  *
  * @return string
  */
-function framework_src_path(): string {
-    return framework_path() . "src/";
+function frameworkSrcPath(): string {
+    return frameworkPath() . "src/";
 }
 
 
@@ -131,8 +127,8 @@ function framework_src_path(): string {
  *
  * @return string
  */
-function config_path(): string {
-    return root_path() . "configs/";
+function configPath(): string {
+    return rootPath() . "configs/";
 }
 
 /**
@@ -141,8 +137,8 @@ function config_path(): string {
  *
  * @return string
  */
-function storage_path(): string {
-    return root_path() . "storage/";
+function storagePath(): string {
+    return rootPath() . "storage/";
 }
 
 /**
@@ -151,8 +147,8 @@ function storage_path(): string {
  *
  * @return string
  */
-function framework_temp_path(): string {
-    return storage_path() . "framework/temp/";
+function frameworkTempPath(): string {
+    return storagePath() . "framework/temp/";
 }
 
 /**

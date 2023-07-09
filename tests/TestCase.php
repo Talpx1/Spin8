@@ -2,6 +2,7 @@
 
 namespace Spin8\Tests;
 
+use InvalidArgumentException;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
@@ -26,10 +27,6 @@ class TestCase extends \PHPUnit\Framework\TestCase {
      * Virtual filesystem root
      */
     public readonly ?vfsStreamDirectory $filesystem_root;
-    public readonly ?vfsStreamDirectory $config_directory;
-    public readonly ?vfsStreamDirectory $storage_directory;
-    public readonly ?vfsStreamDirectory $framework_storage_directory;
-    public readonly ?vfsStreamDirectory $framework_temp_storage_directory;
 
 
     // public static function setUpBeforeClass(): void {
@@ -68,10 +65,26 @@ class TestCase extends \PHPUnit\Framework\TestCase {
     }
 
     protected function createVirtualFileSystem(){
-        $this->filesystem_root = vfsStream::setup('root');
-        $this->config_directory = vfsStream::newDirectory("config")->at($this->filesystem_root);
-        $this->storage_directory = vfsStream::newDirectory("storage")->at($this->filesystem_root);        
-        $this->framework_storage_directory = vfsStream::newDirectory("framework")->at($this->storage_directory);        
-        $this->framework_temp_storage_directory = vfsStream::newDirectory("temp")->at($this->framework_storage_directory);        
+        $this->filesystem_root = vfsStream::setup(structure:[
+            "configs" => [],
+            "storage" => ["framework" => ["temp"=>[]]],
+            "vendor" => ["talp1" => ["spin8" => ["framework" => ["src" => []]]]],
+        ]);
+    }
+
+    public function vfsPathToRealPath(string $vfs_path){
+        if(empty($vfs_path)) throw new InvalidArgumentException("\$vfs_path can not be empty in ".__METHOD__);
+        if(!str_starts_with($vfs_path, "vfs://root")) throw new InvalidArgumentException("\$vfs_path needs to be a virtual filesystem path, but {$vfs_path} is not. Thrown in ".__METHOD__);
+
+        $path = str_replace("vfs://root", '', $vfs_path);
+        if(! str_ends_with($path, "/")) $path .= '/';
+
+        return $path;
+    }
+
+    public function removeLocalPath(string $real_path){
+        if(empty($real_path)) throw new InvalidArgumentException("\$real_path can not be empty in ".__METHOD__);
+
+        return str_replace(dirname(__DIR__)."/src/../../../../..", "", $real_path);
     }
 }

@@ -14,7 +14,6 @@ final class Spin8{
         return self::$instance; 
     }
 
-
     public function singletone(string $class): mixed {
         if(! array_key_exists($class, $this->singletones)) $this->singletones[$class] = $class::instance();  
 

@@ -160,7 +160,7 @@ class Setting {
         add_action("admin_init", fn () => add_settings_field(
             $this->name,
             $this->title,
-            fn ($args) => admin_asset($this->template, array_merge($args, $this->data, ['current' => get_option($this->name)])),
+            fn ($args) => adminAsset($this->template, array_merge($args, $this->data, ['current' => get_option($this->name)])),
             $this->page,
             $this->section,
             ['label_for' => $this->name, 'class' => $this->class]

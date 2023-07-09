@@ -92,7 +92,7 @@ class MenuPage {
             $this->menu_title,
             $this->capability,
             $this->menu_slug,
-            fn () => admin_asset($this->template, $this->data),
+            fn () => adminAsset($this->template, $this->data),
             $this->icon_url,
             $this->position,
         ));

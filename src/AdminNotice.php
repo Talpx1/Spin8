@@ -46,6 +46,6 @@ class AdminNotice {
     }
 
     public function render(): void {
-        add_action("admin_notices", fn () => admin_asset('partials/notice', ['notice' => $this]));
+        add_action("admin_notices", fn () => adminAsset('partials/notice', ['notice' => $this]));
     }
 }

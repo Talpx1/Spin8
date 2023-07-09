@@ -1,12 +1,14 @@
-<?php
+<?php declare(strict_types=1);
+
 use Spin8\Configs\ConfigRepository;
 use Spin8\Spin8;
+
 // ##### TEMPLATE ENGINE #####
 /**
  * @var Latte\Engine
  */
 $latte = new Latte\Engine();
-$latte->setTempDirectory(__DIR__ . "/temp/latte");
+$latte->setTempDirectory(__DIR__ . "/../../../../../storage/framework/temp/latte/");
 
 require_once(__DIR__ . "/functions.php");
 
