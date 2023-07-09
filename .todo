@@ -1,22 +1,26 @@
+TO DO IN FRAMEWORK:
 [ ] enum for all capabilities
 [ ] enum for all settings pages existing in wp
-[ ] settings tabs
-[ ] settings drag and drop
+[ ] settings tabs utility
+[ ] settings drag and drop utility
 [ ] create object/array from settings
-[ ] ui partials template
 [ ] wrap plugin constructor methods in a bootstrap.php file
 [ ] create file for settings definition and include it in bootstrap
 [ ] create file for menus definition and include it in bootstrap
 [ ] create php docs
 [ ] load bootstrap and function via composer
 [ ] global file to perform checks and require autoloader
-[ ] add ABSPATH checks on all files
-[ ] create index.php with silence is golden in each dir
 [ ] move and group const in separate file
 [ ] test remove options from db in uninstall.php
 [ ] test block uninstall for local environment
 [X] create Enviorments enum
-[ ] test Generation
+[X] singleton for spin8
+[X] load config in a separated manager and not read them directly from file. This way are configurable at runtime and testable.
+
+TO DO IN PROJECT BLUEPRINT REPO:
+[ ] add ABSPATH checks on all files
+[ ] ui partials template
+[ ] create index.php with silence is golden in each dir
 [ ] create phpcs rule for index.php with silence is golden in each dir
 [ ] create phpcs rule for ABSPATH checks on all files
 [ ] create phpcs auto-fixer for the above 2 rules

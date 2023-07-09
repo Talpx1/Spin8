@@ -1,15 +1,19 @@
 <?php
 
 use Spin8\Configs\Enums\Environments;
+use Spin8\Configs\Exceptions\ConfigFileMissingException;
+use Spin8\Configs\Exceptions\ConfigFileNotReadableException;
+use Spin8\Configs\Exceptions\ConfigKeyMissing;
+use Spin8\Configs\Exceptions\ConfigKeyMissingException;
+use Spin8\Configs\Facades\ConfigFacade;
 
 /**
  * Render a Latte asset located in assets/admin.
  *
  * @param string $path path of the assets inside assets/admin.
  * @param array $data data in key=>value format to pass to the Latte template. Passed data is available in the template using $key.
- * @return void
  */
-function admin_asset(string $path, array $data = []) {
+function admin_asset(string $path, array $data = []): void {
     if (empty($path)) throw new RuntimeException(sprintf(__("%s needs a valid path. Empty path passed."), __FUNCTION__));
     global $latte;
     $latte->render(assets_path() . "/admin/$path.latte", $data);
@@ -21,7 +25,6 @@ function admin_asset(string $path, array $data = []) {
  * @see https://developer.wordpress.org/reference/functions/sanitize_title/
  *
  * @param string $string the string to convert in slug.
- * @return string
  */
 function slugify(string $string): string {
     if (empty($string)) throw new RuntimeException(sprintf(__("%s needs a valid string. Empty string passed."), __FUNCTION__));
@@ -34,11 +37,10 @@ function slugify(string $string): string {
 
 /**
  * Render the settings form used in Wordpress settings pages.
- * This function ss intended to be used in Latte templates.
+ * This function is intended to be used in Latte templates.
  *
  * @param string $page_slug slug of the setting page, available in Latte page templates via the $page_slug variable.
  * @param string|null $submit_text text to use for the 'submit'/'save' button.
- * @return void
  *
  * @see https://developer.wordpress.org/reference/functions/add_settings_error/
  * @see https://developer.wordpress.org/reference/functions/settings_errors/
@@ -48,12 +50,16 @@ function slugify(string $string): string {
  */
 function build_settings(string $page_slug, string $submit_text = null): void {
     if (isset($_GET['settings-updated'])) add_settings_error(config('plugin', 'name') . '-messages', config('plugin', 'name') . '_message', __('Settings Saved'), 'updated');
+    
     settings_errors(config('plugin', 'name') . '_message');
+
+    ob_start();
     echo '<form action="options.php" method="post">';
     settings_fields($page_slug);
     do_settings_sections($page_slug);
     submit_button($submit_text ?? __('Save'));
     echo '</form>';
+    echo ob_get_clean();
 }
 
 /**
@@ -61,14 +67,11 @@ function build_settings(string $page_slug, string $submit_text = null): void {
  *
  * @param string $file_name name, with no extension, of the file in the 'configs' directory that contains the specified config value.
  * @param string $config_key the key of the desired config to retrive.
+ * @param mixed $default the fallback value to return in case the specified config can not be found.
  * @return mixed
  */
-function config(string $file_name, string $config_key): mixed {
-    $config_file = config_path() . "$file_name.php";
-    if (!file_exists($config_file) || !is_readable($config_file)) throw new RuntimeException(sprintf(__("Unable to retrive %s in configs. The file is either missing or non readable. Check the file in %s."), $file_name, $config_file));
-    $configs = require $config_file;
-    if (!array_key_exists($config_key, $configs)) throw new RuntimeException(sprintf(__("Unable to retrive %s in %s config file. There's no key named %s."), $config_key, $file_name, $config_key));
-    return $configs[$config_key];
+function config(string $file_name, string $config_key, mixed $default = null): mixed {
+    return ConfigFacade::getOr($file_name, $config_key, $default);
 }
 
 /**
@@ -87,8 +90,8 @@ function isRunningTest(): bool {
  *
  * @return string
  */
-function root_path(): string {
-    return __DIR__ . "/../";
+function root_path(): string {    
+    return __DIR__ . "/../../../../../";
 }
 
 /**
@@ -102,14 +105,25 @@ function assets_path(): string {
 }
 
 /**
- * Returns the framework path of this project.
+ * Returns the Spin8 package framework path (inside vendor/talp1/spin8).
  * The trailing slash is included.
  *
  * @return string
  */
 function framework_path(): string {
-    return root_path() . "framework/";
+    return __DIR__ . "/../";
 }
+
+/**
+ * Returns the Spin8 package src path (inside vendor/talp1/spin8/framework).
+ * The trailing slash is included.
+ *
+ * @return string
+ */
+function framework_src_path(): string {
+    return framework_path() . "src/";
+}
+
 
 /**
  * Returns the configs path of this project. Here is where all the config files are stored.
@@ -122,13 +136,23 @@ function config_path(): string {
 }
 
 /**
- * Returns the framework's temporary path of this project.
+ * Returns the storage path of this project.
+ * The trailing slash is included.
+ *
+ * @return string
+ */
+function storage_path(): string {
+    return root_path() . "storage/";
+}
+
+/**
+ * Returns the framework's storage temporary path of this project.
  * The trailing slash is included.
  *
  * @return string
  */
 function framework_temp_path(): string {
-    return framework_path() . "temp/";
+    return storage_path() . "framework/temp/";
 }
 
 /**

@@ -6,3 +6,5 @@ FROM wordpress:${wp_version}-php${php_version}-${webserver_version}
 WORKDIR /var/www/html/
 ENV TEST_PLUGIN_PATH=${TEST_PLUGIN_PATH:-wp-content/plugins/spin8-test/}
 RUN mkdir ${TEST_PLUGIN_PATH}
+RUN mkdir ${TEST_PLUGIN_PATH}/config/
+RUN mkdir ${TEST_PLUGIN_PATH}/storage/framework/temp/

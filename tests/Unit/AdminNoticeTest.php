@@ -2,6 +2,8 @@
 
 namespace Spin8\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use Spin8\AdminNotice;
 use Mockery;
 use Spin8\Tests\TestCase;
@@ -9,51 +11,32 @@ use Spin8\Tests\TestCase;
 use function Brain\Monkey\Actions\expectAdded;
 use function Brain\Monkey\Functions\stubs;
 
-/**
- * @coversDefaultClass \Spin8\AdminNotice
- */
-class AdminNoticeTest extends TestCase {
+#[CoversClass(AdminNotice::class)]
+final class AdminNoticeTest extends TestCase {
 
-    /** 
-     * @test  
-     * @covers ::create
-     */
-    public function test_admin_notice_object_gets_instantiated() {
+    #[Test]
+    public function test_admin_notice_object_gets_instantiated(): void {
         $this->assertInstanceOf(AdminNotice::class, AdminNotice::create('test'));
     }
 
-    /** 
-     * @test  
-     * @covers ::error
-     * @covers ::setType
-     * @covers ::type
-     */
-    public function test_admin_notice_object_gets_instantiated_with_error_type() {
+    #[Test]
+    public function test_admin_notice_object_gets_instantiated_with_error_type(): void {
         $notice = AdminNotice::error('test');
         $this->assertInstanceOf(AdminNotice::class, $notice);
 
         $this->assertTrue($notice->type() === 'error');
     }
 
-    /** 
-     * @test  
-     * @covers ::success
-     * @covers ::setType
-     * @covers ::type
-     */
-    public function test_admin_notice_object_gets_instantiated_with_success_type() {
+    #[Test]
+    public function test_admin_notice_object_gets_instantiated_with_success_type(): void {
         $notice = AdminNotice::success('test');
         $this->assertInstanceOf(AdminNotice::class, $notice);
 
         $this->assertTrue($notice->type() === 'success');
     }
 
-    /** 
-     * @test  
-     * @covers ::__construct
-     * @covers ::text
-     */
-    public function test_admin_notice_text_instantiated_gets_initialized() {
+    #[Test]
+    public function test_admin_notice_text_instantiated_gets_initialized(): void {
         $notice = AdminNotice::create('test');
         $this->assertTrue($notice->text() === 'test');
 
@@ -64,12 +47,8 @@ class AdminNoticeTest extends TestCase {
         $this->assertTrue($error->text() === 'test_error');
     }
 
-    /** 
-     * @test  
-     * @covers ::setDismissible
-     * @covers ::isDismissible
-     */
-    public function test_admin_notice_can_be_set_as_dismissible_by_set_dismissible_method() {
+    #[Test]
+    public function test_admin_notice_can_be_set_as_dismissible_by_set_dismissible_method(): void {
         $notice = AdminNotice::create('test');
         $this->assertFalse($notice->isDismissible());
 
@@ -80,11 +59,8 @@ class AdminNoticeTest extends TestCase {
         $this->assertFalse($notice->isDismissible());
     }
 
-    /** 
-     * @test  
-     * @covers ::render
-     */
-    public function test_admin_notice_gets_rendered_by_render_method() {
+    #[Test]
+    public function test_admin_notice_gets_rendered_by_render_method(): void {
         $notice = AdminNotice::create('test');
         expectAdded('admin_notices')->once()->with(Mockery::type('Closure'));
         $notice->render();

@@ -2,32 +2,26 @@
 
 namespace Spin8\Tests\Unit;
 
+use PHPUnit\Framework\Attributes\Test;
 use Spin8\MenuPage;
 use Spin8\Settings\SettingsPage;
 use Mockery;
 use Spin8\Tests\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 use function Brain\Monkey\Actions\expectAdded;
 use function Brain\Monkey\Functions\stubs;
 
-/**
- * @coversDefaultClass \Spin8\Settings\SettingsPage
- */
+#[CoversClass(SettingsPage::class)]
 class SettingsPageTest extends TestCase {
 
-    /** 
-     * @test  
-     * @covers ::create
-     */
+    #[Test]
     public function test_settings_page_object_gets_instantiated() {
         stubs(['sanitize_title']);
         $this->assertInstanceOf(SettingsPage::class, SettingsPage::create(self::$faker->word, self::$faker->slug));
     }
 
-    /** 
-     * @test  
-     * @covers ::__construct
-     */
+    #[Test]
     public function test_settings_page_parent_constructor_gets_called_and_setting_page_inherit_properties_and_methods() {
         stubs(['sanitize_title']);
         $title = self::$faker->word;
@@ -51,10 +45,7 @@ class SettingsPageTest extends TestCase {
         $this->assertTrue($settings_page->data() === ['a' => 'b']);
     }
 
-    /** 
-     * @test  
-     * @covers ::build
-     */
+    #[Test]
     public function test_setting_page_gets_built_by_build_method() {
         stubs(['sanitize_title', '__']);
         $menu_title = self::$faker->word;
