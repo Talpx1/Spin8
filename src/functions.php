@@ -59,7 +59,7 @@ function buildSettings(string $page_slug, string $submit_text = null): void {
 }
 
 /**
- * Retrive and returns the value of the specified config. If the file or the config key is not found, an exception is thrown.
+ * Retrive and returns the value of the specified config. If the file or the config key is not found, @var $default is returned.
  *
  * @param string $file_name name, with no extension, of the file in the 'configs' directory that contains the specified config value.
  * @param string $config_key the key of the desired config to retrive.
