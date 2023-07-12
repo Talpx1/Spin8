@@ -32,7 +32,7 @@
         "thecodingmachine/safe": "^2.5"
     },
     "require-dev": {
-        "brain/monkey": "2.*",
+        "10up/wp_mock": "^0.4.2",
         "fzaninotto/faker": "1.9.x-dev",
         "mikey179/vfsstream": "^1.6",
         "phpstan/phpstan": "^1.10",

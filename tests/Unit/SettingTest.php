@@ -24,15 +24,15 @@ class SettingTest extends TestCase {
     public function test_setting_object_gets_instantiated() {
         $settingSection = $this->createMock(SettingsSection::class);
         stubs(['sanitize_title']);
-        $this->assertInstanceOf(Setting::class, Setting::create($settingSection, self::$faker->word, self::$faker->slug));
+        $this->assertInstanceOf(Setting::class, Setting::create($settingSection, $this->faker->word, $this->faker->slug));
     }
 
     #[Test]
     public function test_setting_title_gets_initialized() {
         $settingSection = $this->createMock(SettingsSection::class);
         stubs(['sanitize_title']);
-        $title = self::$faker->word;
-        $setting = Setting::create($settingSection, $title, self::$faker->slug);
+        $title = $this->faker->word;
+        $setting = Setting::create($settingSection, $title, $this->faker->slug);
         $this->assertTrue($title === $setting->title());
     }
 
@@ -40,15 +40,15 @@ class SettingTest extends TestCase {
     public function test_setting_name_gets_initialized() {
         $settingSection = $this->createMock(SettingsSection::class);
         stubs(['sanitize_title']);
-        $name = self::$faker->slug;
-        $setting = Setting::create($settingSection, self::$faker->word, $name);
+        $name = $this->faker->slug;
+        $setting = Setting::create($settingSection, $this->faker->word, $name);
         $this->assertTrue(config('plugin', 'name') . '-' . slugify($name) === $setting->name());
     }
 
     #[Test]
     public function test_setting_page_and_section_get_initialized_from_passed_instance_of_settings_groups_enum() {
         stubs(['sanitize_title']);
-        $setting = Setting::create(SettingsGroups::DISCUSSION, self::$faker->word, self::$faker->slug);
+        $setting = Setting::create(SettingsGroups::DISCUSSION, $this->faker->word, $this->faker->slug);
         $this->assertTrue(SettingsGroups::DISCUSSION->value === $setting->section());
         $this->assertTrue(SettingsGroups::DISCUSSION->value === $setting->page());
     }
@@ -56,8 +56,8 @@ class SettingTest extends TestCase {
     #[Test]
     public function test_setting_page_and_section_get_initialized_from_passed_instance_of_settings_section() {
         stubs(['sanitize_title']);
-        $section = SettingsSection::create(self::$faker->word, self::$faker->slug, $this->createMock(SettingsPage::class));
-        $setting = Setting::create($section, self::$faker->word, self::$faker->slug);
+        $section = SettingsSection::create($this->faker->word, $this->faker->slug, $this->createMock(SettingsPage::class));
+        $setting = Setting::create($section, $this->faker->word, $this->faker->slug);
         $this->assertTrue($section->slug() === $setting->section());
         $this->assertTrue($section->page() === $setting->page());
     }
@@ -65,8 +65,8 @@ class SettingTest extends TestCase {
     #[Test]
     public function test_setting_page_and_section_get_initialized_from_passed_string() {
         stubs(['sanitize_title']);
-        $section = self::$faker->word;
-        $setting = Setting::create($section, self::$faker->word, self::$faker->slug);
+        $section = $this->faker->word;
+        $setting = Setting::create($section, $this->faker->word, $this->faker->slug);
         $this->assertTrue($section === $setting->section());
         $this->assertTrue($section === $setting->page());
     }
@@ -75,7 +75,7 @@ class SettingTest extends TestCase {
     public function test_setting_object_type_gets_set_in_set_type_method() {
         $settingSection = $this->createMock(SettingsSection::class);
         stubs(['sanitize_title']);
-        $setting = Setting::create($settingSection, self::$faker->word, slugify(self::$faker->word));
+        $setting = Setting::create($settingSection, $this->faker->word, slugify($this->faker->word));
         $setting->setType(SettingTypes::BOOL);
         $this->assertTrue($setting->type() === SettingTypes::BOOL->realValue());
     }
@@ -84,7 +84,7 @@ class SettingTest extends TestCase {
     public function test_setting_object_sanitize_callback_gets_set_in_set_type_method() {
         $settingSection = $this->createMock(SettingsSection::class);
         stubs(['sanitize_title']);
-        $setting = Setting::create($settingSection, self::$faker->word, slugify(self::$faker->word));
+        $setting = Setting::create($settingSection, $this->faker->word, slugify($this->faker->word));
 
         $this->assertNull($setting->sanitizeCallback());
 
@@ -105,7 +105,7 @@ class SettingTest extends TestCase {
     public function test_setting_object_template_gets_set_in_set_type_method() {
         $settingSection = $this->createMock(SettingsSection::class);
         stubs(['sanitize_title']);
-        $setting = Setting::create($settingSection, self::$faker->word, slugify(self::$faker->word));
+        $setting = Setting::create($settingSection, $this->faker->word, slugify($this->faker->word));
 
         $this->assertNull($setting->template());
 
@@ -126,7 +126,7 @@ class SettingTest extends TestCase {
     public function test_setting_object_data_gets_set_in_set_type_method() {
         $settingSection = $this->createMock(SettingsSection::class);
         stubs(['sanitize_title']);
-        $setting = Setting::create($settingSection, self::$faker->word, slugify(self::$faker->word));
+        $setting = Setting::create($settingSection, $this->faker->word, slugify($this->faker->word));
 
         $this->assertEmpty($setting->data());
 
@@ -150,7 +150,7 @@ class SettingTest extends TestCase {
     public function test_exception_is_thrown_when_trying_to_set_type_if_passed_type_is_not_compatible_with_already_set_default() {
         $settingSection = $this->createMock(SettingsSection::class);
         stubs(['sanitize_title', '__']);
-        $setting = Setting::create($settingSection, self::$faker->word, slugify(self::$faker->word));
+        $setting = Setting::create($settingSection, $this->faker->word, slugify($this->faker->word));
 
         $this->assertNull($setting->default());
         $this->assertNull($setting->type());
@@ -169,7 +169,7 @@ class SettingTest extends TestCase {
     public function test_setting_object_page_gets_set_by_set_page_method() {
         $settingSection = $this->createMock(SettingsSection::class);
         stubs(['sanitize_title']);
-        $setting = Setting::create($settingSection, self::$faker->word, slugify(self::$faker->word));
+        $setting = Setting::create($settingSection, $this->faker->word, slugify($this->faker->word));
         $setting->setPage('test123');
         $this->assertTrue($setting->page() === 'test123');
     }
@@ -178,7 +178,7 @@ class SettingTest extends TestCase {
     public function test_setting_object_description_gets_set_by_set_description_method() {
         $settingSection = $this->createMock(SettingsSection::class);
         stubs(['sanitize_title']);
-        $setting = Setting::create($settingSection, self::$faker->word, slugify(self::$faker->word));
+        $setting = Setting::create($settingSection, $this->faker->word, slugify($this->faker->word));
         $this->assertNull($setting->description());
         $setting->setDescription('test123');
         $this->assertTrue($setting->description() === 'test123');
@@ -188,7 +188,7 @@ class SettingTest extends TestCase {
     public function test_setting_object_default_gets_set_by_set_default_method() {
         $settingSection = $this->createMock(SettingsSection::class);
         stubs(['sanitize_title']);
-        $setting = Setting::create($settingSection, self::$faker->word, slugify(self::$faker->word));
+        $setting = Setting::create($settingSection, $this->faker->word, slugify($this->faker->word));
         $this->assertNull($setting->default());
         $setting->setDefault('test123');
         $this->assertTrue($setting->default() === 'test123');
@@ -198,7 +198,7 @@ class SettingTest extends TestCase {
     public function test_exception_is_thrown_when_trying_to_set_setting_objects_default_incompatible_with_already_set_type() {
         $settingSection = $this->createMock(SettingsSection::class);
         stubs(['sanitize_title', '__']);
-        $setting = Setting::create($settingSection, self::$faker->word, slugify(self::$faker->word));
+        $setting = Setting::create($settingSection, $this->faker->word, slugify($this->faker->word));
 
         $this->assertNull($setting->default());
         $this->assertNull($setting->type());
@@ -217,7 +217,7 @@ class SettingTest extends TestCase {
     public function test_setting_object_show_in_rest_gets_set_by_set_show_in_rest_method() {
         $settingSection = $this->createMock(SettingsSection::class);
         stubs(['sanitize_title']);
-        $setting = Setting::create($settingSection, self::$faker->word, slugify(self::$faker->word));
+        $setting = Setting::create($settingSection, $this->faker->word, slugify($this->faker->word));
 
         $this->assertNull($setting->showInRest());
 
@@ -232,7 +232,7 @@ class SettingTest extends TestCase {
     public function test_setting_object_template_gets_set_by_set_template_method() {
         $settingSection = $this->createMock(SettingsSection::class);
         stubs(['sanitize_title']);
-        $setting = Setting::create($settingSection, self::$faker->word, slugify(self::$faker->word));
+        $setting = Setting::create($settingSection, $this->faker->word, slugify($this->faker->word));
 
         $this->assertNull($setting->template());
 
@@ -244,7 +244,7 @@ class SettingTest extends TestCase {
     public function test_setting_object_class_gets_set_by_set_class_method() {
         $settingSection = $this->createMock(SettingsSection::class);
         stubs(['sanitize_title']);
-        $setting = Setting::create($settingSection, self::$faker->word, slugify(self::$faker->word));
+        $setting = Setting::create($settingSection, $this->faker->word, slugify($this->faker->word));
 
         $this->assertEmpty($setting->class());
 
@@ -256,7 +256,7 @@ class SettingTest extends TestCase {
     public function test_setting_object_data_gets_set_by_with_method() {
         $settingSection = $this->createMock(SettingsSection::class);
         stubs(['sanitize_title']);
-        $setting = Setting::create($settingSection, self::$faker->word, slugify(self::$faker->word));
+        $setting = Setting::create($settingSection, $this->faker->word, slugify($this->faker->word));
 
         $this->assertEmpty($setting->data());
 
@@ -269,9 +269,9 @@ class SettingTest extends TestCase {
     #[Test]
     public function test_setting_object_gets_registered_by_register_method() {
         stubs(['sanitize_title', '__']);
-        $settingSection = SettingsSection::create(self::$faker->word, self::$faker->slug, 'general');
-        $title = self::$faker->word;
-        $name = self::$faker->slug;
+        $settingSection = SettingsSection::create($this->faker->word, $this->faker->slug, 'general');
+        $title = $this->faker->word;
+        $name = $this->faker->slug;
         $setting = Setting::create($settingSection, $title, $name);
 
         $setting->setDescription('test123');
@@ -283,9 +283,9 @@ class SettingTest extends TestCase {
     #[Test]
     public function test_exception_is_thrown_when_registering_setting_object_if_no_template_is_defined() {
         stubs(['sanitize_title', '__']);
-        $settingSection = SettingsSection::create(self::$faker->word, self::$faker->slug, 'general');
-        $title = self::$faker->word;
-        $name = self::$faker->slug;
+        $settingSection = SettingsSection::create($this->faker->word, $this->faker->slug, 'general');
+        $title = $this->faker->word;
+        $name = $this->faker->slug;
 
         $setting = Setting::create($settingSection, $title, $name);
         expectAdded('admin_init')->once()->with(Mockery::type('Closure'));
@@ -296,9 +296,9 @@ class SettingTest extends TestCase {
     #[Test]
     public function test_exception_is_thrown_when_registering_setting_object_if_sanitize_callback_function_does_not_exists() {
         stubs(['sanitize_title', '__']);
-        $settingSection = SettingsSection::create(self::$faker->word, self::$faker->slug, 'general');
-        $title = self::$faker->word;
-        $name = self::$faker->slug;
+        $settingSection = SettingsSection::create($this->faker->word, $this->faker->slug, 'general');
+        $title = $this->faker->word;
+        $name = $this->faker->slug;
 
         $setting = Setting::create($settingSection, $title, $name);
         expectAdded('admin_init')->never();

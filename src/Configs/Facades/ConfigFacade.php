@@ -4,6 +4,7 @@ namespace Spin8\Configs\Facades;
 use InvalidArgumentException;
 use Spin8\Configs\ConfigRepository;
 use Spin8\Configs\Exceptions\ConfigKeyMissingException;
+use Spin8\Utils\Guards\GuardAgainstEmptyParameter;
 
 class ConfigFacade{
 
@@ -51,8 +52,8 @@ class ConfigFacade{
      * @throws InvalidArgumentException
      */
     public static function getOr(string $file_name, string $config_key, mixed $default = null): mixed{
-        if(empty($file_name)) throw new InvalidArgumentException("\$file_name cannot be empty in ".__METHOD__);
-        if(empty($config_key)) throw new InvalidArgumentException("\$config_key cannot be empty in ".__METHOD__);
+        GuardAgainstEmptyParameter::check($file_name);
+        GuardAgainstEmptyParameter::check($config_key);
 
         if(self::has($file_name, $config_key)) return ConfigRepository::all()[$file_name][$config_key];
         return $default;

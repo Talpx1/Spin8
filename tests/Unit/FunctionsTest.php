@@ -5,11 +5,13 @@ namespace Spin8\Tests\Unit;
 use InvalidArgumentException;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\Attributes\CoversFunction;
-
 use PHPUnit\Framework\Attributes\Test;
 use Spin8\Configs\Enums\Environments;
 use Spin8\Configs\Facades\ConfigFacade;
 use Spin8\Tests\TestCase;
+
+use WP_Mock;
+use function Brain\Monkey\Functions\stubs;
 
 
 #[CoversFunction("adminAsset")]
@@ -157,4 +159,21 @@ final class FunctionsTest extends TestCase {
         $this->expectException(InvalidArgumentException::class);      
         config('test', '');
     }
+
+    #[Test]
+    public function test_buildSettings_helper_renders_form(): void { 
+        $fake_plugin_name = 'test_plugin';
+        $fake_page_slug = 'test_page_slug';
+
+        ConfigFacade::set('plugin', 'name', $fake_plugin_name);
+
+        WP_Mock::userFunction('settings_errors')->once()->with("{$fake_plugin_name}_message");
+        WP_Mock::userFunction('settings_fields')->once()->with($fake_page_slug);
+        WP_Mock::userFunction('do_settings_sections')->once()->with($fake_page_slug);
+        WP_Mock::userFunction('__')->once()->with('Save')->andReturn('Save');
+        WP_Mock::userFunction('submit_button')->once()->with('Save');
+
+        $this->assertStringContainsString("<form action='options.php' method='post'>", buildSettings($fake_page_slug));
+    }
+
 }

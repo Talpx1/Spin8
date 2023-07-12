@@ -17,14 +17,14 @@ class MenuPageTest extends TestCase {
     #[Test]
     public function test_settings_page_object_gets_instantiated() {
         stubs(['sanitize_title']);
-        $this->assertInstanceOf(MenuPage::class, MenuPage::create(self::$faker->word, self::$faker->slug));
+        $this->assertInstanceOf(MenuPage::class, MenuPage::create($this->faker->word, $this->faker->slug));
     }
 
     #[Test]
     public function test_page_menu_title_and_page_title_gets_initialized() {
         stubs(['sanitize_title']);
-        $title = self::$faker->word;
-        $menu_page = MenuPage::create($title, self::$faker->slug);
+        $title = $this->faker->word;
+        $menu_page = MenuPage::create($title, $this->faker->slug);
         $this->assertTrue($title === $menu_page->pageTitle());
         $this->assertTrue($title === $menu_page->menuTitle());
     }
@@ -32,33 +32,33 @@ class MenuPageTest extends TestCase {
     #[Test]
     public function test_page_menu_slug_gets_initialized() {
         stubs(['sanitize_title']);
-        $title = self::$faker->word;
-        $menu_page = MenuPage::create($title, self::$faker->slug);
+        $title = $this->faker->word;
+        $menu_page = MenuPage::create($title, $this->faker->slug);
         $this->assertTrue(config('plugin', 'name') . '-' . slugify($title) === $menu_page->slug());
     }
 
     #[Test]
     public function test_page_template_gets_initialized() {
         stubs(['sanitize_title']);
-        $template = self::$faker->slug;
-        $menu_page = MenuPage::create(self::$faker->word, $template);
+        $template = $this->faker->slug;
+        $menu_page = MenuPage::create($this->faker->word, $template);
         $this->assertTrue($template === $menu_page->template());
     }
 
     #[Test]
     public function test_page_title_gets_set_in_set_page_title_method() {
-        $title = self::$faker->word;
+        $title = $this->faker->word;
         stubs(['sanitize_title']);
-        $menu_page = MenuPage::create(self::$faker->word, self::$faker->slug);
+        $menu_page = MenuPage::create($this->faker->word, $this->faker->slug);
         $menu_page->setPageTitle($title);
         $this->assertTrue($title === $menu_page->pageTitle());
     }
 
     #[Test]
     public function test_page_capability_gets_set_in_set_capability_method() {
-        $capability = self::$faker->slug;
+        $capability = $this->faker->slug;
         stubs(['sanitize_title']);
-        $menu_page = MenuPage::create(self::$faker->word, self::$faker->slug);
+        $menu_page = MenuPage::create($this->faker->word, $this->faker->slug);
         $this->assertTrue($menu_page->capability() === 'edit_posts');
         $menu_page->setCapability($capability);
         $this->assertTrue($capability === $menu_page->capability());
@@ -66,10 +66,10 @@ class MenuPageTest extends TestCase {
 
     #[Test]
     public function test_page_menu_slug_gets_set_in_set_slug_method() {
-        $slug = self::$faker->slug;
-        $title = self::$faker->word;
+        $slug = $this->faker->slug;
+        $title = $this->faker->word;
         stubs(['sanitize_title']);
-        $menu_page = MenuPage::create($title, self::$faker->slug);
+        $menu_page = MenuPage::create($title, $this->faker->slug);
         $this->assertTrue($menu_page->slug() === config('plugin', 'name') . '-' . slugify($title));
         $menu_page->setSlug($slug);
         $this->assertTrue($menu_page->slug() === config('plugin', 'name') . '-' . slugify($slug));
@@ -78,10 +78,10 @@ class MenuPageTest extends TestCase {
     #[Test]
     public function test_page_icon_gets_set_in_set_icon_method() {
         stubs(['sanitize_title']);
-        $menu_page = MenuPage::create(self::$faker->word, self::$faker->slug);
+        $menu_page = MenuPage::create($this->faker->word, $this->faker->slug);
         $this->assertEmpty($menu_page->icon());
         $this->assertIsString($menu_page->icon());
-        $icon = self::$faker->imageUrl();
+        $icon = $this->faker->imageUrl();
         $menu_page->setIcon($icon);
         $this->assertTrue($menu_page->icon() === $icon);
     }
@@ -89,7 +89,7 @@ class MenuPageTest extends TestCase {
     #[Test]
     public function test_page_menu_position_gets_set_in_set_position_method() {
         stubs(['sanitize_title']);
-        $menu_page = MenuPage::create(self::$faker->word, self::$faker->slug);
+        $menu_page = MenuPage::create($this->faker->word, $this->faker->slug);
         $this->assertNull($menu_page->position());
         $menu_page->setPosition(2);
         $this->assertIsInt($menu_page->position());
@@ -99,7 +99,7 @@ class MenuPageTest extends TestCase {
     #[Test]
     public function test_page_data_gets_set_in_with_method() {
         stubs(['sanitize_title']);
-        $menu_page = MenuPage::create(self::$faker->word, self::$faker->slug);
+        $menu_page = MenuPage::create($this->faker->word, $this->faker->slug);
         $this->assertIsArray($menu_page->data());
         $this->assertEmpty($menu_page->data());
         $menu_page->with(["test" => "test_123"]);
@@ -111,8 +111,8 @@ class MenuPageTest extends TestCase {
     #[Test]
     public function test_page_gets_built_by_build_method() {
         stubs(['sanitize_title', '__']);
-        $menu_title = self::$faker->word;
-        $template = self::$faker->slug;
+        $menu_title = $this->faker->word;
+        $template = $this->faker->slug;
         $menu_page = MenuPage::create($menu_title, $template);
 
         $menu_page->setIcon('test123');

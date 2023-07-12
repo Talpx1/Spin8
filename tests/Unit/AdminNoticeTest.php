@@ -2,14 +2,13 @@
 
 namespace Spin8\Tests\Unit;
 
+use Closure;
+use Mockery;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use Spin8\AdminNotice;
-use Mockery;
 use Spin8\Tests\TestCase;
-
-use function Brain\Monkey\Actions\expectAdded;
-use function Brain\Monkey\Functions\stubs;
+use WP_Mock;
 
 #[CoversClass(AdminNotice::class)]
 final class AdminNoticeTest extends TestCase {
@@ -61,8 +60,12 @@ final class AdminNoticeTest extends TestCase {
 
     #[Test]
     public function test_admin_notice_gets_rendered_by_render_method(): void {
-        $notice = AdminNotice::create('test');
-        expectAdded('admin_notices')->once()->with(Mockery::type('Closure'));
+
+        $notice = AdminNotice::create('test');                
+        WP_Mock::expectActionAdded('admin_notices', WP_Mock\Functions::type(Closure::class));        
         $notice->render();
+
+        WP_Mock::assertHooksAdded();
+
     }
 }

@@ -2,6 +2,7 @@
 
 use Spin8\Configs\Enums\Environments;
 use Spin8\Configs\Facades\ConfigFacade;
+use Spin8\Utils\Guards\GuardAgainstEmptyParameter;
 
 /**
  * Render a Latte asset located in assets/admin.
@@ -32,11 +33,13 @@ function slugify(string $string): string {
 }
 
 /**
- * Render the settings form used in Wordpress settings pages.
+ * Provide the settings form used in Wordpress settings pages, in string form, will need to be outputted.
  * This function is intended to be used in Latte templates.
  *
  * @param string $page_slug slug of the setting page, available in Latte page templates via the $page_slug variable.
  * @param string|null $submit_text text to use for the 'submit'/'save' button.
+ * 
+ * @throws InvalidArgumentException
  *
  * @see https://developer.wordpress.org/reference/functions/add_settings_error/
  * @see https://developer.wordpress.org/reference/functions/settings_errors/
@@ -44,18 +47,31 @@ function slugify(string $string): string {
  * @see https://developer.wordpress.org/reference/functions/do_settings_sections/
  * @see https://developer.wordpress.org/reference/functions/submit_button/
  */
-function buildSettings(string $page_slug, string $submit_text = null): void {
-    if (isset($_GET['settings-updated'])) add_settings_error(config('plugin', 'name') . '-messages', config('plugin', 'name') . '_message', __('Settings Saved'), 'updated');
-    
-    settings_errors(config('plugin', 'name') . '_message');
+function buildSettings(string $page_slug, string $submit_text = null): string {
+    //TODO: sanitize $submit_text since it goes in HTML. Should not cause problems since is passed from the dev, but better safe than sorry
 
-    ob_start();
-    echo '<form action="options.php" method="post">';
+    GuardAgainstEmptyParameter::check($page_slug);    
+
+    if (isset($_GET['settings-updated'])) {
+        add_settings_error(config('plugin', 'name') . '-messages', config('plugin', 'name') . '_message', __('Settings Saved'), 'updated');
+    }
+    
+    Safe\ob_start();
+    settings_errors(config('plugin', 'name') . '_message');
+    $buffered_settings_errors = ob_get_clean();
+
+    if($buffered_settings_errors === false) throw new ErrorException("An error occurred while building {$page_slug} settings page");
+
+
+    Safe\ob_start();
     settings_fields($page_slug);
     do_settings_sections($page_slug);
     submit_button($submit_text ?? __('Save'));
-    echo '</form>';
-    echo ob_get_clean();
+    $buffer_settings = ob_get_clean();
+
+    if($buffer_settings === false) throw new ErrorException("An error occurred while building {$page_slug} settings page");
+
+    return "{$buffered_settings_errors}<form action='options.php' method='post'>{$buffer_settings}</form>"; 
 }
 
 /**

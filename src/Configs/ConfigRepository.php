@@ -4,6 +4,7 @@ namespace Spin8\Configs;
 use InvalidArgumentException;
 use Spin8\Configs\Exceptions\ConfigFileNotReadableException;
 use Spin8\Spin8;
+use Spin8\Utils\Guards\GuardAgainstEmptyParameter;
 
 /**
  * @method array getAll()
@@ -33,8 +34,8 @@ class ConfigRepository{
     }
 
     public function setConfig(string $file_name, string $config_key, mixed $value): void {
-        if(empty($file_name)) throw new InvalidArgumentException("\$file_name cannot be empty in ".__METHOD__);
-        if(empty($config_key)) throw new InvalidArgumentException("\$config_key cannot be empty in ".__METHOD__);
+        GuardAgainstEmptyParameter::check($file_name);
+        GuardAgainstEmptyParameter::check($config_key);
 
         $this->configs[$file_name][$config_key] = $value;
     }

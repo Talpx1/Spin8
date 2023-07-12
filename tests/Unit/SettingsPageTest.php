@@ -18,14 +18,14 @@ class SettingsPageTest extends TestCase {
     #[Test]
     public function test_settings_page_object_gets_instantiated() {
         stubs(['sanitize_title']);
-        $this->assertInstanceOf(SettingsPage::class, SettingsPage::create(self::$faker->word, self::$faker->slug));
+        $this->assertInstanceOf(SettingsPage::class, SettingsPage::create($this->faker->word, $this->faker->slug));
     }
 
     #[Test]
     public function test_settings_page_parent_constructor_gets_called_and_setting_page_inherit_properties_and_methods() {
         stubs(['sanitize_title']);
-        $title = self::$faker->word;
-        $template = self::$faker->slug;
+        $title = $this->faker->word;
+        $template = $this->faker->slug;
         $settings_page = SettingsPage::create($title, $template);
         $this->assertInstanceOf(SettingsPage::class, $settings_page);
         $this->assertInstanceOf(MenuPage::class, $settings_page);
@@ -48,8 +48,8 @@ class SettingsPageTest extends TestCase {
     #[Test]
     public function test_setting_page_gets_built_by_build_method() {
         stubs(['sanitize_title', '__']);
-        $menu_title = self::$faker->word;
-        $template = self::$faker->slug;
+        $menu_title = $this->faker->word;
+        $template = $this->faker->slug;
         $settings_page = SettingsPage::create($menu_title, $template);
 
         $settings_page->setIcon('test123');
