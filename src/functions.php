@@ -11,7 +11,7 @@ use Spin8\Utils\Guards\GuardAgainstEmptyParameter;
  * @param array $data data in key=>value format to pass to the Latte template. Passed data is available in the template using $key.
  */
 function adminAsset(string $path, array $data = []): void {
-    if (empty($path)) throw new RuntimeException(sprintf(__("%s needs a valid path. Empty path passed."), __FUNCTION__));
+    GuardAgainstEmptyParameter::check($path);
     global $latte;
     $latte->render(assetsPath() . "/admin/$path.latte", $data);
 }
@@ -24,11 +24,16 @@ function adminAsset(string $path, array $data = []): void {
  * @param string $string the string to convert in slug.
  */
 function slugify(string $string): string {
-    if (empty($string)) throw new RuntimeException(sprintf(__("%s needs a valid string. Empty string passed."), __FUNCTION__));
+    GuardAgainstEmptyParameter::check($string);
+    
     $slug = strtolower($string);
     $slug = sanitize_title($slug);
     $slug = str_replace(['_', ' '], '-', $slug);
-    if (empty($slug)) throw new RuntimeException(sprintf(__("An error occurred while converting a string to a slug. Passed string: %s"), $string));
+
+    if (empty($slug)) {
+        throw new RuntimeException(sprintf(__("An error occurred while converting a string to a slug. Passed string: %s"), $string));
+    }
+    
     return $slug;
 }
 
@@ -37,8 +42,8 @@ function slugify(string $string): string {
  * This function is intended to be used in Latte templates.
  *
  * @param string $page_slug slug of the setting page, available in Latte page templates via the $page_slug variable.
- * @param string|null $submit_text text to use for the 'submit'/'save' button.
- * 
+ * @param ?string $submit_text text to use for the 'submit'/'save' button.
+ *
  * @throws InvalidArgumentException
  *
  * @see https://developer.wordpress.org/reference/functions/add_settings_error/
@@ -50,18 +55,19 @@ function slugify(string $string): string {
 function buildSettings(string $page_slug, string $submit_text = null): string {
     //TODO: sanitize $submit_text since it goes in HTML. Should not cause problems since is passed from the dev, but better safe than sorry
 
-    GuardAgainstEmptyParameter::check($page_slug);    
+    GuardAgainstEmptyParameter::check($page_slug);
 
     if (isset($_GET['settings-updated'])) {
         add_settings_error(config('plugin', 'name') . '-messages', config('plugin', 'name') . '_message', __('Settings Saved'), 'updated');
     }
-    
+
     Safe\ob_start();
     settings_errors(config('plugin', 'name') . '_message');
     $buffered_settings_errors = ob_get_clean();
 
-    if($buffered_settings_errors === false) throw new ErrorException("An error occurred while building {$page_slug} settings page");
-
+    if($buffered_settings_errors === false) {
+        throw new ErrorException("An error occurred while building {$page_slug} settings page");
+    }
 
     Safe\ob_start();
     settings_fields($page_slug);
@@ -69,9 +75,11 @@ function buildSettings(string $page_slug, string $submit_text = null): string {
     submit_button($submit_text ?? __('Save'));
     $buffer_settings = ob_get_clean();
 
-    if($buffer_settings === false) throw new ErrorException("An error occurred while building {$page_slug} settings page");
+    if($buffer_settings === false) {
+        throw new ErrorException("An error occurred while building {$page_slug} settings page");
+    }
 
-    return "{$buffered_settings_errors}<form action='options.php' method='post'>{$buffer_settings}</form>"; 
+    return "{$buffered_settings_errors}<form action='options.php' method='post'>{$buffer_settings}</form>";
 }
 
 /**
@@ -102,7 +110,7 @@ function isRunningTest(): bool {
  *
  * @return string
  */
-function rootPath(): string {    
+function rootPath(): string {
     return __DIR__ . "/../../../../../";
 }
 

@@ -9,7 +9,7 @@ class MenuPage {
     protected string $menu_slug;
     protected string $template;
     protected string $icon_url = '';
-    protected int|null $position = null;
+    protected ?int $position = null;
     protected array $data = [];
 
 
@@ -78,7 +78,7 @@ class MenuPage {
         return $this->icon_url;
     }
 
-    public function position(): int|null {
+    public function position(): ?int {
         return $this->position;
     }
 

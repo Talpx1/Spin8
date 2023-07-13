@@ -4,7 +4,7 @@ namespace Spin8;
 
 class AdminNotice {
     private string $text;
-    private string|null $type = null;
+    private ?string $type = null;
     private bool $dismissible = false;
 
     public static function create(string $text): self {
@@ -28,7 +28,7 @@ class AdminNotice {
         return $this;
     }
 
-    public function type(): string|null {
+    public function type(): ?string {
         return $this->type;
     }
 

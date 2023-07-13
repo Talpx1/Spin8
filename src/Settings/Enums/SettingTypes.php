@@ -17,7 +17,7 @@ enum SettingTypes: string {
     case URL = 'url';
     case SELECT = 'select';
 
-    public function sanitizeCallback(): string|null {
+    public function sanitizeCallback(): ?string {
         try {
             return match ($this) {
                 self::STRING, self::BOOL, self::INT, self::NUMBER, self::SELECT => 'sanitize_text_field',
@@ -41,7 +41,7 @@ enum SettingTypes: string {
         }
     }
 
-    public function template(): array|null {
+    public function template(): ?array {
         try {
             return match ($this) {
                 self::STRING => ['path' => 'partials/input', 'data' => ['type' => 'text']],

@@ -1,21 +1,13 @@
 <?xml version="1.0"?>
 <ruleset name="Custom">
-    
-    <file>./jsonld_for_wordpress.php</file>
-    <file>./configs</file>
-    <file>./framework</file>
-    <file>./plugin</file>
-    <file>./tests</file>
 
     <exclude-pattern>./vendor</exclude-pattern>
     <exclude-pattern>./tools</exclude-pattern>
     <exclude-pattern>./.vscode</exclude-pattern>
+    <exclude-pattern>./tests/*Test.php</exclude-pattern>
 
     <autoload>./vendor/autoload.php</autoload>
 
-    <rule ref="Generic.Arrays.ArrayIndent" />
-    <rule ref="Generic.Formatting.MultipleStatementAlignment" />
-    <rule ref="Generic.Formatting.SpaceAfterCast" />
     <rule ref="Generic.PHP.NoSilencedErrors" />
     <rule ref="Generic.Strings.UnnecessaryStringConcat" />
     <rule ref="Generic.WhiteSpace.ArbitraryParenthesesSpacing" />
@@ -32,12 +24,6 @@
         <properties>
             <property name="lineLimit" value="135" />
             <property name="absoluteLineLimit" value="0" />
-        </properties>
-    </rule>
-
-    <rule ref="Generic.Formatting.SpaceAfterNot">
-        <properties>
-            <property name="spacing" value="0" />
         </properties>
     </rule>
 
@@ -65,19 +51,14 @@
         </properties>
     </rule>
 
-    <rule ref="PEAR.Commenting.FunctionComment" />
     <rule ref="PEAR.ControlStructures.MultiLineCondition" />
-    <rule ref="PEAR.Functions.FunctionCallSignature" />
-    <rule ref="PEAR.WhiteSpace.ScopeClosingBrace" />
 
     <rule ref="PSR2.ControlStructures.ControlStructureSpacing" />
     <rule ref="PSR2.ControlStructures.SwitchDeclaration" />
     <rule ref="PSR2.Methods.FunctionCallSignature" />
 
-    <rule ref="Squiz.Commenting.FunctionComment" />
     <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration" />
     <rule ref="Squiz.ControlStructures.ForLoopDeclaration" />
-    <rule ref="Squiz.ControlStructures.SwitchDeclaration" />
 
     <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing">
         <properties>
@@ -87,9 +68,16 @@
 
     <rule ref="Squiz.PHP.CommentedOutCode" />
     <rule ref="Squiz.PHP.DiscouragedFunctions" />
-    <rule ref="Squiz.Strings.ConcatenationSpacing" />
-    <rule ref="Squiz.WhiteSpace.ObjectOperatorSpacing" />
+    <rule ref="Squiz.WhiteSpace.ObjectOperatorSpacing">
+        <properties>
+            <property name="ignoreNewlines" value="true" />
+        </properties>
+    </rule>
     <rule ref="Squiz.WhiteSpace.OperatorSpacing" />
-    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace" />
+    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace">
+        <properties>
+            <property name="ignoreBlankLines" value="true" />
+        </properties>
+    </rule>
 
 </ruleset>

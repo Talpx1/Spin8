@@ -6,14 +6,16 @@ class SettingsSection {
 
     private string $title;
     private string $slug;
-    private string|null $description = null;
+    private ?string $description = null;
     private string $page;
 
-    public static function create(string $title, string $slug, string|SettingsPage $page): self { //TODO: add support for an enum with all the WP settings pages to be passed as $page
+    //TODO: add support for an enum with all the WP settings pages to be passed as $page
+    public static function create(string $title, string $slug, string|SettingsPage $page): self { 
         return new self($title, $slug, $page);
     }
 
-    private function __construct(string $title, string $slug, string|SettingsPage $page) { //TODO: add support for an enum with all the WP settings pages to be passed as $page
+    //TODO: add support for an enum with all the WP settings pages to be passed as $page
+    private function __construct(string $title, string $slug, string|SettingsPage $page) { 
         $this->title = $title;
         $this->page = is_a($page, SettingsPage::class) ? $page->slug() : $page;
         $this->slug = config('plugin', 'name') . '-' . slugify($slug);

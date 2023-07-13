@@ -59,10 +59,13 @@ final class AdminNoticeTest extends TestCase {
     }
 
     #[Test]
-    public function test_admin_notice_gets_rendered_by_render_method(): void {
-
+    public function test_admin_notice_gets_rendered_by_render_method(): void { 
+        
         $notice = AdminNotice::create('test');                
+        
+        //FIXME: fails because of a bug in WP_Mock. Pull request with fix already sent.
         WP_Mock::expectActionAdded('admin_notices', WP_Mock\Functions::type(Closure::class));        
+        
         $notice->render();
 
         WP_Mock::assertHooksAdded();

@@ -2,63 +2,66 @@
 
 namespace Spin8\Tests\Unit;
 
+use Closure;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use Spin8\MenuPage;
-use Mockery;
 use Spin8\Tests\TestCase;
 
-use function Brain\Monkey\Actions\expectAdded;
-use function Brain\Monkey\Functions\stubs;
+use WP_Mock;
 
 #[CoversClass(MenuPage::class)]
 class MenuPageTest extends TestCase {
 
     #[Test]
     public function test_settings_page_object_gets_instantiated() {
-        stubs(['sanitize_title']);
-        $this->assertInstanceOf(MenuPage::class, MenuPage::create($this->faker->word, $this->faker->slug));
+        $menu_title = $this->faker->word();
+        WP_Mock::userFunction('sanitize_title')->once()->with($menu_title)->andReturn($menu_title);
+        $this->assertInstanceOf(MenuPage::class, MenuPage::create($menu_title, $this->faker->slug()));
     }
 
     #[Test]
     public function test_page_menu_title_and_page_title_gets_initialized() {
-        stubs(['sanitize_title']);
-        $title = $this->faker->word;
-        $menu_page = MenuPage::create($title, $this->faker->slug);
+        $title = $this->faker->word();
+        WP_Mock::userFunction('sanitize_title')->once()->with($title)->andReturn($title);
+        $menu_page = MenuPage::create($title, $this->faker->slug());
         $this->assertTrue($title === $menu_page->pageTitle());
         $this->assertTrue($title === $menu_page->menuTitle());
     }
 
     #[Test]
     public function test_page_menu_slug_gets_initialized() {
-        stubs(['sanitize_title']);
-        $title = $this->faker->word;
-        $menu_page = MenuPage::create($title, $this->faker->slug);
+        $title = $this->faker->word();
+        WP_Mock::userFunction('sanitize_title')->once()->with($title)->andReturn($title);
+        $menu_page = MenuPage::create($title, $this->faker->slug());
         $this->assertTrue(config('plugin', 'name') . '-' . slugify($title) === $menu_page->slug());
     }
 
     #[Test]
     public function test_page_template_gets_initialized() {
-        stubs(['sanitize_title']);
-        $template = $this->faker->slug;
-        $menu_page = MenuPage::create($this->faker->word, $template);
+        $template = $this->faker->slug();
+        $title = $this->faker->word();
+        WP_Mock::userFunction('sanitize_title')->once()->with($title)->andReturn($title);
+        $menu_page = MenuPage::create($title, $template);
         $this->assertTrue($template === $menu_page->template());
     }
 
     #[Test]
     public function test_page_title_gets_set_in_set_page_title_method() {
-        $title = $this->faker->word;
-        stubs(['sanitize_title']);
-        $menu_page = MenuPage::create($this->faker->word, $this->faker->slug);
-        $menu_page->setPageTitle($title);
-        $this->assertTrue($title === $menu_page->pageTitle());
+        $page_title = $this->faker->word();
+        $menu_title = $this->faker->word();
+        WP_Mock::userFunction('sanitize_title')->once()->with($menu_title)->andReturn($menu_title);
+        $menu_page = MenuPage::create($menu_title, $this->faker->slug());
+        $menu_page->setPageTitle($page_title);
+        $this->assertTrue($page_title === $menu_page->pageTitle());
     }
 
     #[Test]
     public function test_page_capability_gets_set_in_set_capability_method() {
-        $capability = $this->faker->slug;
-        stubs(['sanitize_title']);
-        $menu_page = MenuPage::create($this->faker->word, $this->faker->slug);
+        $capability = $this->faker->slug();
+        $menu_title = $this->faker->word();
+        WP_Mock::userFunction('sanitize_title')->once()->with($menu_title)->andReturn($menu_title);
+        $menu_page = MenuPage::create($menu_title, $this->faker->slug());
         $this->assertTrue($menu_page->capability() === 'edit_posts');
         $menu_page->setCapability($capability);
         $this->assertTrue($capability === $menu_page->capability());
@@ -66,58 +69,85 @@ class MenuPageTest extends TestCase {
 
     #[Test]
     public function test_page_menu_slug_gets_set_in_set_slug_method() {
-        $slug = $this->faker->slug;
-        $title = $this->faker->word;
-        stubs(['sanitize_title']);
-        $menu_page = MenuPage::create($title, $this->faker->slug);
+        $title = $this->faker->word();
+        
+        WP_Mock::userFunction('sanitize_title')->twice()->with($title)->andReturn($title);
+        $menu_page = MenuPage::create($title, $this->faker->slug());
+        
         $this->assertTrue($menu_page->slug() === config('plugin', 'name') . '-' . slugify($title));
+        
+        $slug = $this->faker->slug();
+
+        WP_Mock::userFunction('sanitize_title')->twice()->with($slug)->andReturn($slug);
         $menu_page->setSlug($slug);
+        
         $this->assertTrue($menu_page->slug() === config('plugin', 'name') . '-' . slugify($slug));
     }
 
     #[Test]
     public function test_page_icon_gets_set_in_set_icon_method() {
-        stubs(['sanitize_title']);
-        $menu_page = MenuPage::create($this->faker->word, $this->faker->slug);
+        $title = $this->faker->word();        
+        WP_Mock::userFunction('sanitize_title')->once()->with($title)->andReturn($title);
+
+        $menu_page = MenuPage::create($title, $this->faker->slug());
+
         $this->assertEmpty($menu_page->icon());
         $this->assertIsString($menu_page->icon());
+
         $icon = $this->faker->imageUrl();
+
         $menu_page->setIcon($icon);
+
         $this->assertTrue($menu_page->icon() === $icon);
     }
 
     #[Test]
     public function test_page_menu_position_gets_set_in_set_position_method() {
-        stubs(['sanitize_title']);
-        $menu_page = MenuPage::create($this->faker->word, $this->faker->slug);
+        $title = $this->faker->word();        
+        WP_Mock::userFunction('sanitize_title')->once()->with($title)->andReturn($title);
+
+        $menu_page = MenuPage::create($title, $this->faker->slug());
+
         $this->assertNull($menu_page->position());
+        
         $menu_page->setPosition(2);
+        
         $this->assertIsInt($menu_page->position());
-        $this->assertTrue($menu_page->position() === 2);
+        $this->assertSame($menu_page->position(), 2);
     }
 
     #[Test]
     public function test_page_data_gets_set_in_with_method() {
-        stubs(['sanitize_title']);
-        $menu_page = MenuPage::create($this->faker->word, $this->faker->slug);
+        $title = $this->faker->word();        
+        WP_Mock::userFunction('sanitize_title')->once()->with($title)->andReturn($title);
+
+        $menu_page = MenuPage::create($title, $this->faker->slug());
+
         $this->assertIsArray($menu_page->data());
         $this->assertEmpty($menu_page->data());
+        
         $menu_page->with(["test" => "test_123"]);
+        
         $this->assertIsArray($menu_page->data());
         $this->assertNotEmpty($menu_page->data());
-        $this->assertTrue($menu_page->data() === ["test" => "test_123"]);
+        $this->assertSame($menu_page->data(), ["test" => "test_123"]);
     }
 
     #[Test]
-    public function test_page_gets_built_by_build_method() {
-        stubs(['sanitize_title', '__']);
-        $menu_title = $this->faker->word;
-        $template = $this->faker->slug;
+    public function test_page_gets_built_by_build_method() {        
+        $menu_title = $this->faker->word();
+        $template = $this->faker->slug();
+
+        WP_Mock::userFunction('sanitize_title')->once()->with($menu_title)->andReturn($menu_title);
+
         $menu_page = MenuPage::create($menu_title, $template);
 
         $menu_page->setIcon('test123');
         $menu_page->setCapability('test123');
-        expectAdded('admin_menu')->once()->with(Mockery::type('Closure'));
+
+        //FIXME: fails because of a bug in WP_Mock. Pull request with fix already sent.
+        WP_Mock::expectActionAdded('admin_menu', WP_Mock\Functions::type(Closure::class));
+        
         $menu_page->build();
     }
 }

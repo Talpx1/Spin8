@@ -1,4 +1,13 @@
 {
+    "cSpell.ignorePaths": [
+        "package-lock.json",
+        "node_modules",
+        "vscode-extension",
+        ".git/objects",
+        ".vscode",
+        ".vscode-insiders",
+        "vendor",
+    ],
     "phpcs.composerJsonPath": "./composer.json",
     "phpcs.executablePath": "./vendor/bin/phpcs",
     "phpcs.ignorePatterns": [
@@ -8,15 +17,18 @@
     ],
     "php.problems.exclude": {
         "**/docker/": true,
-        "./vendor/": true
+        "**/vendor/": true
     },
-    "cSpell.ignorePaths": [
-        "package-lock.json",
-        "node_modules",
-        "vscode-extension",
-        ".git/objects",
-        ".vscode",
-        ".vscode-insiders",
-        "vendor",
-    ]
+    "php.validate.run": "onType",
+    "php.inlayHints.parameters.byReference": true,
+    "php.inlayHints.parameters.enabled": false,
+    "php.inlayHints.types.return": "named",
+    "php.inlayHints.types.suppressVariableFromLiteral": true,
+    "php.inlayHints.types.variable": true,
+    "phpunit.phpunit": "./vendor/bin/phpunit",
+    "php.validate.executablePath": "/usr/bin/php8.2",
+    "php.version": "wsl-8.2",
+    "phpstan.binPath": "./vendor/bin/phpstan",
+    "phpstan.configFile": "./phpstan.neon",
+    "phpstan.enabled": true,
 }

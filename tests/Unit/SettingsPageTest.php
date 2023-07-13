@@ -2,6 +2,7 @@
 
 namespace Spin8\Tests\Unit;
 
+use Closure;
 use PHPUnit\Framework\Attributes\Test;
 use Spin8\MenuPage;
 use Spin8\Settings\SettingsPage;
@@ -9,6 +10,7 @@ use Mockery;
 use Spin8\Tests\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
+use WP_Mock;
 use function Brain\Monkey\Actions\expectAdded;
 use function Brain\Monkey\Functions\stubs;
 
@@ -17,15 +19,19 @@ class SettingsPageTest extends TestCase {
 
     #[Test]
     public function test_settings_page_object_gets_instantiated() {
-        stubs(['sanitize_title']);
-        $this->assertInstanceOf(SettingsPage::class, SettingsPage::create($this->faker->word, $this->faker->slug));
+        $menu_title = $this->faker->word();
+        WP_Mock::userFunction('sanitize_title')->once()->with($menu_title)->andReturn($menu_title);
+
+        $this->assertInstanceOf(SettingsPage::class, SettingsPage::create($menu_title, $this->faker->slug()));
     }
 
     #[Test]
     public function test_settings_page_parent_constructor_gets_called_and_setting_page_inherit_properties_and_methods() {
-        stubs(['sanitize_title']);
-        $title = $this->faker->word;
-        $template = $this->faker->slug;
+        $title = $this->faker->word();
+        $template = $this->faker->slug();
+
+        WP_Mock::userFunction('sanitize_title')->twice()->with($title)->andReturn($title);
+
         $settings_page = SettingsPage::create($title, $template);
         $this->assertInstanceOf(SettingsPage::class, $settings_page);
         $this->assertInstanceOf(MenuPage::class, $settings_page);
@@ -47,15 +53,21 @@ class SettingsPageTest extends TestCase {
 
     #[Test]
     public function test_setting_page_gets_built_by_build_method() {
-        stubs(['sanitize_title', '__']);
-        $menu_title = $this->faker->word;
-        $template = $this->faker->slug;
+        $menu_title = $this->faker->word();
+        $template = $this->faker->slug();
+
+        WP_Mock::userFunction('sanitize_title')->once()->with($menu_title)->andReturn($menu_title);
+
         $settings_page = SettingsPage::create($menu_title, $template);
 
         $settings_page->setIcon('test123');
         $settings_page->setCapability('test123');
-        expectAdded('admin_menu')->once()->with(Mockery::type('Closure'));
+
+        //FIXME: fails because of a bug in WP_Mock. Pull request with fix already sent.
+        WP_Mock::expectActionAdded('admin_menu', WP_Mock\Functions::type(Closure::class));
+        
         $settings_page->build();
+        
         $this->assertTrue($settings_page->data()['page_slug'] === $settings_page->slug());
     }
 }

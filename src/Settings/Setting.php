@@ -14,13 +14,13 @@ class Setting {
     private string $page;
     private string $name;
     private string $title;
-    private string|null $type = null;
-    private string|null $description = null;
-    private bool|null $show_in_rest = null;
+    private ?string $type = null;
+    private ?string $description = null;
+    private ?bool $show_in_rest = null;
     private mixed $default = null;
-    private string|null $sanitize_callback = null;
+    private ?string $sanitize_callback = null;
     private string $class = '';
-    private string|null $template = null;
+    private ?string $template = null;
     private array $data = [];
 
     public static function create(SettingsSection|SettingsGroups|string $section, string $title, string $name): self {
@@ -95,7 +95,7 @@ class Setting {
         return $this->name;
     }
 
-    public function type(): string|null {
+    public function type(): ?string {
         return $this->type;
     }
 
@@ -111,15 +111,15 @@ class Setting {
         return $this->page;
     }
 
-    public function description(): string|null {
+    public function description(): ?string {
         return $this->description;
     }
 
-    public function sanitizeCallback(): string|null {
+    public function sanitizeCallback(): ?string {
         return $this->sanitize_callback;
     }
 
-    public function template(): string|null {
+    public function template(): ?string {
         return $this->template;
     }
 
@@ -135,27 +135,42 @@ class Setting {
         return $this->class;
     }
 
-    public function showInRest(): bool|null {
+    public function showInRest(): ?bool {
         return $this->show_in_rest;
     }
 
-    public function register(callable|string|null $sanitize_callback = null): self {
+    public function register(callable|string $sanitize_callback = null): self {
         $args = [];
-        if (isset($this->type)) $args['type'] = $this->type;
-        if (isset($this->description)) $args['description'] = $this->description;
+        if (isset($this->type)) {
+            $args['type'] = $this->type;
+        }
+
+        if (isset($this->description)) {
+            $args['description'] = $this->description;
+        }
 
         if (isset($sanitize_callback)) {
-            if (is_string($sanitize_callback) && !function_exists($sanitize_callback)) throw new RuntimeException(sprintf(__("Invalid sanitize callback: a function named %s can not be found."), $sanitize_callback));
+            if (is_string($sanitize_callback) && !function_exists($sanitize_callback)) {
+                throw new RuntimeException("Invalid sanitize callback: a function named {$sanitize_callback} can not be found.");
+            }
             $args['sanitize_callback'] = $sanitize_callback;
-        } elseif (isset($this->sanitize_callback)) $args['sanitize_callback'] = $this->sanitize_callback;
+        } elseif(isset($this->sanitize_callback)) {
+            $args['sanitize_callback'] = $this->sanitize_callback;
+        }
 
-        if (isset($this->show_in_rest)) $args['show_in_rest'] = $this->show_in_rest;
-        if (isset($this->default)) $args['default'] = $this->default;
+        if (isset($this->show_in_rest)) {
+            $args['show_in_rest'] = $this->show_in_rest;
+        }
+        
+        if (isset($this->default)) {
+            $args['default'] = $this->default;
+        }
 
         add_action("admin_init", fn () => register_setting($this->page, $this->name, $args));
 
-        if (!isset($this->template))
-            throw new RuntimeException(__("No setting template defined or available. Sometimes templates gets automatically set when specifying the type (setType) of the option. Alternatively define a template calling the 'setTemplate(path, data)' method on a Setting instance."));
+        if (!isset($this->template)) {
+            throw new RuntimeException("No setting template defined or available. Sometimes templates gets automatically set when specifying the type (setType) of the option. Alternatively define a template calling the 'setTemplate(path, data)' method on a Setting instance.");
+        }
 
         add_action("admin_init", fn () => add_settings_field(
             $this->name,
