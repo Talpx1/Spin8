@@ -10,14 +10,17 @@ class SettingsSection {
     private string $page;
 
     //TODO: add support for an enum with all the WP settings pages to be passed as $page
-    public static function create(string $title, string $slug, string|SettingsPage $page): self { 
+    public static function create(string $title, string $slug, string|SettingsPage $page): self {
         return new self($title, $slug, $page);
     }
 
     //TODO: add support for an enum with all the WP settings pages to be passed as $page
-    private function __construct(string $title, string $slug, string|SettingsPage $page) { 
+    private function __construct(string $title, string $slug, string|SettingsPage $page) {
         $this->title = $title;
+        
+        // @phpstan-ignore-next-line
         $this->page = is_a($page, SettingsPage::class) ? $page->slug() : $page;
+
         $this->slug = config('plugin', 'name') . '-' . slugify($slug);
     }
 
@@ -38,7 +41,7 @@ class SettingsSection {
         return $this->page;
     }
 
-    public function description(): string {
+    public function description(): ?string {
         return $this->description;
     }
 
@@ -46,7 +49,9 @@ class SettingsSection {
         add_action("admin_init", fn () => add_settings_section(
             $this->slug,
             $this->title,
-            isset($this->description) ? (fn () => $this->description) : null,
+            function () {
+                echo $this->description;
+            },
             $this->page
         ));
 

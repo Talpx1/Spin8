@@ -2,14 +2,19 @@
 
 namespace Spin8\Settings;
 
+use Closure;
+use InvalidArgumentException;
 use Spin8\Settings\Enums\SettingsGroups;
 use Spin8\Settings\Enums\SettingTypes;
-use Spin8\Spin8;
 use RuntimeException;
+use Spin8\Utils\Guards\GuardAgainstEmptyParameter;
 use TypeError;
 
 class Setting {
-
+    /**
+     * @var array<string, mixed>
+     */
+    private array $data = [];
     private string $section;
     private string $page;
     private string $name;
@@ -18,34 +23,52 @@ class Setting {
     private ?string $description = null;
     private ?bool $show_in_rest = null;
     private mixed $default = null;
-    private ?string $sanitize_callback = null;
+    private string|Closure|null $sanitize_callback = null;
     private string $class = '';
     private ?string $template = null;
-    private array $data = [];
 
     public static function create(SettingsSection|SettingsGroups|string $section, string $title, string $name): self {
         return new self($section, $title, $name);
     }
 
     private function __construct(SettingsSection|SettingsGroups|string $section, string $title, string $name) {
+        GuardAgainstEmptyParameter::check($title);
+        GuardAgainstEmptyParameter::check($name);
+        
+        $this->setSectionAndPage($section);
         $this->title = $title;
         $this->name = config('plugin', 'name') . '-' . slugify($name);
+        
+    }
+
+    private function setSectionAndPage(SettingsSection|SettingsGroups|string $section):void {
+        if(is_string($section)) {
+            GuardAgainstEmptyParameter::check($section);
+
+            $this->section = $section;
+            $this->page = $section;
+            return;
+        }
 
         if (is_a($section, SettingsGroups::class)) {
             $this->section = $section->value;
             $this->page = $section->value;
-        } elseif (is_a($section, SettingsSection::class)) {
+            return;
+        }
+
+        if (is_a($section, SettingsSection::class)) {
             $this->section = $section->slug();
             $this->page = $section->page();
-        } else {
-            $this->section = $section;
-            $this->page = $section;
+            return;
         }
+
+        throw new InvalidArgumentException("section must be a SettingsSection instance or a SettingsGroups instance or a string. ".gettype($section)." passed. Should never be thrown anyway...");
     }
 
     public function setType(SettingTypes $type): self {
-        if (isset($this->default) && gettype($this->default) !== $type->realValue())
-            throw new TypeError(sprintf(__("The specified type %s (%s) is not compatible with the already set default %s. Please change the default or the type."), $type->realValue(), $type->name, gettype($this->default)));
+        if (isset($this->default) && gettype($this->default) !== $type->realValue()) {
+            throw new TypeError("The specified type {$type->realValue()} ({$type->name}) is not compatible with the already set default ".gettype($this->default).". Please change the default or the type.");
+        }
 
         $this->type = $type->realValue();
         $this->sanitize_callback = $type->sanitizeCallback();
@@ -54,7 +77,8 @@ class Setting {
         return $this;
     }
 
-    public function setPage(string $page): self { //TODO: add support for SettingPagesEnum and SettingPage instance
+    //TODO: add support for SettingPagesEnum and SettingPage instance
+    public function setPage(string $page): self {
         $this->page = $page;
         return $this;
     }
@@ -65,13 +89,15 @@ class Setting {
     }
 
     public function setDefault(mixed $default): self {
-        if (isset($this->type) && gettype($default) !== $this->type) throw new TypeError(sprintf(__("The type of the default value does not match the type specified fot the setting. Default value type is %s, the specified type is %s."), gettype($default), $this->type));
+        if (isset($this->type) && gettype($default) !== $this->type) {
+            throw new TypeError("The type of the default value does not match the type specified fot the setting. Default value type is ".gettype($default).", the specified type is {$this->type}.");
+        }
 
         $this->default = $default;
         return $this;
     }
 
-    public function setShowInRest(bool $show_in_rest): self {
+    public function setShowInRest(bool $show_in_rest = true): self {
         $this->show_in_rest = $show_in_rest;
         return $this;
     }
@@ -86,6 +112,19 @@ class Setting {
         return $this;
     }
 
+    public function setSanitizeCallback(string|callable $callback): self {
+        if (is_string($callback) && !function_exists($callback)) {
+            throw new RuntimeException("Invalid sanitize callback: a function named {$callback} can not be found.");
+        }
+
+        $this->sanitize_callback = is_string($callback) ? $callback : Closure::fromCallable($callback);
+        return $this;
+    }
+
+    /**
+     *
+     * @param array<string, mixed> $data
+     */
     public function with(array $data): self {
         $this->data = array_merge($this->data, $data);
         return $this;
@@ -115,7 +154,7 @@ class Setting {
         return $this->description;
     }
 
-    public function sanitizeCallback(): ?string {
+    public function sanitizeCallback(): string|Closure|null {
         return $this->sanitize_callback;
     }
 
@@ -123,7 +162,10 @@ class Setting {
         return $this->template;
     }
 
-    public function data(): array {
+    /**
+     * @return array<string, mixed> $data
+     */
+    public function data(): ?array {
         return $this->data;
     }
 
@@ -139,38 +181,21 @@ class Setting {
         return $this->show_in_rest;
     }
 
-    public function register(callable|string $sanitize_callback = null): self {
+    public function register(): self {
+
+        if (!isset($this->template)) {
+            throw new RuntimeException("No setting template defined or available. Sometimes templates gets automatically set when specifying the type (setType) of the option. Alternatively define a template calling the `setTemplate(path, data)` method on a Setting instance.");
+        }
+
         $args = [];
-        if (isset($this->type)) {
-            $args['type'] = $this->type;
-        }
 
-        if (isset($this->description)) {
-            $args['description'] = $this->description;
-        }
-
-        if (isset($sanitize_callback)) {
-            if (is_string($sanitize_callback) && !function_exists($sanitize_callback)) {
-                throw new RuntimeException("Invalid sanitize callback: a function named {$sanitize_callback} can not be found.");
-            }
-            $args['sanitize_callback'] = $sanitize_callback;
-        } elseif(isset($this->sanitize_callback)) {
-            $args['sanitize_callback'] = $this->sanitize_callback;
-        }
-
-        if (isset($this->show_in_rest)) {
-            $args['show_in_rest'] = $this->show_in_rest;
-        }
-        
-        if (isset($this->default)) {
-            $args['default'] = $this->default;
+        foreach(['type', 'description', 'show_in_rest', 'default', 'sanitize_callback'] as $arg){
+            if(is_null($this->{$arg})) {continue;}
+            
+            $args[$arg] = $this->{$arg};
         }
 
         add_action("admin_init", fn () => register_setting($this->page, $this->name, $args));
-
-        if (!isset($this->template)) {
-            throw new RuntimeException("No setting template defined or available. Sometimes templates gets automatically set when specifying the type (setType) of the option. Alternatively define a template calling the 'setTemplate(path, data)' method on a Setting instance.");
-        }
 
         add_action("admin_init", fn () => add_settings_field(
             $this->name,

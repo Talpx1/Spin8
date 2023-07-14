@@ -14,7 +14,7 @@ class SettingsPage extends MenuPage {
         parent::__construct($menu_title, $template);
     }
 
-    public function build(): self {
+    public function build(): static {
         $this->data['page_slug'] = $this->menu_slug;
         parent::build();
         return $this;

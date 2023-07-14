@@ -8,7 +8,7 @@ use Spin8\Utils\Guards\GuardAgainstEmptyParameter;
  * Render a Latte asset located in assets/admin.
  *
  * @param string $path path of the assets inside assets/admin.
- * @param array $data data in key=>value format to pass to the Latte template. Passed data is available in the template using $key.
+ * @param array<string, mixed> $data data in key=>value format to pass to the Latte template. Passed data is available in the template using $key.
  */
 function adminAsset(string $path, array $data = []): void {
     GuardAgainstEmptyParameter::check($path);

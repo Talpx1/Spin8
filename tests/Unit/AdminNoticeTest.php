@@ -23,7 +23,7 @@ final class AdminNoticeTest extends TestCase {
         $notice = AdminNotice::error('test');
         $this->assertInstanceOf(AdminNotice::class, $notice);
 
-        $this->assertTrue($notice->type() === 'error');
+        $this->assertSame('error', $notice->type());
     }
 
     #[Test]
@@ -31,19 +31,19 @@ final class AdminNoticeTest extends TestCase {
         $notice = AdminNotice::success('test');
         $this->assertInstanceOf(AdminNotice::class, $notice);
 
-        $this->assertTrue($notice->type() === 'success');
+        $this->assertSame('success', $notice->type());
     }
 
     #[Test]
     public function test_admin_notice_text_instantiated_gets_initialized(): void {
         $notice = AdminNotice::create('test');
-        $this->assertTrue($notice->text() === 'test');
+        $this->assertSame('test', $notice->text());
 
         $success = AdminNotice::success('test_success');
-        $this->assertTrue($success->text() === 'test_success');
+        $this->assertSame('test_success', $success->text());
 
         $error = AdminNotice::error('test_error');
-        $this->assertTrue($error->text() === 'test_error');
+        $this->assertSame('test_error', $error->text());
     }
 
     #[Test]

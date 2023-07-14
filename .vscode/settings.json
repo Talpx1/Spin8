@@ -31,4 +31,7 @@
     "phpstan.binPath": "./vendor/bin/phpstan",
     "phpstan.configFile": "./phpstan.neon",
     "phpstan.enabled": true,
+    "cSpell.words": [
+        "singletones"
+    ],
 }

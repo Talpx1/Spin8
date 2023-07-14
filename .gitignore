@@ -1,4 +1,6 @@
 /.env
 **/*.secret.txt
-/vendor
+**/vendor
 /.phpunit.result.cache
+/.vscode
+**/*.lock

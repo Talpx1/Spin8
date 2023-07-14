@@ -1,7 +1,10 @@
 <?php
 
-namespace Spin8\Tests\Unit;
+namespace Spin8\Tests\Unit\Settings;
 
+use Closure;
+use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Spin8\Settings\Enums\SettingsGroups;
 use Spin8\Settings\Enums\SettingTypes;
@@ -26,6 +29,24 @@ class SettingTest extends TestCase {
     }
 
     #[Test]
+    public function test_setting_throws_InvalidArgumentException_on_construct_if_section_is_an_empty_string(): void {
+        $this->expectException(InvalidArgumentException::class);
+        $this->assertInstanceOf(Setting::class, Setting::create("", $this->faker->word(), $this->faker->slug()));
+    }
+
+    #[Test]
+    public function test_setting_throws_InvalidArgumentException_on_construct_if_title_is_an_empty_string(): void {
+        $this->expectException(InvalidArgumentException::class);
+        $this->assertInstanceOf(Setting::class, Setting::create($this->createMock(SettingsSection::class), "", $this->faker->slug()));
+    }
+
+    #[Test]
+    public function test_setting_throws_InvalidArgumentException_on_construct_if_name_is_an_empty_string(): void {
+        $this->expectException(InvalidArgumentException::class);
+        $this->assertInstanceOf(Setting::class, Setting::create($this->createMock(SettingsSection::class), $this->faker->word(), ""));
+    }
+
+    #[Test]
     public function test_setting_title_gets_initialized(): void {
         $settingSection = $this->createMock(SettingsSection::class);        
         $title = $this->faker->word();
@@ -34,7 +55,7 @@ class SettingTest extends TestCase {
         WP_Mock::userFunction('sanitize_title')->once()->with($name)->andReturn($name);
 
         $setting = Setting::create($settingSection, $title, $name);
-        $this->assertTrue($title === $setting->title());
+        $this->assertSame($setting->title(), $title);
     }
 
     #[Test]
@@ -45,7 +66,7 @@ class SettingTest extends TestCase {
         WP_Mock::userFunction('sanitize_title')->twice()->with($name)->andReturn($name);
 
         $setting = Setting::create($settingSection, $this->faker->word(), $name);
-        $this->assertTrue(config('plugin', 'name') . '-' . slugify($name) === $setting->name());
+        $this->assertSame(config('plugin', 'name') . '-' . slugify($name), $setting->name());
     }
 
     #[Test]
@@ -55,8 +76,8 @@ class SettingTest extends TestCase {
 
         $setting = Setting::create(SettingsGroups::DISCUSSION, $this->faker->word(), $name);
 
-        $this->assertTrue(SettingsGroups::DISCUSSION->value === $setting->section());
-        $this->assertTrue(SettingsGroups::DISCUSSION->value === $setting->page());
+        $this->assertSame(SettingsGroups::DISCUSSION->value, $setting->section());
+        $this->assertSame(SettingsGroups::DISCUSSION->value, $setting->page());
     }
 
     #[Test]
@@ -67,8 +88,8 @@ class SettingTest extends TestCase {
         WP_Mock::userFunction('sanitize_title')->once()->with($name)->andReturn($name);        
 
         $setting = Setting::create($section, $this->faker->word(), $name);
-        $this->assertTrue($section->slug() === $setting->section());
-        $this->assertTrue($section->page() === $setting->page());
+        $this->assertSame($section->slug(), $setting->section());
+        $this->assertSame($section->page(), $setting->page());
     }
 
     #[Test]
@@ -79,8 +100,8 @@ class SettingTest extends TestCase {
         WP_Mock::userFunction('sanitize_title')->once()->with($name)->andReturn($name);
 
         $setting = Setting::create($section, $this->faker->word(), $name);
-        $this->assertTrue($section === $setting->section());
-        $this->assertTrue($section === $setting->page());
+        $this->assertSame($section, $setting->section());
+        $this->assertSame($section, $setting->page());
     }
 
     #[Test]
@@ -92,7 +113,7 @@ class SettingTest extends TestCase {
 
         $setting = Setting::create($settingSection, $this->faker->word(), $name);
         $setting->setType(SettingTypes::BOOL);
-        $this->assertTrue($setting->type() === SettingTypes::BOOL->realValue());
+        $this->assertSame(SettingTypes::BOOL->realValue(), $setting->type());
     }
 
     #[Test]
@@ -186,7 +207,7 @@ class SettingTest extends TestCase {
         $this->assertSame(1, $setting->default());
 
         $setting->setType(SettingTypes::INT);
-        $this->assertTrue($setting->type() === SettingTypes::INT->value);
+        $this->assertSame(SettingTypes::INT->value, $setting->type());
 
         $this->expectException(TypeError::class);
         $setting->setType(SettingTypes::STRING);
@@ -201,7 +222,7 @@ class SettingTest extends TestCase {
 
         $setting = Setting::create($settingSection, $this->faker->word(), $name);
         $setting->setPage('test123');
-        $this->assertTrue($setting->page() === 'test123');
+        $this->assertSame('test123', $setting->page());
     }
 
     #[Test]
@@ -214,7 +235,7 @@ class SettingTest extends TestCase {
         $setting = Setting::create($settingSection, $this->faker->word(), $name);
         $this->assertNull($setting->description());
         $setting->setDescription('test123');
-        $this->assertTrue($setting->description() === 'test123');
+        $this->assertSame('test123', $setting->description());
     }
 
     #[Test]
@@ -227,7 +248,7 @@ class SettingTest extends TestCase {
         $setting = Setting::create($settingSection, $this->faker->word(), $name);
         $this->assertNull($setting->default());
         $setting->setDefault('test123');
-        $this->assertTrue($setting->default() === 'test123');
+        $this->assertSame('test123', $setting->default());
     }
 
     #[Test]
@@ -243,10 +264,10 @@ class SettingTest extends TestCase {
         $this->assertNull($setting->type());
 
         $setting->setType(SettingTypes::STRING);
-        $this->assertTrue($setting->type() === SettingTypes::STRING->value);
+        $this->assertSame(SettingTypes::STRING->value, $setting->type());
 
         $setting->setDefault('test123');
-        $this->assertTrue($setting->default() === 'test123');
+        $this->assertSame('test123', $setting->default());
 
         $this->expectException(TypeError::class);
         $setting->setDefault(1);
@@ -268,6 +289,9 @@ class SettingTest extends TestCase {
 
         $setting->setShowInRest(false);
         $this->assertFalse($setting->showInRest());
+
+        $setting->setShowInRest();
+        $this->assertTrue($setting->showInRest());
     }
 
     #[Test]
@@ -282,7 +306,7 @@ class SettingTest extends TestCase {
         $this->assertNull($setting->template());
 
         $setting->setTemplate('test123');
-        $this->assertTrue($setting->template() === 'test123');
+        $this->assertSame('test123', $setting->template());
     }
 
     #[Test]
@@ -297,7 +321,7 @@ class SettingTest extends TestCase {
         $this->assertEmpty($setting->class());
 
         $setting->setClass('test123');
-        $this->assertTrue($setting->class() === 'test123');
+        $this->assertSame('test123', $setting->class());
     }
 
     #[Test]
@@ -311,10 +335,42 @@ class SettingTest extends TestCase {
 
         $this->assertEmpty($setting->data());
 
-        $setting->with([1, 2, 3, 4, 5]);
+        $setting->with(["test"=>"123", "test2"=>"456"]);
         $this->assertNotEmpty($setting->data());
-        $this->assertTrue($setting->data() === [1, 2, 3, 4, 5]);
-        $this->assertCount(5, $setting->data());
+        $this->assertSame(["test"=>"123", "test2"=>"456"], $setting->data());
+        $this->assertCount(2, $setting->data());
+    }
+
+    /**
+     * @return array<string|callable>
+     */
+    public static function sanitize_callback_provider(): array
+    {
+        return [
+            ['sanitize_title'], 
+            [fn() => 'test'], 
+            [[new class{public function sanitize(): string {return "test";}}, "sanitize"]]
+        ];
+    }
+
+    #[DataProvider('sanitize_callback_provider')]
+    #[Test]
+    public function test_setting_object_sanitize_callback_gets_set_by_setSanitizeCallback_method(string|callable $callback): void {
+        $name = $this->faker->slug();
+        WP_Mock::userFunction('sanitize_title')->once()->with($name)->andReturn($name);
+
+        $setting = Setting::create($this->createMock(SettingsSection::class), $this->faker->word(), $name);
+
+        $this->assertNull($setting->sanitizeCallback());
+
+        $setting->setSanitizeCallback($callback);
+        $this->assertNotNull($setting->sanitizeCallback());
+        
+        if(is_array($callback)){
+            $this->assertInstanceOf(Closure::class, $setting->sanitizeCallback());
+        }else{
+            $this->assertSame($callback, $setting->sanitizeCallback());
+        }
     }
 
     #[Test]
@@ -346,25 +402,11 @@ class SettingTest extends TestCase {
         
         //FIXME: fails because of a bug in WP_Mock. Pull request with fix already sent.
         WP_Mock::expectActionAdded('admin_init', WP_Mock\Functions::type(Closure::class));
+        WP_Mock::expectActionAdded('admin_init', WP_Mock\Functions::type(Closure::class));
 
         $this->expectException(RuntimeException::class);
         $setting->register();
     }
 
-    #[Test]
-    public function test_exception_is_thrown_when_registering_setting_object_if_sanitize_callback_function_does_not_exists(): void {        
-        $settingSection = $this->createMock(SettingsSection::class);
-        $title = $this->faker->word();
-        $name = $this->faker->slug();
 
-        WP_Mock::userFunction('sanitize_title')->once()->with($name)->andReturn($name);
-
-        $setting = Setting::create($settingSection, $title, $name);
-        
-        //FIXME: fails because of a bug in WP_Mock. Pull request with fix already sent.
-        WP_Mock::expectActionAdded('admin_init', WP_Mock\Functions::type(Closure::class));
-
-        $this->expectException(RuntimeException::class);
-        $setting->register('function_does_not_exists');
-    }
 }

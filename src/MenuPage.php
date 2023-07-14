@@ -3,6 +3,10 @@
 namespace Spin8;
 
 class MenuPage {
+    /**
+     * @var array<string, mixed>
+     */
+    protected array $data = [];
     protected string $page_title;
     protected string $menu_title;
     protected string $capability = "edit_posts";
@@ -10,8 +14,6 @@ class MenuPage {
     protected string $template;
     protected string $icon_url = '';
     protected ?int $position = null;
-    protected array $data = [];
-
 
     public static function create(string $menu_title, string $template): self {
         return new self($menu_title, $template);
@@ -49,6 +51,9 @@ class MenuPage {
         return $this;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function with(array $data): self {
         $this->data = $data;
         return $this;
@@ -82,20 +87,25 @@ class MenuPage {
         return $this->position;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function data(): array {
         return $this->data;
     }
 
     public function build(): self {
-        add_action('admin_menu', fn () => add_menu_page(
-            $this->page_title,
-            $this->menu_title,
-            $this->capability,
-            $this->menu_slug,
-            fn () => adminAsset($this->template, $this->data),
-            $this->icon_url,
-            $this->position,
-        ));
+        add_action('admin_menu', function() {
+            add_menu_page(
+                $this->page_title,
+                $this->menu_title,
+                $this->capability,
+                $this->menu_slug,
+                fn () => adminAsset($this->template, $this->data),
+                $this->icon_url,
+                $this->position,
+            );
+        });
 
         return $this;
     }
