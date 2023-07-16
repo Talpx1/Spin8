@@ -13,6 +13,7 @@ TO DO IN FRAMEWORK:
 [ ] move and group const in separate file
 [ ] test remove options from db in uninstall.php
 [ ] test block uninstall for local environment
+[ ] test configs
 [X] create Enviorments enum
 [X] singleton for spin8
 [X] load config in a separated manager and not read them directly from file. This way are configurable at runtime and testable.

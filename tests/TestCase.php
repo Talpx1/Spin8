@@ -29,7 +29,7 @@ class TestCase extends \PHPUnit\Framework\TestCase {
     /**
      * Virtual filesystem root
      */
-    public readonly vfsStreamDirectory $filesystem_root;
+    public vfsStreamDirectory $filesystem_root;
 
 
     // public static function setUpBeforeClass(): void {
@@ -41,7 +41,7 @@ class TestCase extends \PHPUnit\Framework\TestCase {
     // }
 
     public function setUp(): void {
-        parent::setUp();        
+        parent::setUp();
         
         $this->faker = \Faker\Factory::create();
         $this->db = new PDO('sqlite::memory:');
@@ -49,33 +49,33 @@ class TestCase extends \PHPUnit\Framework\TestCase {
         $this->createVirtualFileSystem();
         
         Mockery::close();
-        WP_Mock::setUp();        
+        WP_Mock::setUp();
     }
 
-    public function tearDown(): void {      
+    public function tearDown(): void {
         unset($this->faker);
-        unset($this->db);        
+        unset($this->db);
         WP_Mock::tearDown();
         Mockery::close();
         parent::tearDown();
     }
 
-    protected function clearMemoryDb(): void{        
+    protected function clearMemoryDb(): void {
         $this->db->query(
             "PRAGMA writable_schema = 1;
             DELETE FROM sqlite_master WHERE TYPE IN ('table', 'index', 'trigger');
             PRAGMA writable_schema = 0;
             VACUUM;
             PRAGMA INTEGRITY_CHECK;"
-        );        
+        );
 
         unset($this->db);
     }
 
-    protected function createVirtualFileSystem(): void{
+    protected function createVirtualFileSystem(): void {
         $this->filesystem_root = vfsStream::setup(structure:[
             "configs" => [],
-            "storage" => ["framework" => ["temp"=>[]]],
+            "storage" => ["framework" => ["temp" => []]],
             "vendor" => ["talp1" => ["spin8" => ["framework" => ["src" => []]]]],
         ]);
     }
@@ -83,7 +83,7 @@ class TestCase extends \PHPUnit\Framework\TestCase {
     /**
      * removes the unnecessary part of virtual filesystem paths to simulate that these are actually on-disk paths
      */
-    public function vfsPathToRealPath(string $vfs_path): string{
+    public function vfsPathToRealPath(string $vfs_path): string {
         GuardAgainstEmptyParameter::check($vfs_path);
 
         if(!str_starts_with($vfs_path, "vfs://root")) {
@@ -91,7 +91,10 @@ class TestCase extends \PHPUnit\Framework\TestCase {
         }
 
         $path = str_replace("vfs://root", '', $vfs_path);
-        if(! str_ends_with($path, "/")) $path .= '/';
+        
+        if(! str_ends_with($path, "/")) {
+            $path .= '/';
+        }
 
         return $path;
     }
@@ -100,7 +103,7 @@ class TestCase extends \PHPUnit\Framework\TestCase {
     /**
      * removes the unnecessary part of paths to simulate that the root path is actually '/' and not the result of adjusting the output of __DIR__
      */
-    public function removeLocalPath(string $real_path): string{
+    public function removeLocalPath(string $real_path): string {
         GuardAgainstEmptyParameter::check($real_path);
 
         return str_replace(dirname(__DIR__)."/src/../../../../..", "", $real_path);

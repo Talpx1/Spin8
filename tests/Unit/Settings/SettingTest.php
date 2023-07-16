@@ -385,7 +385,7 @@ class SettingTest extends TestCase {
         $setting->setDescription('test123');
         $setting->setTemplate('test123');
 
-        //FIXME: fails because of a bug in WP_Mock. Pull request with fix already sent.
+        //HACK: uses a custom version of WP_Mock to successfully run.
         WP_Mock::expectActionAdded('admin_init', WP_Mock\Functions::type(Closure::class));
         
         $setting->register();
@@ -400,7 +400,7 @@ class SettingTest extends TestCase {
         WP_Mock::userFunction('sanitize_title')->once()->with($name)->andReturn($name);
         $setting = Setting::create($settingSection, $title, $name);
         
-        //FIXME: fails because of a bug in WP_Mock. Pull request with fix already sent.
+        //HACK: uses a custom version of WP_Mock to successfully run.
         WP_Mock::expectActionAdded('admin_init', WP_Mock\Functions::type(Closure::class));
         WP_Mock::expectActionAdded('admin_init', WP_Mock\Functions::type(Closure::class));
 

@@ -89,7 +89,7 @@ class SettingsSectionTest extends TestCase {
         $setting_section = SettingsSection::create($this->faker->word(), $slug, 'general');
         $setting_section->setDescription('test123');
 
-        //FIXME: fails because of a bug in WP_Mock. Pull request with fix already sent.
+        //HACK: uses a custom version of WP_Mock to successfully run.
         WP_Mock::expectActionAdded('admin_init', WP_Mock\Functions::type(Closure::class));
 
         $setting_section->register();

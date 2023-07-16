@@ -14,14 +14,14 @@ use WP_Mock;
 class MenuPageTest extends TestCase {
 
     #[Test]
-    public function test_settings_page_object_gets_instantiated() {
+    public function test_settings_page_object_gets_instantiated(): void {
         $menu_title = $this->faker->word();
         WP_Mock::userFunction('sanitize_title')->once()->with($menu_title)->andReturn($menu_title);
         $this->assertInstanceOf(MenuPage::class, MenuPage::create($menu_title, $this->faker->slug()));
     }
 
     #[Test]
-    public function test_page_menu_title_and_page_title_gets_initialized() {
+    public function test_page_menu_title_and_page_title_gets_initialized(): void {
         $title = $this->faker->word();
         WP_Mock::userFunction('sanitize_title')->once()->with($title)->andReturn($title);
         $menu_page = MenuPage::create($title, $this->faker->slug());
@@ -30,7 +30,7 @@ class MenuPageTest extends TestCase {
     }
 
     #[Test]
-    public function test_page_menu_slug_gets_initialized() {
+    public function test_page_menu_slug_gets_initialized(): void {
         $title = $this->faker->word();
         WP_Mock::userFunction('sanitize_title')->once()->with($title)->andReturn($title);
         $menu_page = MenuPage::create($title, $this->faker->slug());
@@ -38,7 +38,7 @@ class MenuPageTest extends TestCase {
     }
 
     #[Test]
-    public function test_page_template_gets_initialized() {
+    public function test_page_template_gets_initialized(): void {
         $template = $this->faker->slug();
         $title = $this->faker->word();
         WP_Mock::userFunction('sanitize_title')->once()->with($title)->andReturn($title);
@@ -47,7 +47,7 @@ class MenuPageTest extends TestCase {
     }
 
     #[Test]
-    public function test_page_title_gets_set_in_set_page_title_method() {
+    public function test_page_title_gets_set_in_set_page_title_method(): void {
         $page_title = $this->faker->word();
         $menu_title = $this->faker->word();
         WP_Mock::userFunction('sanitize_title')->once()->with($menu_title)->andReturn($menu_title);
@@ -57,7 +57,7 @@ class MenuPageTest extends TestCase {
     }
 
     #[Test]
-    public function test_page_capability_gets_set_in_set_capability_method() {
+    public function test_page_capability_gets_set_in_set_capability_method(): void {
         $capability = $this->faker->slug();
         $menu_title = $this->faker->word();
         WP_Mock::userFunction('sanitize_title')->once()->with($menu_title)->andReturn($menu_title);
@@ -68,7 +68,7 @@ class MenuPageTest extends TestCase {
     }
 
     #[Test]
-    public function test_page_menu_slug_gets_set_in_set_slug_method() {
+    public function test_page_menu_slug_gets_set_in_set_slug_method(): void {
         $title = $this->faker->word();
         
         WP_Mock::userFunction('sanitize_title')->twice()->with($title)->andReturn($title);
@@ -85,7 +85,7 @@ class MenuPageTest extends TestCase {
     }
 
     #[Test]
-    public function test_page_icon_gets_set_in_set_icon_method() {
+    public function test_page_icon_gets_set_in_set_icon_method(): void {
         $title = $this->faker->word();        
         WP_Mock::userFunction('sanitize_title')->once()->with($title)->andReturn($title);
 
@@ -102,7 +102,7 @@ class MenuPageTest extends TestCase {
     }
 
     #[Test]
-    public function test_page_menu_position_gets_set_in_set_position_method() {
+    public function test_page_menu_position_gets_set_in_set_position_method(): void {
         $title = $this->faker->word();        
         WP_Mock::userFunction('sanitize_title')->once()->with($title)->andReturn($title);
 
@@ -117,7 +117,7 @@ class MenuPageTest extends TestCase {
     }
 
     #[Test]
-    public function test_page_data_gets_set_in_with_method() {
+    public function test_page_data_gets_set_in_with_method(): void {
         $title = $this->faker->word();        
         WP_Mock::userFunction('sanitize_title')->once()->with($title)->andReturn($title);
 
@@ -134,7 +134,7 @@ class MenuPageTest extends TestCase {
     }
 
     #[Test]
-    public function test_page_gets_built_by_build_method() {        
+    public function test_page_gets_built_by_build_method(): void {        
         $menu_title = $this->faker->word();
         $template = $this->faker->slug();
 
@@ -145,7 +145,7 @@ class MenuPageTest extends TestCase {
         $menu_page->setIcon('test123');
         $menu_page->setCapability('test123');
 
-        //FIXME: fails because of a bug in WP_Mock. Pull request with fix already sent.
+        //HACK: uses a custom version of WP_Mock to successfully run.
         WP_Mock::expectActionAdded('admin_menu', WP_Mock\Functions::type(Closure::class));
         
         $menu_page->build();

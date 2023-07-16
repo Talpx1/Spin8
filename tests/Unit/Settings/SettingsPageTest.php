@@ -60,7 +60,7 @@ class SettingsPageTest extends TestCase {
         $settings_page->setIcon('test123');
         $settings_page->setCapability('test123');
 
-        //FIXME: fails because of a bug in WP_Mock. Pull request with fix already sent.
+        //HACK: uses a custom version of WP_Mock to successfully run.
         WP_Mock::expectActionAdded('admin_menu', WP_Mock\Functions::type(Closure::class));
         
         $settings_page->build();

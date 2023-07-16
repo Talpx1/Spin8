@@ -63,7 +63,7 @@ final class AdminNoticeTest extends TestCase {
         
         $notice = AdminNotice::create('test');                
         
-        //FIXME: fails because of a bug in WP_Mock. Pull request with fix already sent.
+        //HACK: uses a custom version of WP_Mock to successfully run.
         WP_Mock::expectActionAdded('admin_notices', WP_Mock\Functions::type(Closure::class));        
         
         $notice->render();
