@@ -32,7 +32,7 @@ class MenuPageTest extends TestCase {
     #[Test]
     public function test_page_menu_slug_gets_initialized(): void {
         $title = $this->faker->word();
-        WP_Mock::userFunction('sanitize_title')->once()->with($title)->andReturn($title);
+        WP_Mock::userFunction('sanitize_title')->twice()->with($title)->andReturn($title);
         $menu_page = MenuPage::create($title, $this->faker->slug());
         $this->assertTrue(config('plugin', 'name') . '-' . slugify($title) === $menu_page->slug());
     }

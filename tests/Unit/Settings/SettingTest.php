@@ -346,6 +346,7 @@ class SettingTest extends TestCase {
      */
     public static function sanitize_callback_provider(): array
     {
+        // @phpstan-ignore-next-line
         return [
             ['sanitize_title'], 
             [fn() => 'test'], 
@@ -401,8 +402,7 @@ class SettingTest extends TestCase {
         $setting = Setting::create($settingSection, $title, $name);
         
         //HACK: uses a custom version of WP_Mock to successfully run.
-        WP_Mock::expectActionAdded('admin_init', WP_Mock\Functions::type(Closure::class));
-        WP_Mock::expectActionAdded('admin_init', WP_Mock\Functions::type(Closure::class));
+        WP_Mock::expectActionNotAdded('admin_init', WP_Mock\Functions::type(Closure::class));
 
         $this->expectException(RuntimeException::class);
         $setting->register();

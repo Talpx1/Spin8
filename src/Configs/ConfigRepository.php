@@ -17,6 +17,10 @@ class ConfigRepository{
 
     public static ?self $instance = null;
 
+    public function clear(): void {
+        $this->config_files = [];
+        $this->configs = [];
+    }
     
     public static function instance(): self {
         if(is_null(self::$instance)) {

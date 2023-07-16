@@ -8,6 +8,8 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PDO;
+use Spin8\Configs\ConfigRepository;
+use Spin8\Spin8;
 use Spin8\Utils\Guards\GuardAgainstEmptyParameter;
 use WP_Mock;
 
@@ -20,11 +22,6 @@ class TestCase extends \PHPUnit\Framework\TestCase {
      * Faker instance
      */
     protected \Faker\Generator $faker;
-
-    /**
-     * DB connection variable
-     */
-    protected PDO $db;
 
     /**
      * Virtual filesystem root
@@ -44,7 +41,6 @@ class TestCase extends \PHPUnit\Framework\TestCase {
         parent::setUp();
         
         $this->faker = \Faker\Factory::create();
-        $this->db = new PDO('sqlite::memory:');
         
         $this->createVirtualFileSystem();
         
@@ -54,22 +50,11 @@ class TestCase extends \PHPUnit\Framework\TestCase {
 
     public function tearDown(): void {
         unset($this->faker);
-        unset($this->db);
         WP_Mock::tearDown();
         Mockery::close();
         parent::tearDown();
-    }
 
-    protected function clearMemoryDb(): void {
-        $this->db->query(
-            "PRAGMA writable_schema = 1;
-            DELETE FROM sqlite_master WHERE TYPE IN ('table', 'index', 'trigger');
-            PRAGMA writable_schema = 0;
-            VACUUM;
-            PRAGMA INTEGRITY_CHECK;"
-        );
-
-        unset($this->db);
+        (Spin8::instance()->singletone(ConfigRepository::class))->clear();
     }
 
     protected function createVirtualFileSystem(): void {

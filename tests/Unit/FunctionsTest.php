@@ -4,6 +4,7 @@ namespace Spin8\Tests\Unit;
 
 use InvalidArgumentException;
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\Attributes\BackupGlobals;
 use PHPUnit\Framework\Attributes\CoversFunction;
 use PHPUnit\Framework\Attributes\Test;
 use Spin8\Configs\Enums\Environments;
@@ -28,6 +29,7 @@ use WP_Mock;
 final class FunctionsTest extends TestCase {
 
     #[Test]
+    #[BackupGlobals(true)]
     public function test_environment_helper_returns_right_environment(): void {
         $this->assertTrue(array_key_exists("TESTING", $_ENV) && $_ENV['TESTING'] = '1');
         $this->assertTrue(isRunningTest());
@@ -111,7 +113,7 @@ final class FunctionsTest extends TestCase {
 
     #[Test]
     public function test_isRunningTest_helper_returns_true_when_running_test(): void {        
-        //$_ENV['TESTING'] = '1' gets set by PHPUnit
+        //$_ENV['TESTING'] = '1' gets set by PHPUnit;
         $this->assertTrue(isRunningTest());
     }
 
