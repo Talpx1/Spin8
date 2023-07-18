@@ -2,6 +2,7 @@
 
 use Spin8\Configs\Enums\Environments;
 use Spin8\Configs\Facades\ConfigFacade;
+use Spin8\Spin8;
 use Spin8\Utils\Guards\GuardAgainstEmptyParameter;
 
 /**
@@ -111,7 +112,7 @@ function isRunningTest(): bool {
  * @return string
  */
 function rootPath(): string {
-    return __DIR__ . "/../../../../../";
+    return Spin8::instance()->getProjectRootPath();
 }
 
 /**

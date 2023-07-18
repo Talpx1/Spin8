@@ -3,6 +3,7 @@
 namespace Spin8\Configs\Facades;
 use InvalidArgumentException;
 use Spin8\Configs\ConfigRepository;
+use Spin8\Configs\Exceptions\ConfigFileMissingException;
 use Spin8\Configs\Exceptions\ConfigKeyMissingException;
 use Spin8\Spin8;
 use Spin8\Utils\Guards\GuardAgainstEmptyParameter;
@@ -21,7 +22,7 @@ final class ConfigFacade{
         if(! self::has($file_name, $config_key)) {
             throw new ConfigKeyMissingException($config_key, $file_name);
         }
-
+        
         return self::getConfigRepositoryInstance()->getAll()[$file_name][$config_key];
     }
 
@@ -41,12 +42,24 @@ final class ConfigFacade{
      *
      * @param string $file_name file to look into to check if the @var $config_key exists
      * @param string $config_key key of the config to check
+     *
+     * @throws ConfigFileMissingException
      */
     public static function has(string $file_name, string $config_key): bool {
-        return (
-            array_key_exists($file_name, self::getConfigRepositoryInstance()->getAll()) &&
-            array_key_exists($config_key, self::getConfigRepositoryInstance()->getAll()[$file_name])
-        );
+        if(!self::fileExists($file_name)) {
+            throw new ConfigFileMissingException($file_name);
+        }
+        
+        return array_key_exists($config_key, self::getConfigRepositoryInstance()->getAll()[$file_name]);
+    }
+
+    /**
+     * check wether the specified config file exists
+     *
+     * @param string $file_name file to check
+     */
+    public static function fileExists(string $file_name): bool {
+        return array_key_exists($file_name, self::getConfigRepositoryInstance()->getAll());
     }
 
     /**

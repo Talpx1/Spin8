@@ -14,7 +14,8 @@ TO DO IN FRAMEWORK:
 [ ] test remove options from db in uninstall.php
 [ ] test block uninstall for local environment
 [ ] test configs
-[X] create Enviorments enum
+[ ] avoid initializing spin8 and boostrapping in unit tests
+[X] create Environments enum
 [X] singleton for spin8
 [X] load config in a separated manager and not read them directly from file. This way are configurable at runtime and testable.
 

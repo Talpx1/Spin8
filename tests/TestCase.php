@@ -7,6 +7,8 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
+use org\bovigo\vfs\vfsStreamFile;
+use org\bovigo\vfs\vfsStreamWrapper;
 use PDO;
 use Spin8\Configs\ConfigRepository;
 use Spin8\Spin8;
@@ -26,7 +28,12 @@ class TestCase extends \PHPUnit\Framework\TestCase {
     /**
      * Virtual filesystem root
      */
-    public vfsStreamDirectory $filesystem_root;
+    protected vfsStreamDirectory $filesystem_root;
+    protected vfsStreamDirectory $config_path;
+    protected vfsStreamDirectory $storage_path;
+    protected vfsStreamDirectory $vendor_path;
+    
+    protected ConfigRepository $config_repository;
 
 
     // public static function setUpBeforeClass(): void {
@@ -43,6 +50,8 @@ class TestCase extends \PHPUnit\Framework\TestCase {
         $this->faker = \Faker\Factory::create();
         
         $this->createVirtualFileSystem();
+
+        $this->setUpFramework();
         
         Mockery::close();
         WP_Mock::setUp();
@@ -54,7 +63,7 @@ class TestCase extends \PHPUnit\Framework\TestCase {
         Mockery::close();
         parent::tearDown();
 
-        (Spin8::instance()->singletone(ConfigRepository::class))->clear();
+        $this->config_repository->clear();
     }
 
     protected function createVirtualFileSystem(): void {
@@ -63,6 +72,14 @@ class TestCase extends \PHPUnit\Framework\TestCase {
             "storage" => ["framework" => ["temp" => []]],
             "vendor" => ["talp1" => ["spin8" => ["framework" => ["src" => []]]]],
         ]);
+        
+
+        // @phpstan-ignore-next-line
+        $this->config_path = $this->filesystem_root->getChild('configs');
+        // @phpstan-ignore-next-line
+        $this->storage_path = $this->filesystem_root->getChild('storage');
+        // @phpstan-ignore-next-line
+        $this->vendor_path = $this->filesystem_root->getChild('vendor');
     }
 
     /**
@@ -92,5 +109,30 @@ class TestCase extends \PHPUnit\Framework\TestCase {
         GuardAgainstEmptyParameter::check($real_path);
 
         return str_replace(dirname(__DIR__)."/src/../../../../..", "", $real_path);
+    }
+
+    /**
+     * creates a new config file with the given name in the appropriate virtual directory.
+     * 
+     * @param string $file_name the name that will be given to the newly created file.
+     * @param array<string, mixed> $configs, configs to write in that file.
+     */
+    public function makeConfigFile(string $file_name, array $configs): vfsStreamFile {
+        GuardAgainstEmptyParameter::check($file_name);
+
+        return vfsStream::newFile("{$file_name}.php")->withContent("<?php return ".var_export($configs, true).";")->at($this->config_path);
+    }
+    
+    protected function setUpFramework(): void {
+
+        $spin8 = Spin8::instance()->configure([
+            'project_root_path' => $this->filesystem_root->url()
+        ]);
+
+        require_once(__DIR__ . "/../src/functions.php");
+
+        $this->config_repository = $spin8->singletone(ConfigRepository::class);
+
+        $this->config_repository->loadAll();
     }
 }

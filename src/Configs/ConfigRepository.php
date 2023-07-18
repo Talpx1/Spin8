@@ -15,12 +15,8 @@ class ConfigRepository{
      */
     protected array $configs = [];
 
-    public static ?self $instance = null;
+    protected static ?self $instance = null;
 
-    public function clear(): void {
-        $this->config_files = [];
-        $this->configs = [];
-    }
     
     public static function instance(): self {
         if(is_null(self::$instance)) {
@@ -29,17 +25,22 @@ class ConfigRepository{
         
         return self::$instance;
     }
-
+    
     protected function __construct(){}
-
+    
     public function loadAll(): void {
         $this->discoverFiles();
-
+        
         foreach($this->config_files as $config_file) {
             $this->loadFile($config_file);
         }
     }
-
+    
+    public function clear(): void {
+        $this->config_files = [];
+        $this->configs = [];
+    }
+    
     /**
      * @return array<string, array<string, mixed>>
      */
@@ -58,10 +59,10 @@ class ConfigRepository{
         if (!is_readable($config_file)) {
             throw new ConfigFileNotReadableException($config_file);
         }
-
+        
         $config_file_name = pathinfo($config_file, PATHINFO_FILENAME);
         $this->configs[$config_file_name] = [];
-
+        
         /**
          * @var array<string, mixed>
          */
@@ -75,8 +76,13 @@ class ConfigRepository{
         }
     }
 
+    /**
+     * @internal not using glob, even if far more concise, because it uses the glob:// stream wrapper, making it not testable with the in-memory filesystem
+     */
     protected function discoverFiles(): void {
-        $this->config_files = \Safe\glob(configPath()."*.php");
+        $dir_content = \Safe\scandir(configPath());
+        $config_files = array_filter($dir_content, fn($path) => pathinfo($path, PATHINFO_EXTENSION) === "php");
+        $this->config_files = array_map(fn($config_file) => configPath().$config_file, $config_files);
     }
 
 }

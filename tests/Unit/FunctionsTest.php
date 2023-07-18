@@ -50,65 +50,37 @@ final class FunctionsTest extends TestCase {
 
     #[Test]
     public function test_frameworkTempPath_helper_points_to_right_directory(): void {        
-        $vfs_path = $this->vfsPathToRealPath(vfsStream::url("root/storage/framework/temp/"));
-        $real_path = $this->removeLocalPath(frameworkTempPath());
-        
-        $this->assertSame($vfs_path, $real_path);
-        $this->assertSame("/storage/framework/temp/", $real_path);
+        $this->assertSame(vfsStream::url("root/storage/framework/temp/"), frameworkTempPath());
     }
 
     #[Test]
     public function test_storagePath_helper_points_to_right_directory(): void {        
-        $vfs_path = $this->vfsPathToRealPath(vfsStream::url("root/storage/"));
-        $real_path = $this->removeLocalPath(storagePath());
-        
-        $this->assertSame($vfs_path, $real_path);
-        $this->assertSame("/storage/", $real_path);
+        $this->assertSame(vfsStream::url("root/storage/"), storagePath());
     }
 
     #[Test]
-    public function test_configPath_helper_points_to_right_directory(): void {        
-        $vfs_path = $this->vfsPathToRealPath(vfsStream::url("root/configs/"));
-        $real_path = $this->removeLocalPath(configPath());
-        
-        $this->assertSame($vfs_path, $real_path);
-        $this->assertSame("/configs/", $real_path);
+    public function test_configPath_helper_points_to_right_directory(): void {
+        $this->assertSame(vfsStream::url("root/configs/"), configPath());
     }
 
     #[Test]
     public function test_frameworkSrcPath_helper_points_to_right_directory(): void {        
-        $vfs_path = $this->vfsPathToRealPath(vfsStream::url("root/vendor/talp1/spin8/framework/src/"));
-        $real_path = $this->removeLocalPath(frameworkSrcPath());
-        
-        $this->assertSame($vfs_path, $real_path);
-        $this->assertSame("/vendor/talp1/spin8/framework/src/", $real_path);
+        $this->assertSame(vfsStream::url("root/vendor/talp1/spin8/framework/src/"), frameworkSrcPath());
     }
 
     #[Test]
     public function test_frameworkPath_helper_points_to_right_directory(): void {        
-        $vfs_path = $this->vfsPathToRealPath(vfsStream::url("root/vendor/talp1/spin8/framework/"));
-        $real_path = $this->removeLocalPath(frameworkPath());
-        
-        $this->assertSame($vfs_path, $real_path);
-        $this->assertSame("/vendor/talp1/spin8/framework/", $real_path);
+        $this->assertSame(vfsStream::url("root/vendor/talp1/spin8/framework/"), frameworkPath());
     }
 
     #[Test]
     public function test_assetsPath_helper_points_to_right_directory(): void {        
-        $vfs_path = $this->vfsPathToRealPath(vfsStream::url("root/assets/"));
-        $real_path = $this->removeLocalPath(assetsPath());
-        
-        $this->assertSame($vfs_path, $real_path);
-        $this->assertSame("/assets/", $real_path);
+        $this->assertSame(vfsStream::url("root/assets/"), assetsPath());
     }
 
     #[Test]
     public function test_rootPath_helper_points_to_right_directory(): void {        
-        $vfs_path = $this->vfsPathToRealPath(vfsStream::url("root"));
-        $real_path = $this->removeLocalPath(rootPath());
-        
-        $this->assertSame($vfs_path, $real_path);
-        $this->assertSame("/", $real_path);
+        $this->assertSame(vfsStream::url("root/"), rootPath());
     }
 
     #[Test]

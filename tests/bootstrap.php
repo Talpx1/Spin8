@@ -1,4 +1,5 @@
 <?php
+use Spin8\Spin8;
 
 $autoloader = __DIR__ . '/../vendor/autoload.php';
 if (file_exists($autoloader) && is_readable($autoloader)) {
@@ -10,5 +11,3 @@ if (file_exists($autoloader) && is_readable($autoloader)) {
 //WP_Mock::activateStrictMode();
 WP_Mock::setUsePatchwork(FALSE); //not using patchwork because it breaks phpunit :(
 WP_Mock::bootstrap();
-
-require_once __DIR__ . '/../src/bootstrap.php';

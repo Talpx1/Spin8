@@ -10,9 +10,9 @@ use Spin8\Spin8;
 $latte = new Latte\Engine();
 $latte->setTempDirectory(__DIR__ . "/../../../../../storage/framework/temp/latte/");
 
-require_once(__DIR__ . "/functions.php");
-
 $spin8 = Spin8::instance();
+
+require_once(__DIR__ . "/functions.php");
 
 /**
  * @var \Spin8\Configs\ConfigRepository
