@@ -10,8 +10,21 @@ final class GuardAgainstEmptyParameter{
      *
      * @throws InvalidArgumentException
      */
-    public static function check(mixed $parameter_to_check): void {
+    public static function check(mixed $parameter_to_check, bool $allow_null = false): void {
+        if(is_numeric($parameter_to_check)) {
+            return;
+        }
+
+        if(is_null($parameter_to_check) && $allow_null) {
+            return;
+        }
+
+        if(is_bool($parameter_to_check)) {
+            return;
+        }
+
         $caller = debug_backtrace()[1];
+
         if(empty($parameter_to_check)) {
             $message  = "{$caller['function']} was called with non-allowed empty argument";
             $message  .= array_key_exists('file', $caller) ? " in {$caller['file']}" : "";

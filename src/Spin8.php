@@ -80,7 +80,7 @@ final class Spin8{
      *
      * @param class-string $class
      * @param object $object must be an instance of `@see $class`
-     * 
+     *
      * @throws RuntimeException
      */
     public function replaceSingletone(string $class, object $object): self {

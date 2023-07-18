@@ -55,6 +55,8 @@ class ConfigRepository{
         $this->configs[$file_name][$config_key] = $value;
     }
 
+    //TODO: set from array method
+
     protected function loadFile(string $config_file): void {
         if (!is_readable($config_file)) {
             throw new ConfigFileNotReadableException($config_file);

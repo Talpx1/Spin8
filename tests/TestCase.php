@@ -34,6 +34,8 @@ class TestCase extends \PHPUnit\Framework\TestCase {
     protected vfsStreamDirectory $vendor_path;
     
     protected ConfigRepository $config_repository;
+    
+    protected Spin8 $spin8;
 
 
     // public static function setUpBeforeClass(): void {
@@ -113,26 +115,41 @@ class TestCase extends \PHPUnit\Framework\TestCase {
 
     /**
      * creates a new config file with the given name in the appropriate virtual directory.
-     * 
+     *
      * @param string $file_name the name that will be given to the newly created file.
      * @param array<string, mixed> $configs, configs to write in that file.
      */
-    public function makeConfigFile(string $file_name, array $configs): vfsStreamFile {
+    public function makeConfigFile(string $file_name, array $configs = [], int $permissions = null): vfsStreamFile {
         GuardAgainstEmptyParameter::check($file_name);
 
-        return vfsStream::newFile("{$file_name}.php")->withContent("<?php return ".var_export($configs, true).";")->at($this->config_path);
+        return vfsStream::newFile("{$file_name}.php", $permissions)->withContent("<?php return ".var_export($configs, true).";")->at($this->config_path);
     }
     
     protected function setUpFramework(): void {
 
-        $spin8 = Spin8::instance()->configure([
+        $this->spin8 = Spin8::instance()->configure([
             'project_root_path' => $this->filesystem_root->url()
         ]);
 
         require_once(__DIR__ . "/../src/functions.php");
 
-        $this->config_repository = $spin8->singletone(ConfigRepository::class);
+        $this->config_repository = $this->spin8->singletone(ConfigRepository::class);
 
         $this->config_repository->loadAll();
+    }
+
+    /**
+     * generates a given amount of random configs
+     *
+     * @param int $amount amount of config to generate
+     */
+    public function generateRandomConfigs(int $amount): void {
+        for($i = 0; $i < $amount; $i++){
+            $this->config_repository->set(
+                $this->faker->unique()->slug(),
+                $this->faker->unique()->word(),
+                $this->faker->randomFloat(),
+            );
+        }
     }
 }

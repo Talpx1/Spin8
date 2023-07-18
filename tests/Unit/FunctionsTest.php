@@ -110,13 +110,25 @@ final class FunctionsTest extends TestCase {
 
     #[Test]
     public function test_config_helper_returns_specified_fallback_if_configuration_key_cant_be_found(): void {        
+        $this->makeConfigFile('test', ['a'=>1]);
+        $this->assertSame('fallback', config('test', 'cfg_test', 'fallback'));
+    }
+
+    #[Test]
+    public function test_config_helper_returns_specified_fallback_if_configuration_file_cant_be_found(): void {        
         //no configs exists right now, so every config we try to fetch is going to fallback
         $this->assertSame('fallback', config('test', 'cfg_test', 'fallback'));
     }
 
     #[Test]
-    public function test_config_helper_returns_null_if_configuration_key_cant_be_found_and_no_fallback_is_specified(): void {        
+    public function test_config_helper_returns_null_if_configuration_file_cant_be_found_and_no_fallback_is_specified(): void {        
         //no configs exists right now, so every config we try to fetch is going to fallback
+        $this->assertNull(config('test', 'cfg_test'));
+    }
+
+    #[Test]
+    public function test_config_helper_returns_null_if_configuration_key_cant_be_found_and_no_fallback_is_specified(): void {        
+        $this->makeConfigFile('test', ['a'=>1]);
         $this->assertNull(config('test', 'cfg_test'));
     }
 

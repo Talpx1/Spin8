@@ -75,10 +75,16 @@ final class ConfigFacade{
         GuardAgainstEmptyParameter::check($file_name);
         GuardAgainstEmptyParameter::check($config_key);
 
-        if(self::has($file_name, $config_key)) {
-            return self::getConfigRepositoryInstance()->getAll()[$file_name][$config_key];
+        try{
+            if(self::has($file_name, $config_key)) {
+                return self::getConfigRepositoryInstance()->getAll()[$file_name][$config_key];
+            }
+        } catch(ConfigFileMissingException $e){
+            return $default;
         }
+        
         return $default;
+        
     }
 
     private static function getConfigRepositoryInstance(): ConfigRepository {
