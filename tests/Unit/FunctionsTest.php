@@ -8,7 +8,7 @@ use PHPUnit\Framework\Attributes\BackupGlobals;
 use PHPUnit\Framework\Attributes\CoversFunction;
 use PHPUnit\Framework\Attributes\Test;
 use Spin8\Configs\Enums\Environments;
-use Spin8\Configs\Facades\ConfigFacade;
+use Spin8\Facades\Config;
 use Spin8\Tests\TestCase;
 use WP_Mock;
 
@@ -40,11 +40,11 @@ final class FunctionsTest extends TestCase {
         $this->assertFalse(isRunningTest());
         $this->assertFalse(array_key_exists("TESTING", $_ENV) && $_ENV['TESTING'] = '1');
 
-        ConfigFacade::set('environment', 'environment', Environments::PRODUCTION);
+        Config::set('environment', 'environment', Environments::PRODUCTION);
         $this->assertSame(config('environment', 'environment'), environment());
         $this->assertSame(Environments::PRODUCTION, environment());
 
-        ConfigFacade::set('environment', 'environment', Environments::LOCAL);
+        Config::set('environment', 'environment', Environments::LOCAL);
         $this->assertSame(Environments::LOCAL, environment());
     }
 
@@ -103,7 +103,7 @@ final class FunctionsTest extends TestCase {
 
     #[Test]
     public function test_config_helper_returns_specified_configuration(): void {        
-        ConfigFacade::set('test', 'cfg_test', '123');
+        Config::set('test', 'cfg_test', '123');
 
         $this->assertSame('123', config('test', 'cfg_test'));
     }
@@ -145,11 +145,11 @@ final class FunctionsTest extends TestCase {
     }
 
     #[Test]
-    public function test_buildSettings_helper_renders_form(): void { 
+    public function test_buildSettings_helper_provide_settings_form(): void { 
         $fake_plugin_name = 'test_plugin';
         $fake_page_slug = 'test_page_slug';
 
-        ConfigFacade::set('plugin', 'name', $fake_plugin_name);
+        Config::set('plugin', 'name', $fake_plugin_name);
 
         WP_Mock::userFunction('settings_errors')->once()->with("{$fake_plugin_name}_message");
         WP_Mock::userFunction('settings_fields')->once()->with($fake_page_slug);
@@ -159,5 +159,29 @@ final class FunctionsTest extends TestCase {
 
         $this->assertStringContainsString("<form action='options.php' method='post'>", buildSettings($fake_page_slug));
     }
+
+    #[Test]
+    public function test_slugify_helper_returns_string_in_slug_format(): void { 
+        WP_Mock::userFunction('remove_accents')->once()->with("TÈST 1_2 3 !")->andReturn('TEST 1_2 3 !');
+        WP_Mock::userFunction('sanitize_title_with_dashes')->once()->with("TEST 1_2 3 !", "", 'save')->andReturn('test-1-2-3');
+        $this->assertSame("test-1-2-3", slugify("TÈST 1_2 3 !"));
+    }
+
+    #[Test]
+    public function test_slugify_helper_throws_InvalidArgumentException_if_empty_string_is_passed(): void { 
+        $this->expectException(InvalidArgumentException::class);
+        slugify('');
+    }
+
+    #[Test]
+    public function test_adminAsset_helper_throws_InvalidArgumentException_if_empty_string_is_passed(): void { 
+        $this->expectException(InvalidArgumentException::class);
+        adminAsset('');
+    }
+
+    // #[Test]
+    // public function test_adminAsset_helper_renders_admins_latte_asset(): void { 
+    //     adminAsset('');
+    // }
 
 }

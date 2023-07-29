@@ -33,6 +33,7 @@
     "require": {
         "php": ">=8.2",
         "latte/latte": "^3.0",
+        "psr/container": "^2.0",
         "thecodingmachine/safe": "^2.5"
     },
     "require-dev": {
@@ -51,6 +52,9 @@
     },
     "replace": {
         "10up/wp_mock": "self.version"
+    },
+    "provide": {
+        "psr/container-implementation": "1.1|2.0"
     },
     "config": {
         "sort-packages": true,

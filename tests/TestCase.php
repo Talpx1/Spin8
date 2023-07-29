@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Spin8\Tests;
 
@@ -8,43 +8,37 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStreamFile;
-use org\bovigo\vfs\vfsStreamWrapper;
-use PDO;
 use Spin8\Configs\ConfigRepository;
+use Spin8\Container\Configuration\ContainerConfigurator;
+use Spin8\Container\Container;
+use Spin8\Facades\Config;
 use Spin8\Spin8;
-use Spin8\Utils\Guards\GuardAgainstEmptyParameter;
+use Spin8\Guards\GuardAgainstEmptyParameter;
+use Spin8\TemplatingEngine\Engines\LatteEngine;
+use Spin8\TemplatingEngine\TemplatingEngine;
 use WP_Mock;
 
 //not extending WP_Mock test case because its incompatible with phpunit 10
+
+/** @phpstan-import-type ContainerConfiguration from Container */
 class TestCase extends \PHPUnit\Framework\TestCase {
 
     use MockeryPHPUnitIntegration;
 
-    /**
-     * Faker instance
-     */
+    // Faker instance
     protected \Faker\Generator $faker;
 
-    /**
-     * Virtual filesystem root
-     */
+    // Virtual filesystem root
     protected vfsStreamDirectory $filesystem_root;
     protected vfsStreamDirectory $config_path;
     protected vfsStreamDirectory $storage_path;
     protected vfsStreamDirectory $vendor_path;
     
-    protected ConfigRepository $config_repository;
-    
+    // Framework
     protected Spin8 $spin8;
 
 
-    // public static function setUpBeforeClass(): void {
-        
-    // }
 
-    // public static function tearDownAfterClass(): void {
-        
-    // }
 
     public function setUp(): void {
         parent::setUp();
@@ -61,11 +55,21 @@ class TestCase extends \PHPUnit\Framework\TestCase {
 
     public function tearDown(): void {
         unset($this->faker);
-        WP_Mock::tearDown();
-        Mockery::close();
-        parent::tearDown();
+        
+        Config::clear();
 
-        $this->config_repository->clear();
+        // @phpstan-ignore-next-line
+        $this->spin8->container->clear();
+
+        Spin8::dispose();
+
+        unset($this->spin8);
+        
+        WP_Mock::tearDown();
+        
+        Mockery::close();
+        
+        parent::tearDown();
     }
 
     protected function createVirtualFileSystem(): void {
@@ -85,35 +89,6 @@ class TestCase extends \PHPUnit\Framework\TestCase {
     }
 
     /**
-     * removes the unnecessary part of virtual filesystem paths to simulate that these are actually on-disk paths
-     */
-    public function vfsPathToRealPath(string $vfs_path): string {
-        GuardAgainstEmptyParameter::check($vfs_path);
-
-        if(!str_starts_with($vfs_path, "vfs://root")) {
-            throw new InvalidArgumentException("\$vfs_path needs to be a virtual filesystem path, but {$vfs_path} is not. Thrown in ".__METHOD__);
-        }
-
-        $path = str_replace("vfs://root", '', $vfs_path);
-        
-        if(! str_ends_with($path, "/")) {
-            $path .= '/';
-        }
-
-        return $path;
-    }
-
-
-    /**
-     * removes the unnecessary part of paths to simulate that the root path is actually '/' and not the result of adjusting the output of __DIR__
-     */
-    public function removeLocalPath(string $real_path): string {
-        GuardAgainstEmptyParameter::check($real_path);
-
-        return str_replace(dirname(__DIR__)."/src/../../../../..", "", $real_path);
-    }
-
-    /**
      * creates a new config file with the given name in the appropriate virtual directory.
      *
      * @param string $file_name the name that will be given to the newly created file.
@@ -122,20 +97,20 @@ class TestCase extends \PHPUnit\Framework\TestCase {
     public function makeConfigFile(string $file_name, array $configs = [], int $permissions = null): vfsStreamFile {
         GuardAgainstEmptyParameter::check($file_name);
 
-        return vfsStream::newFile("{$file_name}.php", $permissions)->withContent("<?php return ".var_export($configs, true).";")->at($this->config_path);
+        return vfsStream::newFile("{$file_name}.php", $permissions)
+            ->withContent("<?php return ".var_export($configs, true).";")
+            ->at($this->config_path);
     }
     
     protected function setUpFramework(): void {
+        $container = new Container($this->configureContainer());
+        ContainerConfigurator::run($container);
 
-        $this->spin8 = Spin8::instance()->configure([
+        $this->spin8 = Spin8::init($container, [
             'project_root_path' => $this->filesystem_root->url()
         ]);
 
         require_once(__DIR__ . "/../src/functions.php");
-
-        $this->config_repository = $this->spin8->singletone(ConfigRepository::class);
-
-        $this->config_repository->loadAll();
     }
 
     /**
@@ -145,11 +120,36 @@ class TestCase extends \PHPUnit\Framework\TestCase {
      */
     public function generateRandomConfigs(int $amount): void {
         for($i = 0; $i < $amount; $i++){
-            $this->config_repository->set(
+            Config::set(
                 $this->faker->unique()->slug(),
                 $this->faker->unique()->word(),
                 $this->faker->randomFloat(),
             );
         }
+    }
+
+    /** @return ContainerConfiguration */
+    protected function configureContainer(): array {
+        return [
+            'entries' => [
+                TemplatingEngine::class => LatteEngine::class,
+            ],
+
+            'templating_engines' => [
+                'latte' => LatteEngine::class
+            ],
+
+            'singletons' => [
+                ConfigRepository::class,
+            ],
+
+            'aliases' => [
+                'config' => ConfigRepository::class
+            ]
+        ];
+    }
+
+    public function configRepository(): ConfigRepository {
+        return $this->spin8->container->get(ConfigRepository::class);
     }
 }

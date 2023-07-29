@@ -1,25 +1,32 @@
-TO DO IN FRAMEWORK:
-[ ] enum for all capabilities
-[ ] enum for all settings pages existing in wp
-[ ] settings tabs utility
-[ ] settings drag and drop utility
-[ ] create object/array from settings
-[ ] wrap plugin constructor methods in a bootstrap.php file
-[ ] create file for settings definition and include it in bootstrap
-[ ] create file for menus definition and include it in bootstrap
-[ ] create php docs
-[ ] load bootstrap and function via composer
+FRAMEWORK:
 [ ] global file to perform checks and require autoloader
-[ ] move and group const in separate file
-[ ] test remove options from db in uninstall.php
-[ ] test block uninstall for local environment
-[ ] avoid initializing spin8 and boostrapping in unit tests
+[ ] avoid initializing spin8 and bootstrapping in unit tests
+[ ] implement DI Container, instantiate it before Spin8, load templating engine via container in Spin8
+[ ] test DI Container
+[ ] implement DI support for interfaces
+[ ] implement DI support for enums
+[ ] implement DI support for abstract classes
 [X] test configs
 [X] create Environments enum
 [X] singleton for spin8
 [X] load config in a separated manager and not read them directly from file. This way are configurable at runtime and testable.
 
-TO DO IN PROJECT BLUEPRINT REPO:
+WP:
+[ ] create file for menus definition and include it in bootstrap
+[ ] create file for settings definition and include it in bootstrap
+[ ] wrap plugin constructor methods in a bootstrap.php file
+[ ] create php docs for all WP public APIs
+[ ] enum for all capabilities
+[ ] enum for all settings pages existing in wp
+[ ] settings tabs utility
+[ ] settings drag and drop utility
+[ ] test remove options from db in uninstall.php
+[ ] test block uninstall for local environment
+[ ] move and group plugin const in separate file
+[ ] create object/array from settings ??? -> i dont remember what it means lol
+
+
+BLUEPRINT REPO:
 [ ] add ABSPATH checks on all files
 [ ] ui partials template
 [ ] create index.php with silence is golden in each dir

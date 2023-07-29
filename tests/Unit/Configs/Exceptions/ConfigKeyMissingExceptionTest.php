@@ -1,6 +1,6 @@
 <?php
 
-namespace Spin8\Tests\Unit;
+namespace Spin8\Tests\Unit\Configs\Exceptions;
 
 
 use Exception;

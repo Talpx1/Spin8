@@ -1,38 +1,21 @@
 <?php
 
-namespace Spin8\Tests\Unit;
+namespace Spin8\Tests\Unit\Configs;
 
-use Closure;
-use Error;
 use InvalidArgumentException;
-use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use ReflectionClass;
 use Spin8\Configs\ConfigRepository;
+use Spin8\Configs\Exceptions\ConfigFileNotLoadedException;
 use Spin8\Configs\Exceptions\ConfigFileNotReadableException;
-use Spin8\Configs\Facades\ConfigFacade;
+use Spin8\Configs\Exceptions\ConfigKeyMissingException;
+use Spin8\Facades\Config;
 use Spin8\Spin8;
 use Spin8\Tests\TestCase;
-use WP_Mock;
 
 #[CoversClass(ConfigRepository::class)]
 final class ConfigRepositoryTest extends TestCase {
-
-    #[Test]
-    public function test_config_repository_cant_be_instantiated(): void {
-        $this->expectException(Error::class);
-        // @phpstan-ignore-next-line
-        new ConfigRepository();
-    }
-
-    #[Test]
-    public function test_config_repository_is_a_singletone_and_provide_only_one_instance(): void {
-        $first_instance = ConfigRepository::instance();
-        $second_instance = ConfigRepository::instance();
-
-        $this->assertSame($first_instance, $second_instance);
-    }
 
     #[Test]
     public function test_it_can_discover_config_file(): void {
@@ -73,10 +56,11 @@ final class ConfigRepositoryTest extends TestCase {
         $this->assertSame(123, $configs_loaded['test_cfg']['test']);
         $this->assertSame('hello', $configs_loaded['test_cfg']['test2']);
 
-        Spin8::instance()->replaceSingletone(ConfigRepository::class, $reflected_instance);
+        // @phpstan-ignore-next-line
+        container()->singleton(ConfigRepository::class, $reflected_instance);
 
-        $this->assertSame(123, ConfigFacade::get('test_cfg', 'test'));
-        $this->assertSame('hello', ConfigFacade::get('test_cfg', 'test2'));        
+        $this->assertSame(123, Config::get('test_cfg', 'test'));
+        $this->assertSame('hello', Config::get('test_cfg', 'test2'));        
     }
 
     #[Test]
@@ -104,33 +88,34 @@ final class ConfigRepositoryTest extends TestCase {
         $this->assertArrayHasKey('test_config', $configs_loaded['test_file']);
         $this->assertSame(123, $configs_loaded['test_file']['test_config']);
         
-        $this->spin8->replaceSingletone(ConfigRepository::class, $reflected_instance);
+        // @phpstan-ignore-next-line
+        container()->singleton(ConfigRepository::class, $reflected_instance);
         
-        $this->assertSame(123, ConfigFacade::get('test_file', 'test_config'));        
+        $this->assertSame(123, Config::get('test_file', 'test_config'));        
     }
 
     #[Test]
-    public function test_it_throws_InvalidArgumentException_if_file_name_is_an_empty_string(): void {
+    public function test_it_throws_InvalidArgumentException_when_setting_a_config_if_file_name_is_an_empty_string(): void {
         $this->expectException(InvalidArgumentException::class);
-        $this->config_repository->set('', 'test_config', 123);
+        $this->configRepository()->set('', 'test_config', 123);
     }
 
     #[Test]
-    public function test_it_throws_InvalidArgumentException_if_config_key_is_an_empty_string(): void {
+    public function test_it_throws_InvalidArgumentException_when_setting_a_config_if_config_key_is_an_empty_string(): void {
         $this->expectException(InvalidArgumentException::class);
-        $this->config_repository->set('test_file', '', 123);
+        $this->configRepository()->set('test_file', '', 123);
     }
 
     #[Test]
     public function test_it_can_provide_all_configs(): void {
-        $this->config_repository->set('test1', 'a', 1);
-        $this->config_repository->set('test2', 'b', 2);
-        $this->config_repository->set('test3', 'c', 3);
-        $this->config_repository->set('test4', 'd', 4);
-        $this->config_repository->set('test5', 'e', 5);
-        $this->config_repository->set('test6', 'f', 6);
+        $this->configRepository()->set('test1', 'a', 1);
+        $this->configRepository()->set('test2', 'b', 2);
+        $this->configRepository()->set('test3', 'c', 3);
+        $this->configRepository()->set('test4', 'd', 4);
+        $this->configRepository()->set('test5', 'e', 5);
+        $this->configRepository()->set('test6', 'f', 6);
 
-        $all_configs = $this->config_repository->getAll();
+        $all_configs = $this->configRepository()->getAll();
 
         $this->assertIsArray($all_configs);
         $this->assertNotEmpty($all_configs);
@@ -162,12 +147,12 @@ final class ConfigRepositoryTest extends TestCase {
     public function test_it_can_clear_all_configs(): void {
         $this->generateRandomConfigs(100);
         
-        $this->assertNotEmpty($this->config_repository->getAll());
-        $this->assertCount(100, $this->config_repository->getAll());
+        $this->assertNotEmpty($this->configRepository()->getAll());
+        $this->assertCount(100, $this->configRepository()->getAll());
 
-        $this->config_repository->clear();
+        $this->configRepository()->clear();
 
-        $this->assertEmpty($this->config_repository->getAll());
+        $this->assertEmpty($this->configRepository()->getAll());
     }
 
     #[Test]
@@ -230,5 +215,109 @@ final class ConfigRepositoryTest extends TestCase {
         $this->assertSame(987, $configs_loaded_after['test4']['jkl']);
         $this->assertSame(654, $configs_loaded_after['test5']['mno']);
         $this->assertSame(321, $configs_loaded_after['test6']['pqr']);
+    }
+
+    #[Test]
+    public function test_it_can_provide_a_config(): void {
+        $this->configRepository()->set('test1', 'a', 1);
+        $this->configRepository()->set('test2', 'b', 2);
+
+        $config_1 = $this->configRepository()->get("test1", 'a');
+        $config_2 = $this->configRepository()->get("test2", 'b');
+
+        $this->assertSame(1, $config_1);
+        $this->assertSame(2, $config_2);
+    }
+
+    #[Test]
+    public function test_it_throws_ConfigKeyMissingException_when_getting_a_config_if_config_key_does_not_exists_in_specified_file(): void {
+        $this->configRepository()->set('test1', 'a', 1);
+
+        $this->expectException(ConfigKeyMissingException::class);
+
+        $this->configRepository()->get("test1", 'b');
+    }
+
+    #[Test]
+    public function test_it_throws_InvalidArgumentException_when_getting_a_config_if_file_name_is_an_empty_string(): void {
+        $this->expectException(InvalidArgumentException::class);
+        $this->configRepository()->get('', 'test_config');
+    }
+
+    #[Test]
+    public function test_it_throws_InvalidArgumentException_when_getting_a_config_if_config_key_is_an_empty_string(): void {
+        $this->expectException(InvalidArgumentException::class);
+        $this->configRepository()->get('test_file', '');
+    }
+
+    #[Test]
+    public function test_it_can_check_if_a_file_has_a_config(): void {
+        $this->configRepository()->set('test1', 'a', 1);
+
+        $result_1 = $this->configRepository()->has("test1", 'a');
+        $result_2 = $this->configRepository()->has("test1", 'b');
+
+        $this->assertTrue($result_1);
+        $this->assertFalse($result_2);
+    }
+
+    #[Test]
+    public function test_it_throws_ConfigFileNotLoadedException_when_checking_if_a_config_has_a_config_key_if_the_given_file_has_not_loaded(): void {
+        $this->expectException(ConfigFileNotLoadedException::class);
+
+        $this->configRepository()->has("test1", 'a');
+    }
+
+    #[Test]
+    public function test_it_throws_InvalidArgumentException_when_checking_if_a_config_has_a_config_key_if_file_name_is_an_empty_string(): void {
+        $this->expectException(InvalidArgumentException::class);
+        $this->configRepository()->has('', 'test_config');
+    }
+
+    #[Test]
+    public function test_it_throws_InvalidArgumentException_when_checking_if_a_config_has_a_config_key_if_config_key_is_an_empty_string(): void {
+        $this->expectException(InvalidArgumentException::class);
+        $this->configRepository()->has('test_file', '');
+    }
+
+    #[Test]
+    public function test_it_throws_InvalidArgumentException_when_checking_if_a_config_file_has_loaded_if_file_name_is_an_empty_string(): void {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->configRepository()->fileLoaded("");
+    }
+
+    #[Test]
+    public function test_it_can_check_if_a_file_has_loaded(): void {
+        $this->configRepository()->set('test1', 'a', 1);
+
+        $result_1 = $this->configRepository()->fileLoaded("test1");
+        $result_2 = $this->configRepository()->fileLoaded("test2");
+
+        $this->assertTrue($result_1);
+        $this->assertFalse($result_2);
+    }
+
+    #[Test]
+    public function test_it_throws_InvalidArgumentException_when_getting_a_config_with_fallback_if_file_name_is_an_empty_string(): void {
+        $this->expectException(InvalidArgumentException::class);
+        $this->configRepository()->getOr('', 'test_config', 'test');
+    }
+
+    #[Test]
+    public function test_it_throws_InvalidArgumentException_when_getting_a_config_with_fallback_if_config_key_is_an_empty_string(): void {
+        $this->expectException(InvalidArgumentException::class);
+        $this->configRepository()->getOr('test_file', '', 'test');
+    }
+
+    #[Test]
+    public function test_it_can_get_a_config_and_fallback_if_config_is_not_found(): void {
+        $this->configRepository()->set('test1', 'a', 1);
+
+        $this->assertSame(1, $this->configRepository()->getOr('test1', 'a', 2));
+        $this->assertNull($this->configRepository()->getOr('test1', 'b'));
+        $this->assertNull($this->configRepository()->getOr('test2', 'b'));
+        $this->assertSame('a', $this->configRepository()->getOr('test2', 'b', 'a'));
+        $this->assertSame('a', $this->configRepository()->getOr('test1', 'b', 'a'));
     }
 }

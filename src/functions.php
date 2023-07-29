@@ -1,20 +1,37 @@
-<?php
+<?php declare(strict_types=1);
 
 use Spin8\Configs\Enums\Environments;
-use Spin8\Configs\Facades\ConfigFacade;
+use Spin8\Facades\Config;
 use Spin8\Spin8;
-use Spin8\Utils\Guards\GuardAgainstEmptyParameter;
+use Spin8\Guards\GuardAgainstEmptyParameter;
+use Psr\Container\ContainerInterface;
+
+/**
+ * Returns the container instance
+ */
+function container(): ContainerInterface {
+    return spin8()->container;
+}
+
+/**
+ * Returns the instance of Spin8 from the container
+ */
+function spin8(): Spin8 {
+    return Spin8::instance();
+}
 
 /**
  * Render a Latte asset located in assets/admin.
  *
  * @param string $path path of the assets inside assets/admin.
  * @param array<string, mixed> $data data in key=>value format to pass to the Latte template. Passed data is available in the template using $key.
+ *
+ * @throws InvalidArgumentException
  */
 function adminAsset(string $path, array $data = []): void {
     GuardAgainstEmptyParameter::check($path);
-    global $latte;
-    $latte->render(assetsPath() . "/admin/$path.latte", $data);
+    
+    spin8()->templating_engine->render(assetsPath() . "/admin/$path.latte", $data);
 }
 
 /**
@@ -23,12 +40,14 @@ function adminAsset(string $path, array $data = []): void {
  * @see https://developer.wordpress.org/reference/functions/sanitize_title/
  *
  * @param string $string the string to convert in slug.
+ *
+ * @throws InvalidArgumentException
  */
 function slugify(string $string): string {
     GuardAgainstEmptyParameter::check($string);
     
-    $slug = strtolower($string);
-    $slug = sanitize_title($slug);
+    $slug = remove_accents($string);
+    $slug = sanitize_title_with_dashes($slug, "", 'save');
     $slug = str_replace(['_', ' '], '-', $slug);
 
     if (empty($slug)) {
@@ -92,7 +111,7 @@ function buildSettings(string $page_slug, string $submit_text = null): string {
  * @return mixed
  */
 function config(string $file_name, string $config_key, mixed $default = null): mixed {
-    return ConfigFacade::getOr($file_name, $config_key, $default);
+    return Config::getOr($file_name, $config_key, $default);
 }
 
 /**
@@ -112,7 +131,7 @@ function isRunningTest(): bool {
  * @return string
  */
 function rootPath(): string {
-    return Spin8::instance()->getProjectRootPath();
+    return spin8()->project_root_path;
 }
 
 /**

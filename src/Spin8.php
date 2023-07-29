@@ -1,67 +1,123 @@
 <?php declare(strict_types=1);
 
 namespace Spin8;
-use RuntimeException;
+
+use Psr\Container\ContainerInterface;
+use Spin8\Configs\ConfigRepository;
+use Spin8\Facades\Config;
+use Spin8\Container\Container;
 use Spin8\Exceptions\InvalidConfigurationException;
+use Spin8\Guards\GuardAgainstEmptyParameter;
+use Spin8\TemplatingEngine\TemplatingEngine;
 
 final class Spin8{
 
-    /**
-     * @var array<class-string, object>
-     */
-    private array $singletones = [];
-
     private static ?self $instance = null;
 
-    private string $project_root_path;
+    // @phpstan-ignore-next-line
+    public readonly string $project_root_path;
     
-    private function __construct() {
-        $this->bootstrapWithDefaultValues();
+    // @phpstan-ignore-next-line
+    public readonly TemplatingEngine $templating_engine;
+
+    public readonly ContainerInterface $container;
+
+    private const REAL_ROOT_PATH = __DIR__ . "/../../../../../";
+
+    public const VERSION = 0.1;
+
+    /** @var array<string, mixed> $default_configurations */
+    private array $default_configurations = [
+        'project_root_path' => self::REAL_ROOT_PATH,
+        'templating_engine' => 'latte'
+    ];
+
+    /** @param array<string, mixed> $configurations */
+    public static function init(ContainerInterface $container, array $configurations = []): self {
+        if(!is_null(self::$instance)) {
+            throw new \RuntimeException("Tried to initialize Spin8 when it was already initialized");
+        }
+        self::$instance = new self($container, $configurations);
+        
+        return self::$instance;
     }
-    
+
+    public static function dispose(): void {
+        if(is_null(self::$instance)) {
+            throw new \RuntimeException("Tried to dispose Spin8 when it was not yet initialized");
+        }
+        
+        self::$instance = null;
+        
+    }
+
+
     public static function instance(): self {
         if(is_null(self::$instance)) {
-            self::$instance = new self();
+            throw new \RuntimeException("Tried to get Spin8 instance before initialization");
         }
 
         return self::$instance;
     }
 
+
+    /** @param array<string, mixed> $configurations */
+    private function __construct(ContainerInterface $container, array $configurations) {
+        $this->container = $container;
+
+        $configurations = $this->addDefaultConfigurations($configurations);
+
+        $this->configure($configurations);
+    }
+
+
     /**
-     * @param class-string $class
+     * @param array<string, mixed> $configurations
+     * @return array<string, mixed>
      */
-    public function singletone(string $class): mixed {
-        if(! array_key_exists($class, $this->singletones)) {
-            $this->singletones[$class] = $class::instance();
+    private function addDefaultConfigurations(array $configurations): array {
+        foreach($this->default_configurations as $key => $value) {
+            if(!array_key_exists($key, $configurations)) {
+                if($key === "templating_engine") {
+                    $value = $this->container->get($value);
+                }
+
+                $configurations[$key] = $value;
+            }
         }
 
-        return $this->singletones[$class];
+        return $configurations;
     }
 
-    private function bootstrapWithDefaultValues(): void {
-        $this->project_root_path = __DIR__ . "/../../../../../";
-    }
 
-    public function getProjectRootPath(): string {
-        return $this->project_root_path;
-    }
-
-    public function setProjectRootPath(string $project_root_path): void {
+    private function setProjectRootPath(string $project_root_path): void {
         if(!str_ends_with($project_root_path, DIRECTORY_SEPARATOR)) {
             $project_root_path .= DIRECTORY_SEPARATOR;
         }
 
+        // @phpstan-ignore-next-line
         $this->project_root_path = $project_root_path;
     }
+
+
+    private function setTemplatingEngine(TemplatingEngine $templating_engine): void {
+        // @phpstan-ignore-next-line
+        $this->templating_engine = $templating_engine;
+
+        $this->templating_engine->setTempPath(
+            "{$this->project_root_path}storage/framework/temp/templating_engine/{$this->templating_engine->name}"
+        );
+    }
+
 
     /**
      * Allows to set multiple configurations, instead of calling multiple setters, by passing an associative array with the following structure `configuration_key => configuration_value`
      *
      * @param array<string, mixed> $configurations
-     * 
+     *
      * @throws InvalidConfigurationException
      */
-    public function configure(array $configurations): self {
+    private function configure(array $configurations): self {
         foreach($configurations as $configuration_name => $configuration_value){
             $method = "set".implode(array_map("ucfirst", explode("_", $configuration_name)));
             
@@ -72,23 +128,6 @@ final class Spin8{
             $this->{$method}($configuration_value);
         }
 
-        return $this;
-    }
-
-    /**
-     * Allows to replace a generated singletone with the specified object. This should only be used in testing when reflecting a singletone.
-     *
-     * @param class-string $class
-     * @param object $object must be an instance of `@see $class`
-     *
-     * @throws RuntimeException
-     */
-    public function replaceSingletone(string $class, object $object): self {
-        if(! $object instanceof $class) {
-            throw new RuntimeException("passed object is not an instance of {$class}");
-        }
-
-        $this->singletones[$class] = $object;
         return $this;
     }
     
