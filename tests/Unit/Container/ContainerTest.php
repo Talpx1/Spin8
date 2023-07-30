@@ -7,47 +7,12 @@ use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
+use Spin8\Container\Configuration\ContainerConfigurator;
 use Spin8\Container\Container;
 use Spin8\Container\Exceptions\AutowiringFailureException;
 
 #[CoversClass(Container::class)]
 final class ContainerTest extends \PHPUnit\Framework\TestCase {
-
-    #[Test]
-    public function test_container_instance_accepts_configurations(): void {
-        // @phpstan-ignore-next-line
-        $container = new Container(['test']);
-        $this->assertSame(['test'], $container->getConfigurations());
-    }
-
-    #[Test]
-    public function test_if_no_configurations_are_passed_to_the_container_instance_configurations_are_null(): void {
-        $container = new Container();
-        $this->assertNull($container->getConfigurations());
-    }
-
-    /** @param mixed[] $configs */
-    #[TestWith([[123]])]
-    #[TestWith([['test']])]
-    #[Test]
-    public function test_can_get_configurations_via_getConfigurations_method(array $configs): void {
-        // @phpstan-ignore-next-line
-        $container = new Container($configs);
-        $this->assertSame($configs, $container->getConfigurations());
-    }
-
-    #[Test]
-    public function test_can_set_is_loading_configurations_via_setIsLoadingConfigurations_method(): void {
-        $container = new Container();
-
-        $this->assertFalse($container->isLoadingConfigurations());
-        
-        $container->setIsLoadingConfigurations(true);
-        $this->assertTrue($container->isLoadingConfigurations());
-        
-        $container->setIsLoadingConfigurations(false);
-        $this->assertFalse($container->isLoadingConfigurations());
-    }
 
     #[Test]
     public function test_throws_InvalidArgumentException_if_get_method_is_called_with_empty_string(): void {
@@ -234,6 +199,7 @@ final class ContainerTest extends \PHPUnit\Framework\TestCase {
         $class_a = new class{};
         \Safe\class_alias($class_a::class, "ClassA3");
 
+        // @phpstan-ignore-next-line
         $class_b = new class extends \ClassA3{};
         \Safe\class_alias($class_b::class, "ClassB1");
 
@@ -255,7 +221,7 @@ final class ContainerTest extends \PHPUnit\Framework\TestCase {
         \Safe\class_alias($class_b::class, "ClassB2");
 
         // @phpstan-ignore-next-line
-        $class_c = new class($class_b){function __construct(public readonly \ClassA2|\ClassB2 $test_a){}};
+        $class_c = new class($class_b){function __construct(public readonly \ClassA4|\ClassB2 $test_a){}};
         
         $this->expectException(AutowiringFailureException::class);
         $container->get($class_c::class);
@@ -280,5 +246,7 @@ final class ContainerTest extends \PHPUnit\Framework\TestCase {
         $this->expectException(AutowiringFailureException::class);
         $container->get($class_a::class);
     }
+
+    //TODO: test it tries to resolve dependency params from configs
 
 }

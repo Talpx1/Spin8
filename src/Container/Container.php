@@ -8,18 +8,17 @@ use ReflectionIntersectionType;
 use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionUnionType;
+use Spin8\Container\Configuration\AbstractContainerConfigurator;
 use Spin8\Container\Exceptions\AliasException;
 use Spin8\Container\Exceptions\AutowiringFailureException;
 use Spin8\Container\Exceptions\BindingException;
-use Spin8\Container\Exceptions\ContainerException;
 use Spin8\Container\Exceptions\SingletonException;
+use Spin8\Container\Interfaces\AliasSupport;
+use Spin8\Container\Interfaces\SingletonSupport;
 use Spin8\Guards\GuardAgainstEmptyParameter;
 use Spin8\Guards\GuardAgainstNonExistingClassString;
 
-/**
- * @phpstan-import-type ContainerConfiguration from \Spin8\Container\Configuration\ContainerConfigurator
- */
-class Container implements ContainerInterface {
+class Container implements ContainerInterface, AliasSupport, SingletonSupport {
 
     /** @var array<class-string, callable|class-string> */
     protected array $entries = [];
@@ -31,31 +30,10 @@ class Container implements ContainerInterface {
     protected array $aliases = [];
     
     protected bool $is_loading_configurations = false;
-    
-    /** @var ?ContainerConfiguration $configurations */
-    protected ?array $configurations;
+
+    protected AbstractContainerConfigurator $configurator;
 
 
-
-    /** @param ?ContainerConfiguration $configurations */
-    public function __construct(?array $configurations = null) {
-        $this->configurations = $configurations;
-    }
-
-
-    /** @return ?ContainerConfiguration */
-    public function getConfigurations(): ?array {
-        return $this->configurations;
-    }
-
-
-    public function setIsLoadingConfigurations(bool $loading): void {
-        $this->is_loading_configurations = $loading;
-    }
-
-    public function isLoadingConfigurations(): bool {
-        return $this->is_loading_configurations;
-    }
 
 
     public function get(string $id): mixed {
@@ -239,32 +217,11 @@ class Container implements ContainerInterface {
             $name = $param->getName();
             $type = $param->getType();
 
-            if($this->is_loading_configurations && !is_null($this->configurations) && $type instanceof ReflectionNamedType) {
-                /** @var class-string $type_as_string */
-                $type_as_string = $type->getName();
+            if($this->is_loading_configurations && $type instanceof ReflectionNamedType) {
+                $resolve_from_configs = $this->configurator->resolveDependencyFromConfigs($type->getName());
 
-                $singletons_queue = $this->configurations['singletons'];
-
-                if(array_key_exists($type_as_string, $singletons_queue)) {
-                    return $this->singleton($type_as_string, $singletons_queue[$type_as_string]);
-                }
-
-                /** @var class-string[] $non_obj_stingletons */
-                $non_obj_stingletons = array_filter($singletons_queue, "is_int", ARRAY_FILTER_USE_KEY);
-                if(in_array($type_as_string, $non_obj_stingletons)) {
-                    return $this->singleton($type_as_string);
-                }
-
-                $entries_queue = $this->configurations['entries'];
-
-                if(array_key_exists($type_as_string, $entries_queue)) {
-                    return $this->bind($type_as_string, $entries_queue[$type_as_string]);
-                }
-
-                /** @var class-string[] $non_obj_stingletons */
-                $self_binding_entries = array_filter($entries_queue, "is_int", ARRAY_FILTER_USE_KEY);
-                if(in_array($type_as_string, $self_binding_entries)) {
-                    return $this->bind($type_as_string);
+                if($resolve_from_configs !== false) {
+                    return $resolve_from_configs;
                 }
             }
 
@@ -304,6 +261,15 @@ class Container implements ContainerInterface {
             throw new AutowiringFailureException($id, "Unable to resolve dependencies for {$id}. Parameter {$name} uses an unknown type.");
 
         }, $parameters);
+    }
+
+    public function useConfigurator(AbstractContainerConfigurator $configurator): void {
+        $this->is_loading_configurations = true;
+
+        $this->configurator = $configurator;
+        $configurator->configure($this);
+
+        $this->is_loading_configurations = false;
     }
 
 }

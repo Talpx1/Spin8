@@ -2,63 +2,39 @@
 
 namespace Spin8\Container\Configuration;
 
+use Psr\Container\ContainerInterface;
 use ReflectionClass;
-use Spin8\Container\Container;
 use Spin8\Container\Exceptions\ConfigurationException;
-use Spin8\Guards\GuardAgainstEmptyParameter;
+use Spin8\Container\Interfaces\AliasSupport;
+use Spin8\Container\Interfaces\SingletonSupport;
 use Spin8\Guards\GuardAgainstNonExistingClassString;
 use Spin8\TemplatingEngine\TemplatingEngine;
 
-/**
- * @phpstan-type ContainerConfiguration array{
- *  templating_engines: array<string, class-string>,
- *  singletons: array<class-string|int, class-string|object>,
- *  entries: array<class-string|int, class-string>,
- *  aliases: array<string, class-string>
- * }
- */
-class ContainerConfigurator {
+class ContainerConfigurator extends AbstractContainerConfigurator {
 
-    /** @var ContainerConfiguration $configurations */
-    protected static array $configurations;
-    
-    protected static Container $container;
+    public function __construct(string|array $configurations) {
+        parent::__construct($configurations);
+    }
 
-    public static function run(Container $container): void {
-        self::$container = $container;
-
-        $configurations = $container->getConfigurations();
-        
-        if(is_null($configurations)) {
-            return;
-        }
-
-        self::$configurations = $configurations;
-
-        /** @param ContainerConfiguration $configurations */
-
-        $container->setIsLoadingConfigurations(true);
-        
-        self::configureAliases();
-        self::configureTemplatingEngines();
-        self::configureSingletons();
-        self::configureEntries();
-
-        $container->setIsLoadingConfigurations(false);
+    protected function run(): void {
+        $this->configureAliases();
+        $this->configureTemplatingEngines();
+        $this->configureSingletons();
+        $this->configureEntries();
     }
 
 
-    protected static function configureAliases(): void {
-        if(!array_key_exists('aliases', self::$configurations) || empty(self::$configurations['aliases'])) {
+    protected function configureAliases(): void {
+        if(!array_key_exists('aliases', $this->configurations) || empty($this->configurations['aliases'])) {
             return;
         }
         
         // @phpstan-ignore-next-line
-        if(!is_array(self::$configurations['aliases'])) {
-            throw new ConfigurationException('The key aliases of a container configuration must be an array. '.gettype(self::$configurations['aliases']).' passed.');
+        if(!is_array($this->configurations['aliases'])) {
+            throw new ConfigurationException('The key aliases of a container configuration must be an array. '.gettype($this->configurations['aliases']).' passed.');
         }
 
-        foreach(self::$configurations['aliases'] as $alias => $class) {
+        foreach($this->configurations['aliases'] as $alias => $class) {
             if(!is_string($alias)) {
                 throw new ConfigurationException('An alias binding key must be a string.');
             }
@@ -78,22 +54,22 @@ class ContainerConfigurator {
             GuardAgainstNonExistingClassString::check($class, ConfigurationException::class);
             
             /** @var class-string $class */
-            self::$container->alias($alias, $class);
+            $this->container->alias($alias, $class);
         }
     }
 
 
-    protected static function configureTemplatingEngines(): void {
-        if(!array_key_exists('templating_engines', self::$configurations) || empty(self::$configurations['templating_engines'])) {
+    protected function configureTemplatingEngines(): void {
+        if(!array_key_exists('templating_engines', $this->configurations) || empty($this->configurations['templating_engines'])) {
             return;
         }
 
         // @phpstan-ignore-next-line
-        if(!is_array(self::$configurations['templating_engines'])) {
-            throw new ConfigurationException('The key templating_engines of a container configuration must be an array. '.gettype(self::$configurations['templating_engines']).' passed.');
+        if(!is_array($this->configurations['templating_engines'])) {
+            throw new ConfigurationException('The key templating_engines of a container configuration must be an array. '.gettype($this->configurations['templating_engines']).' passed.');
         }
 
-        foreach(self::$configurations['templating_engines'] as $alias => $class) {
+        foreach($this->configurations['templating_engines'] as $alias => $class) {
             if(!is_string($alias)) {
                 throw new ConfigurationException("A templating engine binding key must be a string in a container configuration. ".gettype($alias)." passed.");
             }
@@ -117,22 +93,22 @@ class ContainerConfigurator {
                 throw new ConfigurationException("A templating engine binding value must be a valid reference to a class that extends ".TemplatingEngine::class.".");
             }
 
-            self::$container->singleton($class);
-            self::$container->alias($alias, $class);
+            $this->container->singleton($class);
+            $this->container->alias($alias, $class);
         }
     }
 
-    protected static function configureSingletons(): void {
-        if(!array_key_exists('singletons', self::$configurations) || empty(self::$configurations['singletons'])) {
+    protected function configureSingletons(): void {
+        if(!array_key_exists('singletons', $this->configurations) || empty($this->configurations['singletons'])) {
             return;
         }
 
         // @phpstan-ignore-next-line
-        if(!is_array(self::$configurations['singletons'])) {
-            throw new ConfigurationException('The key singletons of a container configuration must be an array. '.gettype(self::$configurations['singletons']).' passed.');
+        if(!is_array($this->configurations['singletons'])) {
+            throw new ConfigurationException('The key singletons of a container configuration must be an array. '.gettype($this->configurations['singletons']).' passed.');
         }
         
-        foreach(self::$configurations['singletons'] as $id => $value) {
+        foreach($this->configurations['singletons'] as $id => $value) {
             // @phpstan-ignore-next-line
             if(!is_string($id) && !is_int($id)) {
                 throw new ConfigurationException('A singleton binding key must be in format <class string => object> or <no key => class string> in a container configuration.');
@@ -153,7 +129,7 @@ class ContainerConfigurator {
                     throw new ConfigurationException("A singleton binding value an instance of the class string key when using <class string => binding> in a container configuration. {$id} => ".$value::class." passed.");
                 }
                 
-                self::$container->singleton($id, $value);
+                $this->container->singleton($id, $value);
                 continue;
             }
 
@@ -168,7 +144,7 @@ class ContainerConfigurator {
 
                 GuardAgainstNonExistingClassString::check($value, ConfigurationException::class);
                 
-                self::$container->singleton($value);
+                $this->container->singleton($value);
                 continue;
             }
 
@@ -178,17 +154,17 @@ class ContainerConfigurator {
         }
     }
 
-    protected static function configureEntries(): void {
-        if(!array_key_exists('entries', self::$configurations) || empty(self::$configurations['entries'])) {
+    protected function configureEntries(): void {
+        if(!array_key_exists('entries', $this->configurations) || empty($this->configurations['entries'])) {
             return;
         }
         
         // @phpstan-ignore-next-line
-        if(!is_array(self::$configurations['entries'])) {
-            throw new ConfigurationException('The key entries of a container configuration must be an array. '.gettype(self::$configurations['entries']).' passed.');
+        if(!is_array($this->configurations['entries'])) {
+            throw new ConfigurationException('The key entries of a container configuration must be an array. '.gettype($this->configurations['entries']).' passed.');
         }
 
-        foreach(self::$configurations['entries'] as $id => $value) {
+        foreach($this->configurations['entries'] as $id => $value) {
             // @phpstan-ignore-next-line
             if(!is_string($id) && !is_int($id)) {
                 throw new ConfigurationException('An entry binding key must be in format <class string => class string> or <no key => class string> in a container configuration.');
@@ -209,7 +185,7 @@ class ContainerConfigurator {
                     throw new ConfigurationException("An entry binding value must be an instantiable class string when using <class string => class string> bindings in a container configuration. Non instantiable class string passed.");
                 }
 
-                self::$container->bind($id, $value);
+                $this->container->bind($id, $value);
                 continue;
             }
 
@@ -228,7 +204,7 @@ class ContainerConfigurator {
                     throw new ConfigurationException("An entry binding value must be an instantiable class string when using <no class => class string> bindings in a container configuration. Non instantiable class string passed. If you are trying to bind an interface or some other non instantiable class, use <class string => class string>");
                 }
                 
-                self::$container->bind($value);
+                $this->container->bind($value);
                 continue;
             }
 
@@ -236,6 +212,36 @@ class ContainerConfigurator {
             throw new ConfigurationException("Unable to configure an entry binding. Use <class string => class string> or <no key => class string> to configure an entry.");
             
         }
+    }
+
+
+    /** @param class-string $id */
+    public function resolveDependencyFromConfigs(string $id): mixed {
+        $singletons_queue = $this->configurations['singletons'];
+
+        if(array_key_exists($id, $singletons_queue)) {
+            return $this->container->singleton($id, $singletons_queue[$id]);
+        }
+
+        /** @var class-string[] $non_obj_stingletons */
+        $non_obj_stingletons = array_filter($singletons_queue, "is_int", ARRAY_FILTER_USE_KEY);
+        if(in_array($id, $non_obj_stingletons)) {
+            return $this->container->singleton($id);
+        }
+
+        $entries_queue = $this->configurations['entries'];
+
+        if(array_key_exists($id, $entries_queue)) {
+            return $this->container->bind($id, $entries_queue[$id]);
+        }
+
+        /** @var class-string[] $non_obj_stingletons */
+        $self_binding_entries = array_filter($entries_queue, "is_int", ARRAY_FILTER_USE_KEY);
+        if(in_array($id, $self_binding_entries)) {
+            return $this->container->bind($id);
+        }
+
+        return false;
     }
 
 }

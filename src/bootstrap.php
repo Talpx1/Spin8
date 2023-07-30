@@ -16,9 +16,11 @@ require_once $autoloader;
 
 
 // CONTAINER
-$container = new Container(require_once __DIR__."/Container/configurations.php");
+$container = new Container();
 
-ContainerConfigurator::run($container);
+$container_configurator = new ContainerConfigurator(__DIR__."/Container/configurations.php");
+
+$container->useConfigurator($container_configurator);
 
 // FRAMEWORK
 $spin8 = Spin8::init($container);

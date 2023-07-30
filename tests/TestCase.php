@@ -2,7 +2,6 @@
 
 namespace Spin8\Tests;
 
-use InvalidArgumentException;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use org\bovigo\vfs\vfsStream;
@@ -20,7 +19,7 @@ use WP_Mock;
 
 //not extending WP_Mock test case because its incompatible with phpunit 10
 
-/** @phpstan-import-type ContainerConfiguration from Container */
+/** @phpstan-import-type ContainerConfiguration from \Spin8\Container\Configuration\AbstractContainerConfigurator */
 class TestCase extends \PHPUnit\Framework\TestCase {
 
     use MockeryPHPUnitIntegration;
@@ -103,8 +102,11 @@ class TestCase extends \PHPUnit\Framework\TestCase {
     }
     
     protected function setUpFramework(): void {
-        $container = new Container($this->configureContainer());
-        ContainerConfigurator::run($container);
+        $container = new Container();
+        
+        $container_configurator = new ContainerConfigurator($this->configureContainer());
+        
+        $container->useConfigurator($container_configurator);
 
         $this->spin8 = Spin8::init($container, [
             'project_root_path' => $this->filesystem_root->url()
