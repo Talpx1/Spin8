@@ -27,7 +27,7 @@ final class GuardAgainstEmptyParameter{
         if(empty($parameter_to_check)) {
             $caller = debug_backtrace()[1];
 
-            $message  = "{$caller['function']} was called with non-allowed empty argument";
+            $message  = "function '{$caller['function']}' was called with non-allowed empty argument";
             $message  .= array_key_exists('file', $caller) ? " in {$caller['file']}" : "";
             $message  .= array_key_exists('line', $caller) ? " on line {$caller['line']}" : "";
             $message  .= ".".PHP_EOL;
