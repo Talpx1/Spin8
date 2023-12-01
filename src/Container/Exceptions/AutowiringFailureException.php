@@ -9,7 +9,7 @@ class AutowiringFailureException extends ContainerException {
         $final_message = "Container was unable to autowire {$entry_id}. You may want to configure a binding for it.";
         
         if(!empty($message)) {
-            $final_message .= " {$message}";
+            $final_message .= PHP_EOL.PHP_EOL."FAILURE:".PHP_EOL.$message;
         }
 
         parent::__construct($final_message, $code, $previous);

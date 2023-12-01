@@ -29,8 +29,12 @@ abstract class AbstractContainerConfigurator {
             return;
         }
 
-        if(!file_exists($configurations) || !is_readable($configurations)) {
-            throw new ConfigurationException("Could not find configuration file in ${$configurations}");
+        if(!file_exists($configurations)) {
+            throw new ConfigurationException("Could not find configuration file in {$configurations}");
+        }
+
+        if(!is_readable($configurations)) {
+            throw new ConfigurationException("Could not read configuration from file {$configurations}");
         }
 
         $this->configurations = require_once $configurations;
