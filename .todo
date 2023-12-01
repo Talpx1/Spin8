@@ -6,6 +6,7 @@ FRAMEWORK:
 [ ] implement DI support for interfaces
 [ ] implement DI support for enums
 [ ] implement DI support for abstract classes
+[ ] check for circular reference hell in container
 [X] test configs
 [X] create Environments enum
 [X] singleton for spin8
