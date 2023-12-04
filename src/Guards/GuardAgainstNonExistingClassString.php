@@ -20,20 +20,18 @@ final class GuardAgainstNonExistingClassString{
      *
      * @throws RuntimeException if `@see $throwable` is not a valid class-string.
      */
-    public static function check(string $value, callable|string|null $throwable = null, bool $consider_interfaces = false): void {
-        
-        if(is_null($throwable)) {
-            $throwable = RuntimeException::class;
-        }
+    public static function check(string $value, callable|string $throwable = RuntimeException::class, bool $consider_interfaces = false): void {
 
-        if(is_string($throwable) && (!class_exists($throwable) || !(new ReflectionClass($throwable))->isSubclassOf(Throwable::class))) {
+        if(is_string($throwable) && (!class_exists($throwable) || !is_subclass_of($throwable, Throwable::class))) {
             throw new RuntimeException("\$throwable must be a valid instance of ".Throwable::class.". {$throwable} passed.");
         }
-        
-        if(!class_exists($value) && ($consider_interfaces && !interface_exists($value))) {
+
+        $should_throw = $consider_interfaces ? !class_exists($value) && !interface_exists($value) : !class_exists($value);
+
+        if($should_throw) {
             $caller = debug_backtrace()[1];
 
-            $message  = "{$value} does not reference a valid class." . PHP_EOL;
+            $message  = "'{$value}' does not reference a valid class." . PHP_EOL;
             $message  .= "Thrown in function '{$caller['function']}'";
             $message  .= array_key_exists('file', $caller) ? " called in {$caller['file']}" : "";
             $message  .= array_key_exists('line', $caller) ? " on line {$caller['line']}" : "";
