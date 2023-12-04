@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 namespace Spin8\Container\Configuration;
+
 use Psr\Container\ContainerInterface;
 use Spin8\Container\Exceptions\ConfigurationException;
 use Spin8\Guards\GuardAgainstEmptyParameter;

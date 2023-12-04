@@ -2,11 +2,8 @@
 
 namespace Spin8\Container\Configuration;
 
-use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use Spin8\Container\Exceptions\ConfigurationException;
-use Spin8\Container\Interfaces\AliasSupport;
-use Spin8\Container\Interfaces\SingletonSupport;
 use Spin8\Guards\GuardAgainstNonExistingClassString;
 use Spin8\TemplatingEngine\TemplatingEngine;
 
@@ -217,7 +214,7 @@ class ContainerConfigurator extends AbstractContainerConfigurator {
 
     /** @param class-string $id */
     public function resolveDependencyFromConfigs(string $id): mixed {
-        $singletons_queue = $this->configurations['singletons'];
+        $singletons_queue = $this->configurations['singletons'] ?? [];
 
         if(array_key_exists($id, $singletons_queue)) {
             return $this->container->singleton($id, $singletons_queue[$id]);
@@ -229,7 +226,7 @@ class ContainerConfigurator extends AbstractContainerConfigurator {
             return $this->container->singleton($id);
         }
 
-        $entries_queue = $this->configurations['entries'];
+        $entries_queue = $this->configurations['entries'] ?? [];
 
         if(array_key_exists($id, $entries_queue)) {
             return $this->container->bind($id, $entries_queue[$id]);
