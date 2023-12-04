@@ -352,7 +352,7 @@ class Container implements ContainerInterface, AliasSupport, SingletonSupport {
         }, $parameters);
     }
 
-    public function useConfigurator(AbstractContainerConfigurator $configurator): void {//TODO: TEST
+    public function useConfigurator(AbstractContainerConfigurator $configurator): void {
         $this->is_loading_configurations = true;
 
         $this->configurator = $configurator;

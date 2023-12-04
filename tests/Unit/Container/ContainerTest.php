@@ -442,4 +442,42 @@ final class ContainerTest extends \PHPUnit\Framework\TestCase {
         $this->assertFalse($this->container->hasAlias("test"));
     }
 
+    public function test_clear_method_clears_container(): void {        
+        $class_1 = new class{};
+        $class_2 = new class{};
+        $class_3 = new class{};
+        $class_4 = new class{};
+        $class_5 = new class{};
+        $class_6 = new class{};
+        $class_7 = new class{};
+
+        $this->container->bind($class_1::class);
+        $this->container->bind($class_2::class);
+        
+        $this->container->singleton($class_3::class);
+        $this->container->singleton($class_4::class);
+
+        $this->container->bind([$class_5::class, $class_6::class], $class_7::class);
+
+        $this->assertTrue($this->container->has($class_1::class));
+        $this->assertTrue($this->container->has($class_2::class));
+        $this->assertTrue($this->container->has($class_3::class));
+        $this->assertTrue($this->container->has($class_4::class));
+        $this->assertTrue($this->container->has([$class_5::class, $class_6::class]));
+
+        $this->container->clear();
+
+        $this->assertFalse($this->container->has($class_1::class));
+        $this->assertFalse($this->container->has($class_2::class));
+        $this->assertFalse($this->container->has($class_3::class));
+        $this->assertFalse($this->container->has($class_4::class));
+        $this->assertFalse($this->container->has([$class_5::class, $class_6::class]));
+    }
+
+    public function test_when_container_use_configurator_it_calls_configure_method_on_configurator_passing_itself_as_a_parameter(): void {        
+        $configurator = $this->createMock(ContainerConfigurator::class);
+        $configurator->expects($this->once())->method("configure")->with($this->container);
+
+        $this->container->useConfigurator($configurator);
+    }
 }
