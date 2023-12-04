@@ -1,6 +1,6 @@
 # DISCLAIMER
 
-this is a custom version of WP_Mock, arranged to *kinda* work with PHPUnit 10. ALL CREDITS GOES TO 10up/wp_mock (https://github.com/10up/wp_mock)
+this is a custom version of WP_Mock, arranged to *kinda* work with PHPUnit 10. ALL CREDITS GO TO 10up/wp_mock (https://github.com/10up/wp_mock)
 
 # WP_Mock
 
