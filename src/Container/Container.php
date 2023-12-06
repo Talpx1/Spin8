@@ -15,6 +15,7 @@ use Spin8\Container\Configuration\AbstractContainerConfigurator;
 use Spin8\Container\Exceptions\AliasException;
 use Spin8\Container\Exceptions\AutowiringFailureException;
 use Spin8\Container\Exceptions\BindingException;
+use Spin8\Container\Exceptions\CircularReferenceException;
 use Spin8\Container\Exceptions\EntryNotFoundException;
 use Spin8\Container\Exceptions\SingletonException;
 use Spin8\Container\Interfaces\AliasSupport;
@@ -52,11 +53,18 @@ class Container implements ContainerInterface, AliasSupport, SingletonSupport {
 
     protected const UNRESOLVABLE_TYPES = ["string", "float", "bool", "int", "iterable", "mixed", "array", "object", "callable", "resource", Closure::class];
 
+    /** @var StandardEntryIdentifier[] */
+    protected array $dependency_chain = [];
+
 
 
 
     /** @param EntryIdentifier $id */
-    public function get(string|array $id): mixed {
+    public function get(string|array $id, bool $called_by_self = false): mixed {
+        if(!$called_by_self) {
+            $this->dependency_chain = [];
+        }
+
         GuardAgainstEmptyParameter::check($id);
 
         if(is_array($id)) {
@@ -81,8 +89,14 @@ class Container implements ContainerInterface, AliasSupport, SingletonSupport {
         }
         
         $id = $this->maybeResolveAlias($id);
-
+        
         /** @var StandardEntryIdentifier $id */
+
+        if(in_array($id, $this->dependency_chain)) {
+            throw new CircularReferenceException($id, $this->dependency_chain);
+        }
+
+        $this->dependency_chain[] = $id;
 
         return $this->autowire($id);
     }
@@ -199,7 +213,7 @@ class Container implements ContainerInterface, AliasSupport, SingletonSupport {
 
         $this->entries[$id] = $value;
 
-        return $this->get($id);
+        return $this->get($id, called_by_self: true);
     }
 
     /**
@@ -217,7 +231,7 @@ class Container implements ContainerInterface, AliasSupport, SingletonSupport {
 
         $this->intersection_type_resolvers[] = ["intersection_types" => $id, "resolver" => $value];
 
-        return $this->get($id);
+        return $this->get($id, called_by_self: true);
     }
 
 
@@ -239,12 +253,12 @@ class Container implements ContainerInterface, AliasSupport, SingletonSupport {
             GuardAgainstNonExistingClassString::check($value, SingletonException::class);
 
             $this->singletons[$id] = $this->autowire($value);
-            return $this->get($id);
+            return $this->get($id, called_by_self: true);
         }
 
         $this->singletons[$id] = $value;
 
-        return $this->get($id);
+        return $this->get($id, called_by_self: true);
     }
 
 
@@ -265,6 +279,7 @@ class Container implements ContainerInterface, AliasSupport, SingletonSupport {
         $this->aliases = [];
         $this->singletons = [];
         $this->intersection_type_resolvers = [];
+        $this->dependency_chain = [];
     }
 
 
@@ -446,7 +461,7 @@ class Container implements ContainerInterface, AliasSupport, SingletonSupport {
     /** @param EntryIdentifier $needs_resolver */
     protected function tryGetting(string|array $needs_resolver, string $currently_resolving_id): mixed {
         try{
-            return $this->get($needs_resolver);
+            return $this->get($needs_resolver, called_by_self: true);
         } catch(Exception $e) {
             $needs_resolver_string = \Safe\json_encode($needs_resolver);
             throw new AutowiringFailureException($currently_resolving_id, "attempt to resolve '{$needs_resolver_string}'", previous: $e);

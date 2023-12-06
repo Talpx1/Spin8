@@ -3,6 +3,7 @@
 namespace Spin8\Tests\Unit;
 
 use Error;
+use Exception;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -11,6 +12,7 @@ use PHPUnit\Framework\Attributes\TestWith;
 use Spin8\Container\Configuration\ContainerConfigurator;
 use Spin8\Container\Container;
 use Spin8\Container\Exceptions\AutowiringFailureException;
+use Spin8\Container\Exceptions\CircularReferenceException;
 use Spin8\Container\Exceptions\EntryNotFoundException;
 
 /** @phpstan-import-type ContainerConfiguration from \Spin8\Container\Configuration\AbstractContainerConfigurator */
@@ -479,5 +481,29 @@ final class ContainerTest extends \PHPUnit\Framework\TestCase {
         $configurator->expects($this->once())->method("configure")->with($this->container);
 
         $this->container->useConfigurator($configurator);
+    }
+
+    public function test_it_detects_circular_reference(): void {        
+        $class_a = new class("test"){function __construct(public readonly \ClassB5|string $test){}};
+        \Safe\class_alias($class_a::class, "ClassA8");
+
+        $class_b = new class("test"){function __construct(public readonly \ClassA8|string $test){}};
+        \Safe\class_alias($class_b::class, "ClassB5");
+
+        try{
+            $this->container->get($class_a::class);
+        } catch (Exception $e){
+            $original_exception = $e;
+            
+            while(true) {
+                if(is_null($original_exception->getPrevious())) {
+                    break;
+                }
+
+                $original_exception = $original_exception->getPrevious();
+            }
+
+            $this->assertEquals(CircularReferenceException::class, get_class($original_exception));
+        }
     }
 }
