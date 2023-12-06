@@ -35,7 +35,7 @@ final class Spin8{
     /** @param array<string, mixed> $configurations */
     public static function init(ContainerInterface $container, array $configurations = []): self {
         if(!is_null(self::$instance)) {
-            throw new \RuntimeException("Tried to initialize Spin8 when it was already initialized");
+            throw new \RuntimeException("Tried to initialize Spin8 when it was already initialized. Use Spin8::instance in order to get the Spin8 instance.");
         }
         self::$instance = new self($container, $configurations);
         
@@ -54,7 +54,7 @@ final class Spin8{
 
     public static function instance(): self {
         if(is_null(self::$instance)) {
-            throw new \RuntimeException("Tried to get Spin8 instance before initialization");
+            throw new \RuntimeException("Tried to get Spin8 instance before initialization. Initialize Spin8 using 'Spin8::init' method.");
         }
 
         return self::$instance;
