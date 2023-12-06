@@ -1,12 +1,12 @@
 FRAMEWORK:
 [ ] global file to perform checks and require autoloader
 [ ] avoid initializing spin8 and bootstrapping in unit tests
-[ ] implement DI Container, instantiate it before Spin8, load templating engine via container in Spin8
-[ ] test DI Container
-[ ] implement DI support for interfaces
-[ ] implement DI support for enums
-[ ] implement DI support for abstract classes
-[ ] check for circular reference hell in container
+[X] implement DI Container, instantiate it before Spin8, load templating engine via container in Spin8
+[X] test DI Container
+[X] implement DI support for interfaces
+[X] implement DI support for enums
+[X] implement DI support for abstract classes
+[X] check for circular reference hell in container
 [X] test configs
 [X] create Environments enum
 [X] singleton for spin8
