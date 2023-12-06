@@ -73,10 +73,13 @@ function slugify(string $string): string {
  * @see https://developer.wordpress.org/reference/functions/submit_button/
  */
 function buildSettings(string $page_slug, string $submit_text = null): string {
-    //TODO: sanitize $submit_text since it goes in HTML. Should not cause problems since is passed from the dev, but better safe than sorry
-
     GuardAgainstEmptyParameter::check($page_slug);
-
+    GuardAgainstEmptyParameter::check($submit_text, allow_null: true);
+    
+    if(!is_null($submit_text)) {
+        $submit_text = sanitize_text_field($submit_text);
+    }
+    
     if (isset($_GET['settings-updated'])) {
         add_settings_error(config('plugin', 'name') . '-messages', config('plugin', 'name') . '_message', __('Settings Saved'), 'updated');
     }

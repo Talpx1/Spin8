@@ -145,6 +145,18 @@ final class FunctionsTest extends TestCase {
     }
 
     #[Test]
+    public function test_buildSettings_helper_throws_InvalidArgumentException_if_page_slug_is_an_empty_string(): void {  
+        $this->expectException(InvalidArgumentException::class);      
+        buildSettings('');
+    }
+
+    #[Test]
+    public function test_buildSettings_helper_throws_InvalidArgumentException_if_submit_text_is_an_empty_string(): void {  
+        $this->expectException(InvalidArgumentException::class);      
+        buildSettings('test', '');
+    }
+
+    #[Test]
     public function test_buildSettings_helper_provide_settings_form(): void { 
         $fake_plugin_name = 'test_plugin';
         $fake_page_slug = 'test_page_slug';
