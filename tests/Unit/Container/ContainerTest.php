@@ -1,8 +1,7 @@
 <?php
 
-namespace Spin8\Tests\Unit;
+namespace Spin8\Tests\Unit\Container;
 
-use Error;
 use Exception;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -271,7 +270,7 @@ final class ContainerTest extends \PHPUnit\Framework\TestCase {
     }
     
     // @phpstan-ignore-next-line
-    public static function conatiner_configurations_provider(): array{
+    public static function container_configurations_provider(): array{
         $class_a = new class{};
         \Safe\class_alias($class_a::class, "ClassA5");
 
@@ -286,7 +285,7 @@ final class ContainerTest extends \PHPUnit\Framework\TestCase {
 
     /** @param ContainerConfiguration $configurations */
     #[Test]
-    #[DataProvider('conatiner_configurations_provider')]
+    #[DataProvider('container_configurations_provider')]
     public function test_it_tries_to_resolve_dependency_parameters_from_configs(array $configurations): void {        
         $container_configurator = $this->createPartialMock(ContainerConfigurator::class, ['resolveDependencyFromConfigs']);
 

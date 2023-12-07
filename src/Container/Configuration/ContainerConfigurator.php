@@ -86,7 +86,7 @@ class ContainerConfigurator extends AbstractContainerConfigurator {
             GuardAgainstNonExistingClassString::check($class, ConfigurationException::class);
 
             /** @var class-string $class */
-            if(!(new ReflectionClass($class))->isSubclassOf(TemplatingEngine::class)) {
+            if(!is_subclass_of($class, TemplatingEngine::class)) {
                 throw new ConfigurationException("A templating engine binding value must be a valid reference to a class that extends ".TemplatingEngine::class.".");
             }
 
