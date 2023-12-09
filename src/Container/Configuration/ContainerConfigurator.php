@@ -49,7 +49,7 @@ class ContainerConfigurator extends AbstractContainerConfigurator {
             }
             
             GuardAgainstNonExistingClassString::check($class, ConfigurationException::class);
-            
+
             /** @var class-string $class */
             $this->container->alias($alias, $class);
         }
