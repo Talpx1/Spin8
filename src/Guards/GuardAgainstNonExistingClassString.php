@@ -12,7 +12,7 @@ final class GuardAgainstNonExistingClassString{
      * Assure that the passed class-string references an existing class
      *
      * @param string $value the class-string to check.
-     * @param callable(string=):\Throwable|class-string|null $throwable the exception/error to throw in case `@see $value` is an nonexisting class-string.  
+     * @param callable(string=):\Throwable|class-string $throwable the exception/error to throw in case `@see $value` is an nonexisting class-string.  
      * If null, it defaults to `@see RuntimeException`.  
      * Pass a callable that returns an instance of `@see Throwable` if you need to pass custom parameters to your exception, that callable always accept one parameter which is the message of the thrown exception.  
      * Pass a class-string of a class that implements `@see Throwable` otherwise.
