@@ -9,8 +9,8 @@ use Spin8\TemplatingEngine\TemplatingEngine;
  */
 class LatteEngine extends TemplatingEngine{
 
-    public function __construct() {
-        parent::__construct('latte', 'latte', new Engine());
+    public function __construct(Engine $engine = null) {
+        parent::__construct('latte', 'latte', $engine ?? new Engine());
     }
 
     public function render($path, $data = []): void {
