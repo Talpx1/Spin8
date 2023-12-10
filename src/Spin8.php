@@ -2,7 +2,7 @@
 
 namespace Spin8;
 
-use Psr\Container\ContainerInterface;
+use Spin8\Container\Interfaces\Spin8ContainerContract;
 use Spin8\Exceptions\InvalidConfigurationException;
 use Spin8\TemplatingEngine\TemplatingEngine;
 
@@ -16,7 +16,7 @@ final class Spin8{
     // @phpstan-ignore-next-line
     public readonly TemplatingEngine $templating_engine;
 
-    public readonly ContainerInterface $container;
+    public readonly Spin8ContainerContract $container;
 
     private const REAL_ROOT_PATH = __DIR__ . "/../../../../../";
 
@@ -29,7 +29,7 @@ final class Spin8{
     ];
 
     /** @param array<string, mixed> $configurations */
-    public static function init(ContainerInterface $container, array $configurations = []): self {
+    public static function init(Spin8ContainerContract $container, array $configurations = []): self {
         if(!is_null(self::$instance)) {
             throw new \RuntimeException("Tried to initialize Spin8 when it was already initialized. Use Spin8::instance in order to get the Spin8 instance.");
         }
@@ -58,7 +58,7 @@ final class Spin8{
 
 
     /** @param array<string, mixed> $configurations */
-    private function __construct(ContainerInterface $container, array $configurations) {
+    private function __construct(Spin8ContainerContract $container, array $configurations) {
         $this->container = $container;
 
         $configurations = $this->addDefaultConfigurations($configurations);

@@ -2,8 +2,8 @@
 
 namespace Spin8\Container\Configuration;
 
-use Psr\Container\ContainerInterface;
 use Spin8\Container\Exceptions\ConfigurationException;
+use Spin8\Container\Interfaces\Spin8ContainerContract;
 use Spin8\Guards\GuardAgainstEmptyParameter;
 
 /**
@@ -19,7 +19,7 @@ abstract class AbstractContainerConfigurator {
     /** @var ContainerConfiguration $configurations */
     protected array $configurations;
 
-    protected ContainerInterface $container;
+    protected Spin8ContainerContract $container;
 
     /** @param ContainerConfiguration|string $configurations */
     public function __construct(string|array $configurations) {
@@ -41,7 +41,7 @@ abstract class AbstractContainerConfigurator {
         $this->configurations = require_once $configurations;
     }
 
-    public function configure(ContainerInterface $container): void {
+    public function configure(Spin8ContainerContract $container): void {
         $this->container = $container;
         $this->run();
     }
