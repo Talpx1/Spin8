@@ -285,6 +285,7 @@ class Container implements ContainerInterface, AliasSupport, SingletonSupport {
 
     /** @param class-string $id */
     protected function autowire(string $id): mixed {
+        // @phpstan-ignore-next-line
         GuardAgainstNonExistingClassString::check($id, fn(string $message) => new AutowiringFailureException($id, $message));
 
         $reflection_class = new ReflectionClass($id);
