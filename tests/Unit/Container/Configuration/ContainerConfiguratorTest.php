@@ -2,6 +2,7 @@
 
 namespace Spin8\Tests\Unit\Container\Configuration;
 
+use Exception;
 use InvalidArgumentException;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -15,7 +16,6 @@ use Spin8\Container\Exceptions\ConfigurationException;
 use Spin8\TemplatingEngine\Engines\LatteEngine;
 use Spin8\TemplatingEngine\TemplatingEngine;
 
-//TODO
 #[CoversClass(ContainerConfigurator::class)]
 #[CoversClass(AbstractContainerConfigurator::class)]
 final class ContainerConfiguratorTest extends \PHPUnit\Framework\TestCase {
@@ -326,5 +326,245 @@ final class ContainerConfiguratorTest extends \PHPUnit\Framework\TestCase {
         (new ContainerConfigurator(["templating_engines"=>["test"=>$class::class]]))->configure($this->container);
     }
 
-    //TODO TEST
+    #[Test]
+    public function test_if_singletons_key_is_not_array_in_configurations_it_throws_ConfigurationException(): void {        
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage('The key singletons of a container configuration must be an array. string passed.');
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["singletons"=>"test"]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_binding_key_is_empty_string_in_singletons_configuration_it_throws_ConfigurationException(): void {        
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage("A singleton binding key must be a non-empty string in a container configuration. Empty string passed (empty-like values are considered empty).");
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["singletons"=>[""=>"test"]]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_binding_key_is_invalid_class_string_in_singletons_configuration_it_throws_ConfigurationException(): void {        
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage("'test' does not reference a valid class.");
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["singletons"=>["test"=>"test"]]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_binding_key_is_valid_class_string_and_binding_value_is_not_an_object_in_singletons_configuration_it_throws_ConfigurationException(): void {        
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage("A singleton binding value must be an object when using <class string => binding> in a container configuration. string passed.");
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["singletons"=>[\ArrayObject::class=>"test"]]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_binding_key_is_valid_class_string_and_binding_value_is_not_an_instance_of_the_binding_value_in_singletons_configuration_it_throws_ConfigurationException(): void {        
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage("A singleton binding value an instance of the class string key when using <class string => binding> in a container configuration. ".\ArrayObject::class." => ".\Exception::class." passed.");
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["singletons"=>[\ArrayObject::class=>new \Exception()]]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_binding_key_is_valid_class_string_and_binding_value_is_an_instance_of_the_binding_value_it_calls_singleton_method_on_container_with_binding_from_singletons_configs(): void {        
+        $value = new \LogicException();
+        
+        $this->container->expects($this->once())->method("singleton")->with(Exception::class, $value);
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["singletons"=>[\Exception::class=>$value]]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_binding_key_is_int_and_binding_value_is_not_string_in_singletons_configuration_it_throws_ConfigurationException(): void {        
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage("A singleton binding value must be a string (class string) when using <no key => binding> in a container configuration. integer passed.");
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["singletons"=>[0=>1]]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_binding_key_is_int_and_binding_value_is_an_empty_string_in_singletons_configuration_it_throws_ConfigurationException(): void {        
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage("A singleton binding value must be a non-empty string in a container configuration. Empty string passed (empty-like values are considered empty).");
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["singletons"=>[0=>""]]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_binding_key_is_int_and_binding_value_is_an_invalid_class_string_in_singletons_configuration_it_throws_ConfigurationException(): void {        
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage("'test' does not reference a valid class.");
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["singletons"=>[0=>"test"]]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_binding_key_is_int_and_binding_value_is_a_valid_class_string_it_calls_singleton_method_on_container_with_binding_from_singletons_configs(): void {        
+        $this->container->expects($this->once())->method("singleton")->with(\ArrayObject::class);
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["singletons"=>[0=>\ArrayObject::class]]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_entries_key_is_not_array_in_configurations_it_throws_ConfigurationException(): void {        
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage('The key entries of a container configuration must be an array. string passed.');
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["entries"=>"test"]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_binding_key_is_empty_string_in_entries_configuration_it_throws_ConfigurationException(): void {        
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage("An entry binding key must be a non-empty string in a container configuration. Empty string passed (empty-like values are considered empty).");
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["entries"=>[""=>"test"]]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_binding_key_is_invalid_class_string_in_entries_configuration_it_throws_ConfigurationException(): void {        
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage("'test' does not reference a valid class.");
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["entries"=>["test"=>"test"]]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_binding_key_is_valid_class_string_and_binding_value_is_not_a_string_in_entries_configuration_it_throws_ConfigurationException(): void {        
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage("An entry binding value must be a class string when using <class string => class string> bindings in a container configuration. integer passed.");
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["entries"=>[\ArrayObject::class=>1]]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_binding_key_is_valid_class_string_and_binding_value_is_not_an_instantiable_class_string_in_entries_configuration_it_throws_ConfigurationException(): void {        
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage("An entry binding value must be an instantiable class string when using <class string => class string> bindings in a container configuration. Non instantiable class string passed.");
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["entries"=>[\ArrayObject::class=>\Throwable::class]]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_binding_key_is_valid_class_string_and_binding_value_is_an_instantiable_class_string_it_calls_bind_method_on_container_with_binding_from_entries_configs(): void {        
+        $this->container->expects($this->once())->method("bind")->with(Exception::class, \LogicException::class);
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["entries"=>[Exception::class=>\LogicException::class]]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_binding_key_is_int_and_binding_value_is_not_string_in_entries_configuration_it_throws_ConfigurationException(): void {        
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage("An entry binding value must be a string (class string) when using <no key => binding> in a container configuration. integer passed.");
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["entries"=>[0=>1]]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_binding_key_is_int_and_binding_value_is_an_empty_string_in_entries_configuration_it_throws_ConfigurationException(): void {        
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage("An entry binding value must be a non-empty string in a container configuration. Empty string passed (empty-like values are considered empty).");
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["entries"=>[0=>""]]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_binding_key_is_int_and_binding_value_is_not_an_instantiable_class_string_in_entries_configuration_it_throws_ConfigurationException(): void {
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage("An entry binding value must be an instantiable class string when using <no class => class string> bindings in a container configuration. Non instantiable class string passed. If you are trying to bind an interface or some other non instantiable class, use <class string => class string>");
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["entries"=>[0=>\ReflectionType::class]]))->configure($this->container);
+    }
+
+    #[Test]
+    public function test_if_binding_key_is_int_and_binding_value_is_an_instantiable_class_string_it_calls_bind_method_on_container_with_binding_from_entries_configs(): void {        
+        $this->container->expects($this->once())->method("bind")->with(\ArrayObject::class);
+
+        // @phpstan-ignore-next-line
+        (new ContainerConfigurator(["entries"=>[0=>\ArrayObject::class]]))->configure($this->container);
+    }
+
+    // @phpstan-ignore-next-line
+    public static function config_singleton_dependency_provider(): array{
+        return [
+            [\ArrayObject::class],
+            [[Exception::class => new \LogicException()]],
+        ];
+    }
+
+    /** @param string|array{int|class-string, class-string|object} $configurations */
+    #[Test]
+    #[DataProvider('config_singleton_dependency_provider')]
+    public function test_tries_to_resolve_a_config_singleton_dependency_from_the_loaded_configs_and_register_binding_in_container(array|string $configurations): void {
+        // @phpstan-ignore-next-line
+        $configurator = new ContainerConfigurator(["singletons"=>is_array($configurations) ? $configurations : [$configurations]]);
+
+        // @phpstan-ignore-next-line
+        $configurator->configure($this->container);
+
+        $params = is_array($configurations) ? [array_key_first($configurations), $configurations[array_key_first($configurations)]] : [$configurations];
+
+        $this->container->expects($this->once())->method("singleton")->with(...$params);
+
+        $id = is_array($configurations) ? array_key_first($configurations) : $configurations;
+        
+        // @phpstan-ignore-next-line
+        $configurator->resolveDependencyFromConfigs($id);
+    }
+
+    // @phpstan-ignore-next-line
+    public static function config_entry_dependency_provider(): array{
+        return [
+            [\ArrayObject::class],
+            [[Exception::class => \LogicException::class]],
+        ];
+    }
+
+    /** @param string|array{int|class-string, class-string|object} $configurations */
+    #[Test]
+    #[DataProvider('config_entry_dependency_provider')]
+    public function test_tries_to_resolve_a_config_entry_dependency_from_the_loaded_configs_and_register_binding_in_container(array|string $configurations): void {
+        // @phpstan-ignore-next-line
+        $configurator = new ContainerConfigurator(["entries"=>is_array($configurations) ? $configurations : [$configurations]]);
+
+        // @phpstan-ignore-next-line
+        $configurator->configure($this->container);
+
+        $params = is_array($configurations) ? [array_key_first($configurations), $configurations[array_key_first($configurations)]] : [$configurations];
+
+        $this->container->expects($this->once())->method("bind")->with(...$params);
+
+        $id = is_array($configurations) ? array_key_first($configurations) : $configurations;
+        
+        // @phpstan-ignore-next-line
+        $configurator->resolveDependencyFromConfigs($id);
+    }
+
+
+    #[Test]
+    public function test_it_returns_false_if_it_can_not_resolve_a_config_dependency_from_the_loaded_configs(): void {
+        // @phpstan-ignore-next-line
+        $this->assertFalse((new ContainerConfigurator(["singletons"=>[]]))->resolveDependencyFromConfigs(\ArrayObject::class));
+    }
+
 }

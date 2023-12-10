@@ -106,10 +106,11 @@ class ContainerConfigurator extends AbstractContainerConfigurator {
         }
         
         foreach($this->configurations['singletons'] as $id => $value) {
-            // @phpstan-ignore-next-line
-            if(!is_string($id) && !is_int($id)) {
-                throw new ConfigurationException('A singleton binding key must be in format <class string => object> or <no key => class string> in a container configuration.');
-            }
+            //! Commented out because afaik array keys can only be strings or ints, making this superfluous.
+            //! keeping it just in case i realize thats not the case, removing it soon otherwise.
+            // if(!is_string($id) && !is_int($id)) {
+            //     throw new ConfigurationException('A singleton binding key must be in format <class string => object> or <no key => class string> in a container configuration.');
+            // }
 
             if(is_string($id)) {
                 if(empty($id)) {
@@ -145,6 +146,7 @@ class ContainerConfigurator extends AbstractContainerConfigurator {
                 continue;
             }
 
+            //! Theoretically, it should never be called... but just in case, might as well throw a little exception.
             // @phpstan-ignore-next-line
             throw new ConfigurationException("Unable to configure a singleton binding. Use <class string => object> or <no key => class string> to configure a singleton.");
             
@@ -162,10 +164,10 @@ class ContainerConfigurator extends AbstractContainerConfigurator {
         }
 
         foreach($this->configurations['entries'] as $id => $value) {
-            // @phpstan-ignore-next-line
-            if(!is_string($id) && !is_int($id)) {
-                throw new ConfigurationException('An entry binding key must be in format <class string => class string> or <no key => class string> in a container configuration.');
-            }
+            //! same as above, {@see line #109}
+            // if(!is_string($id) && !is_int($id)) {
+            //     throw new ConfigurationException('An entry binding key must be in format <class string => class string> or <no key => class string> in a container configuration.');
+            // }
 
             if(is_string($id)) {
                 if(empty($id)) {
@@ -205,6 +207,7 @@ class ContainerConfigurator extends AbstractContainerConfigurator {
                 continue;
             }
 
+            //! same as above, {@see line #149}
             // @phpstan-ignore-next-line
             throw new ConfigurationException("Unable to configure an entry binding. Use <class string => class string> or <no key => class string> to configure an entry.");
             
@@ -220,9 +223,9 @@ class ContainerConfigurator extends AbstractContainerConfigurator {
             return $this->container->singleton($id, $singletons_queue[$id]);
         }
 
-        /** @var class-string[] $non_obj_stingletons */
-        $non_obj_stingletons = array_filter($singletons_queue, "is_int", ARRAY_FILTER_USE_KEY);
-        if(in_array($id, $non_obj_stingletons)) {
+        /** @var class-string[] $non_obj_singletons */
+        $non_obj_singletons = array_filter($singletons_queue, "is_int", ARRAY_FILTER_USE_KEY);
+        if(in_array($id, $non_obj_singletons)) {
             return $this->container->singleton($id);
         }
 
@@ -232,7 +235,7 @@ class ContainerConfigurator extends AbstractContainerConfigurator {
             return $this->container->bind($id, $entries_queue[$id]);
         }
 
-        /** @var class-string[] $non_obj_stingletons */
+        /** @var class-string[] $non_obj_singletons */
         $self_binding_entries = array_filter($entries_queue, "is_int", ARRAY_FILTER_USE_KEY);
         if(in_array($id, $self_binding_entries)) {
             return $this->container->bind($id);
