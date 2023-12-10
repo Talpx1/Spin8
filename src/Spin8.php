@@ -3,11 +3,7 @@
 namespace Spin8;
 
 use Psr\Container\ContainerInterface;
-use Spin8\Configs\ConfigRepository;
-use Spin8\Facades\Config;
-use Spin8\Container\Container;
 use Spin8\Exceptions\InvalidConfigurationException;
-use Spin8\Guards\GuardAgainstEmptyParameter;
 use Spin8\TemplatingEngine\TemplatingEngine;
 
 final class Spin8{
@@ -77,13 +73,15 @@ final class Spin8{
      */
     private function addDefaultConfigurations(array $configurations): array {
         foreach($this->default_configurations as $key => $value) {
-            if(!array_key_exists($key, $configurations)) {
-                if($key === "templating_engine") {
-                    $value = $this->container->get($value);
-                }
-
-                $configurations[$key] = $value;
+            if(array_key_exists($key, $configurations)) {
+                continue;
             }
+
+            if($key === "templating_engine") {
+                $value = $this->container->get($value);
+            }
+
+            $configurations[$key] = $value;
         }
 
         return $configurations;
