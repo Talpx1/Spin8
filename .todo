@@ -11,7 +11,7 @@ FRAMEWORK:
 [X] create Environments enum
 [X] singleton for spin8
 [X] load config in a separated manager and not read them directly from file. This way are configurable at runtime and testable.
-[ ] test Spin8 class
+[X] test Spin8 class
 
 WP:
 [ ] create file for menus definition and include it in bootstrap
