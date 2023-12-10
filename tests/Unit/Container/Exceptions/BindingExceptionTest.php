@@ -11,9 +11,21 @@ use Spin8\Tests\TestCase;
 final class BindingExceptionTest extends TestCase {
 
     #[Test]
-    public function test_test(): void {        
-        //TODO
-        $this->assertTrue(true);
+    public function test_it_appends_message(): void {        
+        $exception = new BindingException("Test");
+
+        $this->assertEquals("Unable to bind. Test", $exception->getMessage());
+    }
+
+    #[Test]
+    public function test_it_passes_arguments_to_parent(): void {   
+        $prev = new \LogicException();
+                
+        $exception = new BindingException("Test", 1, $prev);
+
+        $this->assertEquals("Unable to bind. Test", $exception->getMessage());
+        $this->assertEquals(1, $exception->getCode());
+        $this->assertSame($prev, $exception->getPrevious());
     }
 
 }

@@ -11,9 +11,22 @@ use Spin8\Tests\TestCase;
 final class CircularReferenceExceptionTest extends TestCase {
 
     #[Test]
-    public function test_test(): void {        
-        //TODO
-        $this->assertTrue(true);
+    public function test_it_builds_message(): void {        
+        // @phpstan-ignore-next-line
+        $exception = new CircularReferenceException("Test", ["dependency1", "dependency2"]);
+        $this->assertEquals("Circular reference detected in container while trying to resolve 'Test'.".PHP_EOL."Dependency Chain:".PHP_EOL.'["dependency1","dependency2"]', $exception->getMessage());
+    }
+
+    #[Test]
+    public function test_it_passes_arguments_to_parent(): void {   
+        $prev = new \LogicException();
+                
+        // @phpstan-ignore-next-line
+        $exception = new CircularReferenceException("Test", ["dependency1", "dependency2"], 1, $prev);
+
+        $this->assertEquals("Circular reference detected in container while trying to resolve 'Test'.".PHP_EOL."Dependency Chain:".PHP_EOL.'["dependency1","dependency2"]', $exception->getMessage());
+        $this->assertEquals(1, $exception->getCode());
+        $this->assertSame($prev, $exception->getPrevious());
     }
 
 }
