@@ -55,9 +55,7 @@ final class GuardAgainstNonExistingClassStringTest extends TestCase {
 
         $message = "'test' does not reference a valid class." . PHP_EOL;
         $message .= "Thrown in function '" . __FUNCTION__ . "'";
-        $message .= ' called in ' . $file;
-        $message .= ' on line 1114';
-        $message .= '.' . PHP_EOL;
+        $message .= " called in {$file} on line 1114." . PHP_EOL;
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage($message);
@@ -71,11 +69,6 @@ final class GuardAgainstNonExistingClassStringTest extends TestCase {
         $this->expectExceptionMessage("'test' does not reference a valid class.");
 
         GuardAgainstNonExistingClassString::check('test');
-
-        $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage("'test' does not reference a valid class.");
-
-        GuardAgainstNonExistingClassString::check('test', throwable: \LogicException::class);
     }
 
     #[Test]
@@ -109,6 +102,7 @@ final class GuardAgainstNonExistingClassStringTest extends TestCase {
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('$throwable must be a valid instance of ' . \Throwable::class . ". '" . \ArrayObject::class . "' passed.");
 
+        // @phpstan-ignore-next-line
         GuardAgainstNonExistingClassString::check('test', \ArrayObject::class);
     }
 }
