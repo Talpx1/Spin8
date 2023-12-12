@@ -51,7 +51,8 @@ abstract class Spin8ContainerContract implements AliasSupport, SingletonSupport,
 
 
     //! AUTOWIRE SUPPORT
-    protected const UNRESOLVABLE_TYPES = ["string", "float", "bool", "int", "iterable", "mixed", "array", "object", "callable", "resource", \Closure::class];
+    /** @var string[] */
+    protected const array UNRESOLVABLE_TYPES = ["string", "float", "bool", "int", "iterable", "mixed", "array", "object", "callable", "resource", \Closure::class];
 
     /** @var StandardEntryIdentifier[] */
     protected array $dependency_chain = [];
