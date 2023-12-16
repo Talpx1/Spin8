@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 namespace Spin8\Container;
 
+use BadMethodCallException;
 use Exception;
+use InvalidArgumentException;
+use ReflectionFunction;
+use ReflectionFunctionAbstract;
+use ReflectionMethod;
+use ReflectionParameter;
 use Spin8\Container\Configuration\AbstractContainerConfigurator;
 use Spin8\Container\Exceptions\AutowiringFailureException;
 use Spin8\Container\Exceptions\BindingException;
@@ -12,10 +18,12 @@ use Spin8\Container\Exceptions\CircularReferenceException;
 use Spin8\Container\Interfaces\Spin8ContainerContract;
 use Spin8\Container\Traits\AliasSupport;
 use Spin8\Container\Traits\AutowireSupport;
+use Spin8\Container\Traits\CallableSupport;
 use Spin8\Container\Traits\IntersectionTypeSupport;
 use Spin8\Container\Traits\SingletonSupport;
 use Spin8\Guards\GuardAgainstEmptyParameter;
 use Spin8\Guards\GuardAgainstNonExistingClassString;
+use Spin8\Spin8;
 
 /**
  * @phpstan-import-type IntersectionEntryIdentifier from Spin8ContainerContract
@@ -26,15 +34,21 @@ use Spin8\Guards\GuardAgainstNonExistingClassString;
  * @phpstan-import-type IntersectionTypeResolver from Spin8ContainerContract
  */
 class Container extends Spin8ContainerContract {
+
     use AutowireSupport;
     use IntersectionTypeSupport;
     use SingletonSupport;
     use AliasSupport;
+    use CallableSupport;
 
     /** @param EntryIdentifier $id */
     public function get(string|array $id, bool $called_by_self = false) : mixed {
         if (!$called_by_self) {
             $this->dependency_chain = [];
+        }
+
+        if($id === Spin8::class) {
+            return Spin8::instance();
         }
 
         GuardAgainstEmptyParameter::check($id);

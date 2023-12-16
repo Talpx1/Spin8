@@ -2,6 +2,7 @@
 
 namespace Spin8\Container\Interfaces;
 use Psr\Container\ContainerInterface;
+use ReflectionFunctionAbstract;
 use Spin8\Container\Configuration\AbstractContainerConfigurator;
 
 /**
@@ -13,7 +14,7 @@ use Spin8\Container\Configuration\AbstractContainerConfigurator;
  * @phpstan-type IntersectionTypeResolver array{intersection_types: class-string[], resolver: EntryResolver}
  */
 
-abstract class Spin8ContainerContract implements AliasSupport, SingletonSupport, ContainerInterface {
+abstract class Spin8ContainerContract implements AliasSupport, SingletonSupport, ContainerInterface, CallableSupport {
 
     //! DEFAULT CONTAINER SUPPORT
     protected bool $is_loading_configurations = false;
@@ -88,4 +89,13 @@ abstract class Spin8ContainerContract implements AliasSupport, SingletonSupport,
      * @param EntryResolver $value
      */
     protected abstract function bindIntersectionTypeResolver(array $id, callable|string|null $value): mixed;
+
+
+    //! METHOD CALL SUPPORT
+    /** 
+     * @param array<string, mixed>|array{} $params 
+     * @param class-string $id
+     * @return array<string, mixed>
+     */
+    protected abstract function resolveFunctionParams(ReflectionFunctionAbstract $reflector, string $id, string|false $doc_comment = false, array $params = []): array;
 }

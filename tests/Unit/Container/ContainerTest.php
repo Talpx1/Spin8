@@ -2,6 +2,7 @@
 
 namespace Spin8\Tests\Unit\Container;
 
+use BadMethodCallException;
 use Exception;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -12,9 +13,11 @@ use Spin8\Container\Container;
 use Spin8\Container\Exceptions\AutowiringFailureException;
 use Spin8\Container\Exceptions\CircularReferenceException;
 use Spin8\Container\Exceptions\EntryNotFoundException;
+use Spin8\Container\Interfaces\Spin8ContainerContract;
 
 /** @phpstan-import-type ContainerConfiguration from \Spin8\Container\Configuration\AbstractContainerConfigurator */
 #[CoversClass(Container::class)]
+#[CoversClass(Spin8ContainerContract::class)]
 final class ContainerTest extends \PHPUnit\Framework\TestCase {
     protected Container $container;
 
@@ -535,5 +538,170 @@ final class ContainerTest extends \PHPUnit\Framework\TestCase {
 
             $this->assertEquals(CircularReferenceException::class, get_class($original_exception));
         }
+    }
+
+    #[Test]
+    public function test_it_call_given_lambda_callable(): void {
+        $callable = fn() => 'test';
+
+        $this->assertEquals('test', $this->container->call($callable));
+    }
+    
+    #[Test]
+    public function test_it_call_given_lambda_callable_with_given_params(): void {
+        $callable = fn(string $name) => "hello {$name}";
+
+        $this->assertEquals('hello test', $this->container->call($callable, ['name'=>'test']));
+    }
+    
+    #[Test]
+    public function test_it_call_given_function_string_callable(): void {
+        $callable = 'phpversion';
+
+        $this->assertStringContainsString(PHP_VERSION, $this->container->call($callable));
+    }
+    
+    #[Test]
+    public function test_it_call_given_function_string_callable_with_given_params(): void {
+        $callable = 'implode';
+
+        $this->assertStringContainsString('test,test', $this->container->call($callable, [",", ["test", "test"]]));
+    }
+    
+    #[Test]
+    public function test_it_call_given_static_method_string_callable(): void {
+        $class = new class() {
+            public static function test(): string {return "test";}
+        };
+        \Safe\class_alias($class::class, 'ClassA9');
+
+        // @phpstan-ignore-next-line
+        $this->assertEquals("test", $this->container->call(\ClassA9::class."::test"));
+    }
+    
+    #[Test]
+    public function test_it_call_given_static_method_string_callable_with_given_params(): void {
+        $class = new class() {
+            public static function hello(string $name): string {return "hello {$name}";}
+        };
+        \Safe\class_alias($class::class, 'ClassA10');
+
+        // @phpstan-ignore-next-line
+        $this->assertEquals("hello test", $this->container->call(\ClassA10::class."::hello", ['name'=>'test']));
+    }
+    
+    #[Test]
+    public function test_it_call_given_method_string_callable(): void {
+        $class = new class() {
+            public function test(): string {return "test";}
+        };
+        \Safe\class_alias($class::class, 'ClassA11');
+
+        // @phpstan-ignore-next-line
+        $this->assertEquals("test", $this->container->call(\ClassA11::class."@test"));
+    }
+    
+    #[Test]
+    public function test_it_call_given_method_string_callable_with_given_params(): void {
+        $class = new class() {
+            public function hello(string $name): string {return "hello {$name}";}
+        };
+        \Safe\class_alias($class::class, 'ClassA12');
+
+        // @phpstan-ignore-next-line
+        $this->assertEquals("hello test", $this->container->call(\ClassA12::class."@hello", ['name'=>'test']));
+    }
+    
+    #[Test]
+    public function test_it_throws_InvalidArgumentException_if_params_is_not_an_associative_array(): void {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("\$param array parameter passed to call should be an associative array, where the keys are the parameter name.");
+
+        $this->container->call([new \ArrayObject(), 'append'], ['test']);
+    }
+    
+    #[Test]
+    public function test_it_does_not_throw_if_params_is_an_associative_array(): void {
+        $arr_obj = new \ArrayObject();
+        $this->container->call([$arr_obj, 'append'], ['value'=>'test']);
+        $this->assertContains('test', $arr_obj) ;
+    }
+
+    // @phpstan-ignore-next-line
+    public static function callable_array_with_invalid_method_provider() : array {
+        return [
+            [[new \ArrayObject(), 'test']],
+            [[\ArrayObject::class, 'test']]
+        ];
+    }
+
+    /** @param array{string|object, string} $callable */
+    #[Test]
+    #[DataProvider('callable_array_with_invalid_method_provider')]
+    public function test_if_callable_is_array_and_method_does_not_exists_it_throws_BadMethodCallException(array $callable): void {
+        $this->expectException(BadMethodCallException::class);
+        $this->expectExceptionMessage("Container is unable to call method test as it does not exists in class ".\ArrayObject::class);
+
+        $this->container->call($callable);
+    }
+
+    #[Test]
+    public function test_it_calls_array_callable_method_considering_annotations(): void {
+        $class = new class{
+            /** @param \ArrayObject $array */
+            public function count($array):int {
+                $array->append("test");
+
+                return $array->count();
+            }
+        };
+        \Safe\class_alias($class::class, 'ClassA13');
+
+        // @phpstan-ignore-next-line
+        $this->assertEquals(1, $this->container->call([new \ClassA13, 'count']));
+    }
+
+    #[Test]
+    public function test_it_calls_array_callable_method_autowiring_dependencies(): void {
+        $class = new class{
+            public function count(\ArrayObject $array):int {
+                $array->append("test");
+
+                return $array->count();
+            }
+        };
+        \Safe\class_alias($class::class, 'ClassA14');
+
+        // @phpstan-ignore-next-line
+        $this->assertEquals(1, $this->container->call([new \ClassA14, 'count']));
+    }
+
+    #[Test]
+    public function test_it_calls_array_callable_method_autowiring_dependencies_without_overriding_user_defined_params(): void {
+        $class = new class{
+            public function count(\ArrayObject $array):int {
+                $array->append("test");
+
+                return $array->count();
+            }
+        };
+        \Safe\class_alias($class::class, 'ClassA15');
+
+        // @phpstan-ignore-next-line
+        $this->assertEquals(2, $this->container->call([new \ClassA15, 'count'], ['array' => new \ArrayObject(['test0'])]));
+    }
+
+    #[Test]
+    public function test_it_calls_lambda_callable_autowiring_dependencies(): void {
+        $callable = function(\ArrayObject $array) {$array->append("test"); return $array->count();};
+
+        $this->assertEquals(1, $this->container->call($callable));
+    }
+
+    #[Test]
+    public function test_it_calls_lambda_callable_autowiring_dependencies_without_overriding_user_defined_params(): void {
+        $callable = function(\ArrayObject $array) {$array->append("test"); return $array->count();};
+
+        $this->assertEquals(2, $this->container->call($callable, ['array' => new \ArrayObject(['test0'])]));
     }
 }
