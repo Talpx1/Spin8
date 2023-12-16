@@ -18,7 +18,7 @@ require_once $autoloader;
 // CONTAINER
 $container = new Container();
 
-$container_configurator = new ContainerConfigurator(__DIR__."/Container/configurations.php");
+$container_configurator = new ContainerConfigurator(__DIR__."/Container/Configuration/configurations.php");
 
 $container->useConfigurator($container_configurator);
 

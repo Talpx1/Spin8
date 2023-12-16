@@ -17,7 +17,6 @@ return [
 
     'singletons' => [
         ConfigRepository::class,
-        Spin8::class
     ],
 
     'entries' => [
