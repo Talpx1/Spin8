@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 namespace Spin8\Console;
+use Spin8\Console\Exceptions\MissingExecuteMethodException;
 
 abstract class Command { //TODO: test
 
@@ -21,10 +22,12 @@ abstract class Command { //TODO: test
             return;
         }
 
-        $this->execute();
+        if(!method_exists($this, 'execute')) {
+            throw new MissingExecuteMethodException($this::class);
+        }
+        
+        container()->call([$this, 'execute']);
     }
-
-    public abstract function execute(): void;
 
     protected abstract function showHelp(): void;
     

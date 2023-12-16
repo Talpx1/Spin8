@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 namespace Spin8\Console\Exceptions;
+
 use Exception;
 use Throwable;
 
