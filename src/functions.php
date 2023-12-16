@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
 use Spin8\Configs\Enums\Environments;
+use Spin8\Container\Interfaces\Spin8ContainerContract;
 use Spin8\Facades\Config;
 use Spin8\Spin8;
 use Spin8\Guards\GuardAgainstEmptyParameter;
-use Psr\Container\ContainerInterface;
 
 /**
  * Returns the container instance
  */
-function container(): ContainerInterface {
+function container(): Spin8ContainerContract {
     return spin8()->container;
 }
 
@@ -207,4 +207,15 @@ function frameworkTempPath(): string {
  */
 function environment(): Environments {
     return isRunningTest() ? Environments::TESTING : config('environment', 'environment');
+}
+
+/**
+ * Returns the value of an env variable.
+ * 
+ * @param string $name the name of the environment variable to be read.
+ *
+ * @return mixed
+ */
+function env(string $name): mixed {
+    return $_ENV[$name];
 }
