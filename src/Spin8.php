@@ -18,7 +18,7 @@ final class Spin8{
 
     public readonly Spin8ContainerContract $container;
 
-    private const REAL_ROOT_PATH = __DIR__ . "/../../../../../";
+    private const REAL_ROOT_PATH = __DIR__ . "/../../../../";
 
     public const VERSION = 0.1;
 
