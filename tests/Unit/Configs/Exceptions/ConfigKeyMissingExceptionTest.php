@@ -16,7 +16,7 @@ final class ConfigKeyMissingExceptionTest extends TestCase {
     public function test_it_build_message_with_the_given_config_key_and_file_name(): void {
         $exception = new ConfigKeyMissingException('test_key', 'test_file');
 
-        $this->assertSame("Unable to retrive test_key in test_file config file. There's no key named test_key.", $exception->getMessage());
+        $this->assertSame("Unable to retrieve test_key in test_file config file. There's no key named test_key.", $exception->getMessage());
     }
 
     #[Test]

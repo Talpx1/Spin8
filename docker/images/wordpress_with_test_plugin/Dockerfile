@@ -6,7 +6,7 @@ FROM wordpress:${WP_VERSION}-php${PHP_VERSION}-${WEBSERVER_VERSION}
 
 COPY ./plugin_structure /var/www/html/docker_temp
 
-#intalling wp-cli
+#installing wp-cli
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 RUN chmod +x wp-cli.phar
 RUN mv wp-cli.phar /usr/local/bin/wp
