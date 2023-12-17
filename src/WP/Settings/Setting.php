@@ -90,7 +90,7 @@ class Setting {
 
     public function setDefault(mixed $default): self {
         if (isset($this->type) && gettype($default) !== $this->type) {
-            throw new TypeError("The type of the default value does not match the type specified fot the setting. Default value type is ".gettype($default).", the specified type is {$this->type}.");
+            throw new TypeError("The type of the default value does not match the type specified for the setting. Default value type is ".gettype($default).", the specified type is {$this->type}.");
         }
 
         $this->default = $default;

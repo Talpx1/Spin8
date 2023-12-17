@@ -96,8 +96,8 @@ class ConfigRepository{
     /**
      * get the specified config
      *
-     * @param string $file_name file to retrive the @var $config_key from
-     * @param string $config_key key of the config to retrive
+     * @param string $file_name file to retrieve the @var $config_key from
+     * @param string $config_key key of the config to retrieve
      *
      * @throws ConfigKeyMissingException
      */
@@ -113,7 +113,7 @@ class ConfigRepository{
     }
 
     /**
-     * check wether the specified config exists in the specified file
+     * check whether the specified config exists in the specified file
      *
      * @param string $file_name file to look into to check if the @var $config_key exists
      * @param string $config_key key of the config to check
@@ -132,7 +132,7 @@ class ConfigRepository{
     }
 
     /**
-     * check wether the specified config file has been loaded
+     * check whether the specified config file has been loaded
      *
      * @param string $file_name file to check
      */
@@ -145,8 +145,8 @@ class ConfigRepository{
     /**
      * get the specified config or return the provided fallback
      *
-     * @param string $file_name file to retrive the @var $config_key from
-     * @param string $config_key key of the config to retrive
+     * @param string $file_name file to retrieve the @var $config_key from
+     * @param string $config_key key of the config to retrieve
      * @param mixed $default fallback in case the specified config key can't be found in the specified file
      *
      * @throws \InvalidArgumentException
