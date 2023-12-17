@@ -58,7 +58,7 @@ function slugify(string $string): string {
 }
 
 /**
- * Provide the settings form used in Wordpress settings pages, in string form, will need to be outputted.
+ * Provide the settings form used in WordPress settings pages, in string form, will need to be outputted.
  * This function is intended to be used in Latte templates.
  *
  * @param string $page_slug slug of the setting page, available in Latte page templates via the $page_slug variable.
@@ -106,10 +106,10 @@ function buildSettings(string $page_slug, string $submit_text = null): string {
 }
 
 /**
- * Retrive and returns the value of the specified config. If the file or the config key is not found, @var $default is returned.
+ * Retrieve and returns the value of the specified config. If the file or the config key is not found, @var $default is returned.
  *
  * @param string $file_name name, with no extension, of the file in the 'configs' directory that contains the specified config value.
- * @param string $config_key the key of the desired config to retrive.
+ * @param string $config_key the key of the desired config to retrieve.
  * @param mixed $default the fallback value to return in case the specified config can not be found.
  * @return mixed
  */
