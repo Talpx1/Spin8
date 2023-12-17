@@ -5,16 +5,6 @@ use Spin8\Container\Container;
 use Spin8\Configs\ConfigRepository;
 use Spin8\Container\Configuration\ContainerConfigurator;
 
-//AUTOLOADER
-$autoloader = __DIR__ . '/../vendor/autoload.php';
-
-if (!file_exists($autoloader) || !is_readable($autoloader)) {
-    throw new RuntimeException("[Spin8] Can't require the autoloader in ".basename(__FILE__).", it's either missing or non-readable. Check the autoloader in {$autoloader}");
-}
-
-require_once $autoloader;
-
-
 // CONTAINER
 $container = new Container();
 
