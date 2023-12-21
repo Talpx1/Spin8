@@ -3,7 +3,7 @@
 namespace Spin8\Console;
 use Spin8\Console\Exceptions\MissingExecuteMethodException;
 
-abstract class Command { //TODO: test
+abstract class Command {
 
     /** @var string[] */
     protected const array HELP_FLAGS = ["-h", "--help"];
@@ -14,10 +14,10 @@ abstract class Command { //TODO: test
      * @param string[] $flags 
      * @param string[] $args 
      */
-    public function __construct(protected array $flags, protected array $args) {}
+    public function __construct(protected array $flags = [], protected array $args = []) {}
 
-    public function maybeExecute(): void {
-        if($this->shouldShowHelp()) {
+    public function maybeExecute(): void {        
+        if(!empty(array_intersect($this->flags, self::HELP_FLAGS))) {
             $this->showHelp();
             return;
         }
@@ -29,10 +29,5 @@ abstract class Command { //TODO: test
         container()->call([$this, 'execute']);
     }
 
-    protected abstract function showHelp(): void;
-    
-    protected function shouldShowHelp(): bool {
-        return in_array($this->flags, self::HELP_FLAGS);
-    }
-
+    public abstract function showHelp(): void;
 }
