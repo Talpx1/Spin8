@@ -3,7 +3,7 @@
 namespace Spin8\Console;
 use Spin8\Console\Exceptions\InvalidCommandException;
 
-final class Console { //TODO: test
+final class Console {
 
     /** @var string[] */
     protected array $flags = [];
@@ -24,6 +24,10 @@ final class Console { //TODO: test
                 
         /** @var class-string<Command> $class */
         $class = '\\Spin8\\Console\\Commands\\'.ucfirst($this->command_name);
+
+        if(!class_exists($class)) {
+            $class = '\\'.config('plugin', 'namespace').'\\Console\\Commands\\'.ucfirst($this->command_name);
+        }
 
         if(!class_exists($class) || !is_subclass_of($class, Command::class)) {
             throw new InvalidCommandException($this->command_name);
