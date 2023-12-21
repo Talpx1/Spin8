@@ -217,5 +217,11 @@ function environment(): Environments {
  * @return mixed
  */
 function env(string $name): mixed {
+    GuardAgainstEmptyParameter::check($name);
+
+    if(!array_key_exists($name, $_ENV)) {
+        throw new InvalidArgumentException("{$name} is not an environment variable. Maybe you forgot to set it in .env, or maybe you wanted to access a config.");
+    }
+
     return $_ENV[$name];
 }
