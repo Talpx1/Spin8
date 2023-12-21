@@ -4,7 +4,7 @@ namespace Spin8\Console\Commands;
 
 use Spin8\Console\Command;
 
-class Help extends Command { //TODO: test
+class Help extends Command {
 
     public function execute(): void {
         $this->showHelp();
@@ -25,10 +25,6 @@ class Help extends Command { //TODO: test
 
 
         HELP;
-    }
-
-    protected function shouldShowHelp(): true {
-        return true;
     }
 
 }
