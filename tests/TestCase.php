@@ -8,6 +8,7 @@ use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStreamFile;
 use Spin8\Configs\ConfigRepository;
+use Spin8\Console\Command;
 use Spin8\Container\Configuration\ContainerConfigurator;
 use Spin8\Container\Container;
 use Spin8\Facades\Config;
@@ -57,7 +58,6 @@ class TestCase extends \PHPUnit\Framework\TestCase {
         
         Config::clear();
 
-        // @phpstan-ignore-next-line
         $this->spin8->container->clear();
 
         Spin8::dispose();
@@ -153,5 +153,30 @@ class TestCase extends \PHPUnit\Framework\TestCase {
 
     public function configRepository(): ConfigRepository {
         return $this->spin8->container->get(ConfigRepository::class);
+    }
+    
+    /**
+     * @param class-string<Command> $class
+     */
+    public function getHelpMessageForCommand(string $class): string {
+        \Safe\ob_start();
+        (new $class([],[]))->showHelp();
+        $output = ob_get_clean();
+
+        if($output === false) {
+            throw new \RuntimeException("Unable to retrieve help message for command {$class}");
+        }
+        
+        return $output;
+    }
+
+    /**
+     * @return array<int, array<int, string>>
+     */
+    public static function help_flags_provider() : array {
+        return [
+            ["-h"],
+            ["--help"]
+        ];
     }
 }
