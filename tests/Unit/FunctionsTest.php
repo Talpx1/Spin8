@@ -31,56 +31,56 @@ final class FunctionsTest extends TestCase {
     #[Test]
     #[BackupGlobals(true)]
     public function test_environment_helper_returns_right_environment(): void {
-        $this->assertTrue(array_key_exists("TESTING", $_ENV) && $_ENV['TESTING'] = '1');
+        $this->assertTrue(array_key_exists("TESTING", $_ENV) && $_ENV['TESTING'] === '1');
         $this->assertTrue(isRunningTest());
 
-        $this->assertSame(Environments::TESTING, environment());
+        $this->assertEquals(Environments::TESTING, environment());
 
         unset($_ENV['TESTING']);
         $this->assertFalse(isRunningTest());
-        $this->assertFalse(array_key_exists("TESTING", $_ENV) && $_ENV['TESTING'] = '1');
+        $this->assertFalse(array_key_exists("TESTING", $_ENV) && $_ENV['TESTING'] === '1');
 
         Config::set('environment', 'environment', Environments::PRODUCTION);
-        $this->assertSame(config('environment', 'environment'), environment());
-        $this->assertSame(Environments::PRODUCTION, environment());
+        $this->assertEquals(config('environment', 'environment'), environment());
+        $this->assertEquals(Environments::PRODUCTION, environment());
 
         Config::set('environment', 'environment', Environments::LOCAL);
-        $this->assertSame(Environments::LOCAL, environment());
+        $this->assertEquals(Environments::LOCAL, environment());
     }
 
     #[Test]
     public function test_frameworkTempPath_helper_points_to_right_directory(): void {        
-        $this->assertSame(vfsStream::url("root/storage/framework/temp/"), frameworkTempPath());
+        $this->assertEquals(vfsStream::url("root/storage/framework/temp/"), frameworkTempPath());
     }
 
     #[Test]
     public function test_storagePath_helper_points_to_right_directory(): void {        
-        $this->assertSame(vfsStream::url("root/storage/"), storagePath());
+        $this->assertEquals(vfsStream::url("root/storage/"), storagePath());
     }
 
     #[Test]
     public function test_configPath_helper_points_to_right_directory(): void {
-        $this->assertSame(vfsStream::url("root/configs/"), configPath());
+        $this->assertEquals(vfsStream::url("root/configs/"), configPath());
     }
 
     #[Test]
     public function test_frameworkSrcPath_helper_points_to_right_directory(): void {        
-        $this->assertSame(vfsStream::url("root/vendor/talp1/spin8/framework/src/"), frameworkSrcPath());
+        $this->assertEquals(vfsStream::url("root/vendor/talp1/spin8/framework/src/"), frameworkSrcPath());
     }
 
     #[Test]
     public function test_frameworkPath_helper_points_to_right_directory(): void {        
-        $this->assertSame(vfsStream::url("root/vendor/talp1/spin8/framework/"), frameworkPath());
+        $this->assertEquals(vfsStream::url("root/vendor/talp1/spin8/framework/"), frameworkPath());
     }
 
     #[Test]
     public function test_assetsPath_helper_points_to_right_directory(): void {        
-        $this->assertSame(vfsStream::url("root/assets/"), assetsPath());
+        $this->assertEquals(vfsStream::url("root/assets/"), assetsPath());
     }
 
     #[Test]
     public function test_rootPath_helper_points_to_right_directory(): void {        
-        $this->assertSame(vfsStream::url("root/"), rootPath());
+        $this->assertEquals(vfsStream::url("root/"), rootPath());
     }
 
     #[Test]
@@ -105,19 +105,19 @@ final class FunctionsTest extends TestCase {
     public function test_config_helper_returns_specified_configuration(): void {        
         Config::set('test', 'cfg_test', '123');
 
-        $this->assertSame('123', config('test', 'cfg_test'));
+        $this->assertEquals('123', config('test', 'cfg_test'));
     }
 
     #[Test]
     public function test_config_helper_returns_specified_fallback_if_configuration_key_cant_be_found(): void {        
         $this->makeConfigFile('test', ['a'=>1]);
-        $this->assertSame('fallback', config('test', 'cfg_test', 'fallback'));
+        $this->assertEquals('fallback', config('test', 'cfg_test', 'fallback'));
     }
 
     #[Test]
     public function test_config_helper_returns_specified_fallback_if_configuration_file_cant_be_found(): void {        
         //no configs exists right now, so every config we try to fetch is going to fallback
-        $this->assertSame('fallback', config('test', 'cfg_test', 'fallback'));
+        $this->assertEquals('fallback', config('test', 'cfg_test', 'fallback'));
     }
 
     #[Test]
@@ -176,7 +176,7 @@ final class FunctionsTest extends TestCase {
     public function test_slugify_helper_returns_string_in_slug_format(): void { 
         WP_Mock::userFunction('remove_accents')->once()->with("TÈST 1_2 3 !")->andReturn('TEST 1_2 3 !');
         WP_Mock::userFunction('sanitize_title_with_dashes')->once()->with("TEST 1_2 3 !", "", 'save')->andReturn('test-1-2-3');
-        $this->assertSame("test-1-2-3", slugify("TÈST 1_2 3 !"));
+        $this->assertEquals("test-1-2-3", slugify("TÈST 1_2 3 !"));
     }
 
     #[Test]
@@ -195,5 +195,26 @@ final class FunctionsTest extends TestCase {
     // public function test_adminAsset_helper_renders_admins_latte_asset(): void { 
     //     adminAsset('');
     // }
+
+    
+    #[Test]
+    #[BackupGlobals(true)]
+    public function test_env_helper_returns_an_environment_variable_value(): void { 
+        $_ENV['TEST'] = 'test_val';
+
+        $this->assertEquals('test_val', env("TEST"));
+    }
+
+    #[Test]
+    public function test_env_helper_throws_InvalidArgumentException_if_empty_string_is_passed(): void { 
+        $this->expectException(InvalidArgumentException::class);
+        env('');
+    }
+
+    #[Test]
+    public function test_env_helper_throws_InvalidArgumentException_if_passed_env_var_name_does_not_exists_in_env(): void { 
+        $this->expectException(InvalidArgumentException::class);
+        env('TEST');
+    }
 
 }
