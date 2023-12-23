@@ -2,6 +2,7 @@
 
 namespace Spin8\Configs;
 
+use InvalidArgumentException;
 use Spin8\Configs\Exceptions\ConfigFileNotLoadedException;
 use Spin8\Configs\Exceptions\ConfigFileNotReadableException;
 use Spin8\Configs\Exceptions\ConfigKeyMissingException;
@@ -61,7 +62,31 @@ class ConfigRepository{
         $this->configs[$file_name][$config_key] = $value;
     }
 
-    //TODO: set from array method
+    /**
+     * massively set the specified configs to the specified values
+     * 
+     * format:
+     * ```['file_name' => ['config_key' => value, ...], ...]```
+     *
+     * @param array<string, array<string, mixed>> $configs to massively set.
+     */
+    public function setFrom(array $configs): void {
+        GuardAgainstEmptyParameter::check($configs);
+
+        foreach($configs as $file_name => $configs_group){
+            if(! is_string($file_name)) {
+                throw new InvalidArgumentException("{$file_name} is not a valid config file name. It should be string, ".gettype($file_name)." passed.");
+            }
+
+            foreach($configs_group as $config_key => $value) {
+                if(! is_string($config_key)) {
+                    throw new InvalidArgumentException("{$config_key} is not a valid config key. It should be string, ".gettype($file_name)." passed.");
+                }
+
+                $this->set($file_name, $config_key, $value);
+            }
+        }
+    }
 
     protected function loadFile(string $config_file): void {
         if (!is_readable($config_file)) {

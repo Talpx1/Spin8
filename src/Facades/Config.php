@@ -9,6 +9,7 @@ namespace Spin8\Facades;
  *
  * @method static mixed get(string $file_name, string $config_key)
  * @method static void set(string $file_name, string $config_key, mixed $value)
+ * @method static void setFrom(array $configs)
  * @method static bool has(string $file_name, string $config_key)
  * @method static bool fileLoaded(string $file_name)
  * @method static mixed getOr(string $file_name, string $config_key, mixed $default = null)
@@ -19,7 +20,7 @@ namespace Spin8\Facades;
  */
 final class Config extends Facade {
     /** @var string[] $allowed */
-    protected static array $allowed = ['get', 'set', 'has', 'fileLoaded', 'getOr', 'clear'];
+    protected static array $allowed = ['get', 'set', 'setFrom', 'has', 'fileLoaded', 'getOr', 'clear'];
 
     protected static function implementor() : string {
         return 'config';

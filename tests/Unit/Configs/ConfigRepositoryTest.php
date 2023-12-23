@@ -53,14 +53,13 @@ final class ConfigRepositoryTest extends TestCase {
         $this->assertArrayHasKey('test_cfg', $configs_loaded);
         $this->assertArrayHasKey('test', $configs_loaded['test_cfg']);
         $this->assertArrayHasKey('test2', $configs_loaded['test_cfg']);
-        $this->assertSame(123, $configs_loaded['test_cfg']['test']);
-        $this->assertSame('hello', $configs_loaded['test_cfg']['test2']);
+        $this->assertEquals(123, $configs_loaded['test_cfg']['test']);
+        $this->assertEquals('hello', $configs_loaded['test_cfg']['test2']);
 
-        // @phpstan-ignore-next-line
         container()->singleton(ConfigRepository::class, $reflected_instance);
 
-        $this->assertSame(123, Config::get('test_cfg', 'test'));
-        $this->assertSame('hello', Config::get('test_cfg', 'test2'));        
+        $this->assertEquals(123, Config::get('test_cfg', 'test'));
+        $this->assertEquals('hello', Config::get('test_cfg', 'test2'));        
     }
 
     #[Test]
@@ -86,12 +85,12 @@ final class ConfigRepositoryTest extends TestCase {
         $this->assertNotEmpty($configs_loaded);
         $this->assertArrayHasKey('test_file', $configs_loaded);
         $this->assertArrayHasKey('test_config', $configs_loaded['test_file']);
-        $this->assertSame(123, $configs_loaded['test_file']['test_config']);
+        $this->assertEquals(123, $configs_loaded['test_file']['test_config']);
         
         // @phpstan-ignore-next-line
         container()->singleton(ConfigRepository::class, $reflected_instance);
         
-        $this->assertSame(123, Config::get('test_file', 'test_config'));        
+        $this->assertEquals(123, Config::get('test_file', 'test_config'));        
     }
 
     #[Test]
@@ -135,12 +134,12 @@ final class ConfigRepositoryTest extends TestCase {
         $this->assertArrayHasKey("e", $all_configs['test5']);
         $this->assertArrayHasKey("f", $all_configs['test6']);
 
-        $this->assertSame(1, $all_configs['test1']["a"]);
-        $this->assertSame(2, $all_configs['test2']["b"]);
-        $this->assertSame(3, $all_configs['test3']["c"]);
-        $this->assertSame(4, $all_configs['test4']["d"]);
-        $this->assertSame(5, $all_configs['test5']["e"]);
-        $this->assertSame(6, $all_configs['test6']["f"]);
+        $this->assertEquals(1, $all_configs['test1']["a"]);
+        $this->assertEquals(2, $all_configs['test2']["b"]);
+        $this->assertEquals(3, $all_configs['test3']["c"]);
+        $this->assertEquals(4, $all_configs['test4']["d"]);
+        $this->assertEquals(5, $all_configs['test5']["e"]);
+        $this->assertEquals(6, $all_configs['test6']["f"]);
     }
 
     #[Test]
@@ -209,12 +208,12 @@ final class ConfigRepositoryTest extends TestCase {
         $this->assertArrayHasKey('mno', $configs_loaded_after['test5']);
         $this->assertArrayHasKey('pqr', $configs_loaded_after['test6']);
 
-        $this->assertSame(123, $configs_loaded_after['test1']['abc']);
-        $this->assertSame(456, $configs_loaded_after['test2']['def']);
-        $this->assertSame(789, $configs_loaded_after['test3']['ghi']);
-        $this->assertSame(987, $configs_loaded_after['test4']['jkl']);
-        $this->assertSame(654, $configs_loaded_after['test5']['mno']);
-        $this->assertSame(321, $configs_loaded_after['test6']['pqr']);
+        $this->assertEquals(123, $configs_loaded_after['test1']['abc']);
+        $this->assertEquals(456, $configs_loaded_after['test2']['def']);
+        $this->assertEquals(789, $configs_loaded_after['test3']['ghi']);
+        $this->assertEquals(987, $configs_loaded_after['test4']['jkl']);
+        $this->assertEquals(654, $configs_loaded_after['test5']['mno']);
+        $this->assertEquals(321, $configs_loaded_after['test6']['pqr']);
     }
 
     #[Test]
@@ -225,8 +224,8 @@ final class ConfigRepositoryTest extends TestCase {
         $config_1 = $this->configRepository()->get("test1", 'a');
         $config_2 = $this->configRepository()->get("test2", 'b');
 
-        $this->assertSame(1, $config_1);
-        $this->assertSame(2, $config_2);
+        $this->assertEquals(1, $config_1);
+        $this->assertEquals(2, $config_2);
     }
 
     #[Test]
@@ -314,10 +313,42 @@ final class ConfigRepositoryTest extends TestCase {
     public function test_it_can_get_a_config_and_fallback_if_config_is_not_found(): void {
         $this->configRepository()->set('test1', 'a', 1);
 
-        $this->assertSame(1, $this->configRepository()->getOr('test1', 'a', 2));
+        $this->assertEquals(1, $this->configRepository()->getOr('test1', 'a', 2));
         $this->assertNull($this->configRepository()->getOr('test1', 'b'));
         $this->assertNull($this->configRepository()->getOr('test2', 'b'));
-        $this->assertSame('a', $this->configRepository()->getOr('test2', 'b', 'a'));
-        $this->assertSame('a', $this->configRepository()->getOr('test1', 'b', 'a'));
+        $this->assertEquals('a', $this->configRepository()->getOr('test2', 'b', 'a'));
+        $this->assertEquals('a', $this->configRepository()->getOr('test1', 'b', 'a'));
+    }
+
+    #[Test]
+    public function test_it_can_massively_set_configs(): void {
+        $reflected_class = new ReflectionClass(ConfigRepository::class);
+        /** @var ConfigRepository */
+        $reflected_instance = $reflected_class->newInstanceWithoutConstructor();
+        $reflected_class->getMethod('setFrom')->invoke($reflected_instance, ["test_file_1" => ["test_key_1" => 1, "test_key_2" => 2], "test_file_2" => ["test_key_3" => 'a', "test_key_4" => 'b']]);
+
+        /** @var array<string, array<string, mixed>> */
+        $configs_loaded = $reflected_class->getProperty('configs')->getValue($reflected_instance);
+        $this->assertNotEmpty($configs_loaded);
+        
+        $this->assertArrayHasKey('test_file_1', $configs_loaded);
+        $this->assertArrayHasKey('test_file_2', $configs_loaded);
+
+        $this->assertArrayHasKey('test_key_1', $configs_loaded['test_file_1']);
+        $this->assertArrayHasKey('test_key_2', $configs_loaded['test_file_1']);
+        $this->assertArrayHasKey('test_key_3', $configs_loaded['test_file_2']);
+        $this->assertArrayHasKey('test_key_4', $configs_loaded['test_file_2']);
+
+        $this->assertEquals(1, $configs_loaded['test_file_1']['test_key_1']);
+        $this->assertEquals(2, $configs_loaded['test_file_1']['test_key_2']);
+        $this->assertEquals('a', $configs_loaded['test_file_2']['test_key_3']);
+        $this->assertEquals('b', $configs_loaded['test_file_2']['test_key_4']);
+        
+        container()->singleton(ConfigRepository::class, $reflected_instance);
+        
+        $this->assertEquals(1, Config::get('test_file_1', 'test_key_1'));
+        $this->assertEquals(2, Config::get('test_file_1', 'test_key_2'));
+        $this->assertEquals('a', Config::get('test_file_2', 'test_key_3'));
+        $this->assertEquals('b', Config::get('test_file_2', 'test_key_4'));   
     }
 }
