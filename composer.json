@@ -65,6 +65,6 @@
         }
     },
     "bin": [
-        "src/bin/spin8"
+        "bin/spin8"
     ]
 }
