@@ -1,5 +1,4 @@
 #!/usr/bin/env php
-
 <?php declare(strict_types=1);
 
 //!!! THIS FILE IS INTENDED TO BE CALLED BY THE Spin8 BINARY IN THE PROJECT TEMPLATE VIA PROXY OR BY THE COMPOSER GENERATED BINARY !!!
@@ -39,7 +38,7 @@ if($argc === 0 || $argv[0] !== 'spin8') {
     throw new RuntimeException("Can not call Spin8 Console 'binary' (spin8 file) outside of the 'php spin8' command context.");
 }
 
-$console = new Console();
+$console = new Spin8\Console\Console();
 
 try{
     $console->handle(array_splice($argv, 1));
