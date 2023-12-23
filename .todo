@@ -1,6 +1,7 @@
 FRAMEWORK:
-[ ] global file to perform checks and require autoloader
+[ ] create binary to install spin8 via 'spin8 install'
 [ ] avoid initializing spin8 and bootstrapping in unit tests
+[ ] add support for nestable configs
 [X] implement DI Container, instantiate it before Spin8, load templating engine via container in Spin8
 [X] test DI Container
 [X] implement DI support for interfaces
