@@ -67,7 +67,7 @@ final class GuardAgainstEmptyParameterTest extends TestCase {
         $reflector = new \ReflectionClass(\PHPUnit\Framework\TestCase::class);
         $file = $reflector->getFileName();
 
-        $message = "function '" . __FUNCTION__ . "' was called with non-allowed empty argument in {$file} on line 1114." . PHP_EOL . PHP_EOL;
+        $message = "function '" . __FUNCTION__ . "' was called with non-allowed empty argument in {$file} on line 1116." . PHP_EOL . PHP_EOL;
         $message .= 'Passed arguments:' . PHP_EOL . '[]';
 
         $this->expectException(InvalidArgumentException::class);

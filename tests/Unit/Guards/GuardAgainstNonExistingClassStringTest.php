@@ -55,7 +55,7 @@ final class GuardAgainstNonExistingClassStringTest extends TestCase {
 
         $message = "'test' does not reference a valid class." . PHP_EOL;
         $message .= "Thrown in function '" . __FUNCTION__ . "'";
-        $message .= " called in {$file} on line 1114." . PHP_EOL;
+        $message .= " called in {$file} on line 1116." . PHP_EOL;
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage($message);
