@@ -32,10 +32,6 @@ require $project_root.'/vendor/spin8/framework/src/bootstrap.php';
 
 
 //executing the command
-if($argc === 0 || $argv[0] !== 'spin8') {
-    throw new RuntimeException("Can not call Spin8 Console 'binary' (spin8 file) outside of the 'php spin8' command context.");
-}
-
 $console = new Spin8\Console\Console();
 
 try{
