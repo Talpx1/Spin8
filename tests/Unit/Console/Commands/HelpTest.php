@@ -13,12 +13,16 @@ use Spin8\Tests\TestCase;
 #[CoversClass(Command::class)]
 final class HelpTest extends TestCase {   
     
+    /**
+     * @param string[] $flags
+     * @param string[] $args
+     */
     #[Test]
-    #[DataProvider('help_flags_provider')]
-    public function test_it_shows_help_if_it_receive_help_flag(string $flag): void {
+    #[DataProvider('help_flags_and_args_provider')]
+    public function test_it_shows_help_if_it_receive_help_flag(array $flags, array $args): void {
         $this->expectOutputString($this->getHelpMessageForCommand(Help::class));
 
-        $help_command = new Help([$flag]);
+        $help_command = new Help($flags, $args);
 
         $help_command->maybeExecute();
     }

@@ -6,7 +6,7 @@ use Spin8\Console\Exceptions\MissingExecuteMethodException;
 abstract class Command {
 
     /** @var string[] */
-    protected const array HELP_FLAGS = ["-h", "--help"];
+    protected const array HELP_FLAGS = ["--help", '-help'];
 
 
 
@@ -17,7 +17,7 @@ abstract class Command {
     public function __construct(protected array $flags = [], protected array $args = []) {}
 
     public function maybeExecute(): void {        
-        if(!empty(array_intersect($this->flags, self::HELP_FLAGS))) {
+        if(!empty(array_intersect($this->flags, self::HELP_FLAGS)) || in_array('help', $this->args)) { //TODO: TEST
             $this->showHelp();
             return;
         }

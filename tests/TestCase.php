@@ -171,12 +171,13 @@ class TestCase extends \PHPUnit\Framework\TestCase {
     }
 
     /**
-     * @return array<int, array<int, string>>
+     * @return array<array{string[]|array{}, string[]|array{}}>
      */
-    public static function help_flags_provider() : array {
+    public static function help_flags_and_args_provider() : array {
         return [
-            ["-h"],
-            ["--help"]
+            [["--help"], []],
+            [["-help"], []],
+            [[], ["help"]]
         ];
     }
 }
