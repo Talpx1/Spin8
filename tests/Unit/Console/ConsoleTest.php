@@ -49,7 +49,7 @@ final class ConsoleTest extends TestCase {
     #[Test]
     public function test_it_throws_InvalidCommandException_if_command_class_does_not_exists() : void {
         $this->expectException(InvalidCommandException::class);
-        $this->expectExceptionMessage("'test2' is not a valid Spin8 command. Type 'php spin8 --help' for a list of commands.");
+        $this->expectExceptionMessage("'test2' is not a valid Spin8 command. Use the 'help' command for a list of commands.");
 
         (new Console())->handle(['test2']);
     }
@@ -60,7 +60,7 @@ final class ConsoleTest extends TestCase {
         \Safe\class_alias($command::class, "\\Spin8\\Console\\Commands\\Test2");
 
         $this->expectException(InvalidCommandException::class);
-        $this->expectExceptionMessage("'test2' is not a valid Spin8 command. Type 'php spin8 --help' for a list of commands.");
+        $this->expectExceptionMessage("'test2' is not a valid Spin8 command. Use the 'help' command for a list of commands.");
 
         (new Console())->handle(['test2']);
     }

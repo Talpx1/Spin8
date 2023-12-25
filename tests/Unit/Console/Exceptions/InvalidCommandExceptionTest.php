@@ -14,7 +14,7 @@ final class InvalidCommandExceptionTest extends TestCase {
     public function test_it_appends_command_name(): void {        
         $exception = new InvalidCommandException("Test");
 
-        $this->assertEquals("'Test' is not a valid Spin8 command. Type 'php spin8 --help' for a list of commands.", $exception->getMessage());
+        $this->assertEquals("'Test' is not a valid Spin8 command. Use the 'help' command for a list of commands.", $exception->getMessage());
     }
 
     #[Test]
@@ -23,7 +23,7 @@ final class InvalidCommandExceptionTest extends TestCase {
                 
         $exception = new InvalidCommandException("Test", 1, $prev);
 
-        $this->assertEquals("'Test' is not a valid Spin8 command. Type 'php spin8 --help' for a list of commands.", $exception->getMessage());
+        $this->assertEquals("'Test' is not a valid Spin8 command. Use the 'help' command for a list of commands.", $exception->getMessage());
         $this->assertEquals(1, $exception->getCode());
         $this->assertSame($prev, $exception->getPrevious());
     }
