@@ -42,8 +42,15 @@ final class HelpTest extends TestCase {
         Description: execute a Spin8 command.
 
         Standard commands (user-defined commands are not listed):
-        help: display this message.
-        publish: publish a resource.
+        
+        > Commands available also before starting the container (using the Spin8 binary)
+        install     -   launch the Spin8 installation wizard. Also available before starting the container.
+        up          -   start the Spin8 containers. Also available before starting the container.
+        down        -   stop the Spin8 containers. Also available before starting the container.
+        help        -   display this message. Also available before starting the container.
+        
+        > Commands available only after starting the container
+        publish     -   publish a resource.
 
         Available flags for this command:
         -h, --help: display this message
