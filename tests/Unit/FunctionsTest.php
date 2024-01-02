@@ -8,6 +8,7 @@ use PHPUnit\Framework\Attributes\BackupGlobals;
 use PHPUnit\Framework\Attributes\CoversFunction;
 use PHPUnit\Framework\Attributes\Test;
 use Spin8\Configs\Enums\Environments;
+use Spin8\Exceptions\EnvironmentVariableNotFoundException;
 use Spin8\Facades\Config;
 use Spin8\Tests\TestCase;
 use WP_Mock;
@@ -212,9 +213,33 @@ final class FunctionsTest extends TestCase {
     }
 
     #[Test]
-    public function test_env_helper_throws_InvalidArgumentException_if_passed_env_var_name_does_not_exists_in_env(): void { 
-        $this->expectException(InvalidArgumentException::class);
+    public function test_env_helper_throws_EnvironmentVariableNotFoundException_if_passed_env_var_name_does_not_exists_in_env(): void { 
+        $this->expectException(EnvironmentVariableNotFoundException::class);
         env('TEST');
+    }
+
+    #[Test]
+    #[BackupGlobals(true)]
+    public function test_envOr_helper_returns_an_environment_variable_value(): void { 
+        $_ENV['TEST'] = 'test_val';
+
+        $this->assertEquals('test_val', envOr("TEST"));
+    }
+
+    #[Test]
+    public function test_envOr_helper_throws_InvalidArgumentException_if_empty_string_is_passed(): void { 
+        $this->expectException(InvalidArgumentException::class);
+        envOr('');
+    }
+
+    #[Test]
+    public function test_envOr_helper_returns_passed_default_value_if_env_var_name_does_not_exists_in_env(): void { 
+        $this->assertEquals("fallback", envOr('TEST', "fallback"));
+    }
+
+    #[Test]
+    public function test_envOr_helper_returns_null_if_env_var_name_does_not_exists_in_env_and_no_fallback_value_id_provided(): void { 
+        $this->assertNull(envOr('TEST'));
     }
 
 }

@@ -2,6 +2,7 @@
 
 use Spin8\Configs\Enums\Environments;
 use Spin8\Container\Interfaces\Spin8ContainerContract;
+use Spin8\Exceptions\EnvironmentVariableNotFoundException;
 use Spin8\Facades\Config;
 use Spin8\Spin8;
 use Spin8\Guards\GuardAgainstEmptyParameter;
@@ -220,8 +221,26 @@ function env(string $name): mixed {
     GuardAgainstEmptyParameter::check($name);
 
     if(!array_key_exists($name, $_ENV)) {
-        throw new InvalidArgumentException("{$name} is not an environment variable. Maybe you forgot to set it in .env, or maybe you wanted to access a config.");
+        throw new EnvironmentVariableNotFoundException("{$name} is not an environment variable. Maybe you forgot to set it in .env, or maybe you wanted to access a config.");
     }
 
     return $_ENV[$name];
+}
+
+/**
+ * Returns the value of an env variable if exists, otherwise it fallback to the provided value.
+ * 
+ * @param string $name the name of the environment variable to be read.
+ * @param mixed $default the fallback value to return in case the specified env variable can not be found.
+ *
+ * @return mixed
+ */
+function envOr(string $name, mixed $default = null): mixed {
+    GuardAgainstEmptyParameter::check($name);
+
+    try {
+        return env($name);
+    } catch (EnvironmentVariableNotFoundException) {
+        return $default;
+    }
 }
