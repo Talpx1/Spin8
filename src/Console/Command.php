@@ -17,7 +17,7 @@ abstract class Command {
     public function __construct(protected array $flags = [], protected array $args = []) {}
 
     public function maybeExecute(): void {        
-        if(!empty(array_intersect($this->flags, self::HELP_FLAGS)) || in_array('help', $this->args)) { //TODO: TEST
+        if(!empty(array_intersect($this->flags, self::HELP_FLAGS)) || in_array('help', $this->args)) {
             $this->showHelp();
             return;
         }
