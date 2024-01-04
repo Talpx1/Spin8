@@ -180,4 +180,19 @@ class TestCase extends \PHPUnit\Framework\TestCase {
             [[], ["help"]]
         ];
     }
+
+    /**
+     * @param class-string $class
+     * @param non-empty-string[] $methods
+     * @param array<non-empty-string, mixed> $constructor_args
+     */
+    public function partialMockWithConstructorArgs(string $class, array $methods, array $constructor_args): \PHPUnit\Framework\MockObject\MockObject {
+        return $this->getMockBuilder($class)
+            ->setConstructorArgs($constructor_args)
+            ->disableOriginalClone()
+            ->disableArgumentCloning()
+            ->disallowMockingUnknownTypes()
+            ->onlyMethods($methods)
+            ->getMock();
+    }
 }
