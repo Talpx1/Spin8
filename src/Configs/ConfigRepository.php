@@ -121,7 +121,7 @@ class ConfigRepository{
     /**
      * get the specified config
      *
-     * @param string $file_name file to retrieve the @var $config_key from
+     * @param string $file_name file to retrieve the `@param $config_key` from
      * @param string $config_key key of the config to retrieve
      *
      * @throws ConfigKeyMissingException
@@ -173,8 +173,6 @@ class ConfigRepository{
      * @param string $file_name file to retrieve the @var $config_key from
      * @param string $config_key key of the config to retrieve
      * @param mixed $default fallback in case the specified config key can't be found in the specified file
-     *
-     * @throws \InvalidArgumentException
      */
     public function getOr(string $file_name, string $config_key, mixed $default = null): mixed {
         GuardAgainstEmptyParameter::check($file_name);

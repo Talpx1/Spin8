@@ -10,7 +10,7 @@ use Spin8\Tests\TestCase;
 #[CoversClass(EnvironmentVariableNotFoundException::class)]
 final class EnvironmentVariableNotFoundExceptionTest extends TestCase {
 
-        #[Test]
+    #[Test]
     public function test_it_inserts_env_var_name_in_message(): void {        
         $exception = new EnvironmentVariableNotFoundException("Test");
 

@@ -1,5 +1,4 @@
 FRAMEWORK:
-[ ] create binary to install spin8 via 'spin8 install'
 [ ] avoid initializing spin8 and bootstrapping in unit tests
 [ ] add support for nestable configs
 [X] implement DI Container, instantiate it before Spin8, load templating engine via container in Spin8
@@ -28,11 +27,3 @@ WP:
 [ ] move and group plugin const in separate file
 [ ] create object/array from settings ??? -> i dont remember what it means lol
 
-
-BLUEPRINT REPO:
-[ ] add ABSPATH checks on all files
-[ ] ui partials template
-[ ] create index.php with silence is golden in each dir
-[ ] create phpcs rule for index.php with silence is golden in each dir
-[ ] create phpcs rule for ABSPATH checks on all files
-[ ] create phpcs auto-fixer for the above 2 rules
