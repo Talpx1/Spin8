@@ -115,7 +115,7 @@ class ConfigRepository{
     protected function discoverFiles(): void {
         $dir_content = \Safe\scandir(configPath());
         $config_files = array_filter($dir_content, fn($path) => pathinfo($path, PATHINFO_EXTENSION) === "php");
-        $this->config_files = array_map(fn($config_file) => configPath().$config_file, $config_files);
+        $this->config_files = array_map(fn($config_file) => configPath($config_file), $config_files);
     }
 
     /**
