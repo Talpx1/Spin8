@@ -177,6 +177,7 @@ final class FunctionsTest extends TestCase {
     }
 
     #[Test]
+    #[BackupGlobals(true)]
     public function test_isRunningTest_helper_returns_false_when_not_running_test(): void {        
         //$_ENV['TESTING'] = '1' gets set by PHPUnit
         //unsetting $_ENV['TESTING'] to simulate a non testing environment
