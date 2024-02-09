@@ -6,6 +6,7 @@ use Spin8\Exceptions\EnvironmentVariableNotFoundException;
 use Spin8\Facades\Config;
 use Spin8\Spin8;
 use Spin8\Guards\GuardAgainstEmptyParameter;
+use Spin8\WP\Plugin;
 
 /**
  * Returns the container instance
@@ -22,7 +23,12 @@ function spin8(): Spin8 {
 }
 
 /**
- * Render a Latte asset located in assets/admin.
+ * Returns plugin's current instance.
+ */
+function plugin(): Plugin {
+    return container()->get('plugin');
+}
+
  *
  * @param string $path path of the assets inside assets/admin.
  * @param array<string, mixed> $data data in key=>value format to pass to the Latte template. Passed data is available in the template using $key.
@@ -190,13 +196,25 @@ function storagePath(): string {
 }
 
 /**
- * Returns the framework's storage temporary path of this project.
- * The trailing slash is included.
+ * Returns the plugin path of this project.
+ * The trailing slash is not included, and if provided in {@param $path} it will be removed.
+ * 
+ * @param string $path if provided, it will be appended.
  *
  * @return string
  */
-function frameworkTempPath(): string {
-    return storagePath() . "framework/temp/";
+function pluginPath(string $path = ""): string {
+    $path = ltrim($path, DIRECTORY_SEPARATOR);
+    return rtrim(rootPath("plugin/{$path}"), DIRECTORY_SEPARATOR);
+}
+
+/**
+ * Returns the path of the plugin main file.
+ * 
+ * @return string
+ */
+function pluginFilePath(): string {
+    return rootPath(config('plugin', 'slug').".php");
 }
 
 /**
@@ -243,4 +261,13 @@ function envOr(string $name, mixed $default = null): mixed {
     } catch (EnvironmentVariableNotFoundException) {
         return $default;
     }
+}
+
+/**
+ * Returns the installed version of WordPress.
+ * 
+ * @return string
+ */
+function wpVersion(): string {
+    return get_bloginfo('version');
 }
