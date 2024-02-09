@@ -46,7 +46,7 @@ final class Spin8Test extends \PHPUnit\Framework\TestCase {
         $spin8 = Spin8::init($container);
 
         $this->assertInstanceOf(LatteEngine::class, $spin8->templating_engine);
-        $this->assertStringContainsString('src/../../../../', $spin8->project_root_path);
+        $this->assertStringContainsString('src/../../../..', $spin8->project_root_path);
     }
 
     #[Test]
@@ -70,7 +70,7 @@ final class Spin8Test extends \PHPUnit\Framework\TestCase {
         $spin8 = Spin8::init($container, ['project_root_path' => 'test', 'templating_engine' => $templating_engine]);
 
         $this->assertInstanceOf(\ArrayObject::class, $spin8->templating_engine->engine);
-        $this->assertEquals('test/', $spin8->project_root_path);
+        $this->assertEquals('test', $spin8->project_root_path);
     }
 
     #[Test]
