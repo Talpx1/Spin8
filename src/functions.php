@@ -136,63 +136,93 @@ function isRunningTest(): bool {
 //PATHS
 /**
  * Returns the root path of this project.
- * The trailing slash is included.
+ * The trailing slash is not included, and if provided in {@param $path} it will be removed.
+ * 
+ * @param string $path if provided, it will be appended.
  *
  * @return string
  */
-function rootPath(): string {
-    return spin8()->project_root_path;
+function rootPath(string $path = ""): string {
+    $path = ltrim($path, DIRECTORY_SEPARATOR);
+    return rtrim(spin8()->project_root_path ."/{$path}", DIRECTORY_SEPARATOR);
 }
 
 /**
  * Returns the assets path of this project.
- * The trailing slash is included.
+ * The trailing slash is not included, and if provided in {@param $path} it will be removed.
+ * 
+ * @param string $path if provided, it will be appended.
  *
  * @return string
  */
-function assetsPath(): string {
-    return rootPath() . "assets/";
+function assetsPath(string $path = ""): string {
+    $path = ltrim($path, DIRECTORY_SEPARATOR);
+    return rtrim(rootPath("assets/{$path}"), DIRECTORY_SEPARATOR);
 }
 
 /**
  * Returns the Spin8 package framework path (inside vendor/talp1/spin8).
- * The trailing slash is included.
+ * The trailing slash is not included, and if provided in {@param $path} it will be removed.
+ * 
+ * @param string $path if provided, it will be appended.
  *
  * @return string
  */
-function frameworkPath(): string {
-    return rootPath() . "vendor/talp1/spin8/framework/";
+function frameworkPath(string $path = ""): string {
+    $path = ltrim($path, DIRECTORY_SEPARATOR);
+    return rtrim(rootPath("vendor/spin8/framework/{$path}"), DIRECTORY_SEPARATOR);
 }
 
 /**
  * Returns the Spin8 package src path (inside vendor/talp1/spin8/framework).
- * The trailing slash is included.
+ * The trailing slash is not included, and if provided in {@param $path} it will be removed.
+ * 
+ * @param string $path if provided, it will be appended.
  *
  * @return string
  */
-function frameworkSrcPath(): string {
-    return frameworkPath() . "src/";
+function frameworkSrcPath(string $path = ""): string {
+    $path = ltrim($path, DIRECTORY_SEPARATOR);
+    return rtrim(frameworkPath("src/{$path}"), DIRECTORY_SEPARATOR);
 }
 
+/**
+ * Returns the framework's storage temporary path of this project.
+ * The trailing slash is not included, and if provided in {@param $path} it will be removed.
+ * 
+ * @param string $path if provided, it will be appended.
+ *
+ * @return string
+ */
+function frameworkTempPath(string $path = ""): string {
+    $path = ltrim($path, DIRECTORY_SEPARATOR);
+    return rtrim(storagePath("framework/temp/{$path}"), DIRECTORY_SEPARATOR);
+}
 
 /**
  * Returns the configs path of this project. Here is where all the config files are stored.
- * The trailing slash is included.
+ * The trailing slash is not included, and if provided in {@param $path} it will be removed.
+ * 
+ * @param string $path if provided, it will be appended.
  *
  * @return string
  */
-function configPath(): string {
-    return rootPath() . "configs/";
+function configPath(string $path = ""): string {
+    $path = ltrim($path, DIRECTORY_SEPARATOR);
+    return rtrim(rootPath("configs/{$path}"), DIRECTORY_SEPARATOR);
 }
 
 /**
  * Returns the storage path of this project.
- * The trailing slash is included.
+ * The trailing slash is not included, and if provided in {@param $path} it will be removed.
+ * 
+ * @param string $path if provided, it will be appended.
  *
  * @return string
  */
-function storagePath(): string {
-    return rootPath() . "storage/";
+function storagePath(string $path = ""): string {
+    $path = ltrim($path, DIRECTORY_SEPARATOR);
+    return rtrim(rootPath("storage/{$path}"), DIRECTORY_SEPARATOR);
 }
 
 /**
