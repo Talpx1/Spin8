@@ -29,16 +29,22 @@ function plugin(): Plugin {
     return container()->get('plugin');
 }
 
+/**
+ * Render an asset located in assets/admin/.
  *
- * @param string $path path of the assets inside assets/admin.
- * @param array<string, mixed> $data data in key=>value format to pass to the Latte template. Passed data is available in the template using $key.
+ * @param string $path path of the assets inside assets/admin/. Do not specify the file extension.
+ * @param array<string, mixed> $data data in key=>value format to pass to the template. Passed data is available in the template using $key.
  *
  * @throws InvalidArgumentException
  */
 function adminAsset(string $path, array $data = []): void {
     GuardAgainstEmptyParameter::check($path);
+
+    $path = ltrim($path, DIRECTORY_SEPARATOR);
+
+    $path = assetsPath("admin/{$path}") . "." . spin8()->templating_engine->extension;
     
-    spin8()->templating_engine->render(assetsPath() . "/admin/$path.latte", $data);
+    spin8()->templating_engine->render($path, $data);
 }
 
 /**
@@ -66,10 +72,12 @@ function slugify(string $string): string {
 
 /**
  * Provide the settings form used in WordPress settings pages, in string form, will need to be outputted.
- * This function is intended to be used in Latte templates.
+ * This function is intended to be used in templates.
  *
  * @param string $page_slug slug of the setting page, available in Latte page templates via the $page_slug variable.
  * @param ?string $submit_text text to use for the 'submit'/'save' button.
+ * 
+ * @return string returns the HTML form (and eventual errors) to be printed in the template.
  *
  * @throws InvalidArgumentException
  *
@@ -96,7 +104,7 @@ function buildSettings(string $page_slug, string $submit_text = null): string {
     $buffered_settings_errors = ob_get_clean();
 
     if($buffered_settings_errors === false) {
-        throw new ErrorException("An error occurred while building {$page_slug} settings page");
+        throw new RuntimeException("An error occurred while building {$page_slug} settings page");
     }
 
     Safe\ob_start();
@@ -106,7 +114,7 @@ function buildSettings(string $page_slug, string $submit_text = null): string {
     $buffer_settings = ob_get_clean();
 
     if($buffer_settings === false) {
-        throw new ErrorException("An error occurred while building {$page_slug} settings page");
+        throw new RuntimeException("An error occurred while building {$page_slug} settings page");
     }
 
     return "{$buffered_settings_errors}<form action='options.php' method='post'>{$buffer_settings}</form>";

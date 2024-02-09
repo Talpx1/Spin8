@@ -14,8 +14,10 @@ use Spin8\Container\Container;
 use Spin8\Facades\Config;
 use Spin8\Spin8;
 use Spin8\Guards\GuardAgainstEmptyParameter;
+use Spin8\TemplatingEngine\Engines\BasicEngine;
 use Spin8\TemplatingEngine\Engines\LatteEngine;
 use Spin8\TemplatingEngine\TemplatingEngine;
+use Spin8\WP\Plugin;
 use WP_Mock;
 
 //not extending WP_Mock test case because its incompatible with phpunit 10
@@ -33,9 +35,15 @@ class TestCase extends \PHPUnit\Framework\TestCase {
     protected vfsStreamDirectory $config_path;
     protected vfsStreamDirectory $storage_path;
     protected vfsStreamDirectory $vendor_path;
+    protected vfsStreamDirectory $assets_path;
+    protected vfsStreamDirectory $plugin_path;
     
     // Framework
     protected Spin8 $spin8;
+    protected Plugin $plugin;
+
+    /** @var array<string, mixed> $spin8_configs */
+    protected array $spin8_configs = [];
 
 
 
@@ -73,7 +81,9 @@ class TestCase extends \PHPUnit\Framework\TestCase {
 
     protected function createVirtualFileSystem(): void {
         $this->filesystem_root = vfsStream::setup(structure:[
+            "assets" => ["admin" => [], "common" => [], "public"=>[]],
             "configs" => [],
+            "plugin" => [],
             "storage" => ["framework" => ["temp" => []]],
             "vendor" => ["talp1" => ["spin8" => ["framework" => ["src" => []]]]],
         ]);
@@ -85,6 +95,10 @@ class TestCase extends \PHPUnit\Framework\TestCase {
         $this->storage_path = $this->filesystem_root->getChild('storage');
         // @phpstan-ignore-next-line
         $this->vendor_path = $this->filesystem_root->getChild('vendor');
+        // @phpstan-ignore-next-line
+        $this->plugin_path = $this->filesystem_root->getChild('plugin');
+        // @phpstan-ignore-next-line
+        $this->assets_path = $this->filesystem_root->getChild('assets');
     }
 
     /**
@@ -108,11 +122,17 @@ class TestCase extends \PHPUnit\Framework\TestCase {
         
         $container->useConfigurator($container_configurator);
 
-        $this->spin8 = Spin8::init($container, [
-            'project_root_path' => $this->filesystem_root->url()
-        ]);
+        $spin8_configs = array_merge([
+            'project_root_path' => $this->filesystem_root->url(),
+            'templating_engine' => new BasicEngine()
+        ], $this->spin8_configs);
+
+        $this->spin8 = Spin8::init($container, $spin8_configs);
 
         require_once(__DIR__ . "/../src/functions.php");
+
+        $this->plugin = $container->singleton(Plugin::class);
+        $container->alias('plugin', Plugin::class);
     }
 
     /**

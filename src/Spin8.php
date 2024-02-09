@@ -18,7 +18,7 @@ final class Spin8{
 
     public readonly Spin8ContainerContract $container;
 
-    private const REAL_ROOT_PATH = __DIR__ . "/../../../../";
+    private const REAL_ROOT_PATH = __DIR__ . "/../../../..";
 
     public const VERSION = 0.1;
 
@@ -89,8 +89,8 @@ final class Spin8{
 
 
     private function setProjectRootPath(string $project_root_path): void {
-        if(!str_ends_with($project_root_path, DIRECTORY_SEPARATOR)) {
-            $project_root_path .= DIRECTORY_SEPARATOR;
+        if(str_ends_with($project_root_path, DIRECTORY_SEPARATOR)) {
+            $project_root_path .= substr($project_root_path, 0, -1);
         }
 
         // @phpstan-ignore-next-line
