@@ -14,9 +14,9 @@ FRAMEWORK:
 [X] test Spin8 class
 
 WP:
-[ ] create file for menus definition and include it in bootstrap
-[ ] create file for settings definition and include it in bootstrap
-[ ] wrap plugin constructor methods in a bootstrap.php file
+[X] create file for menus definition and include it in bootstrap
+[X] create file for settings definition and include it in bootstrap
+[X] wrap plugin constructor methods in a bootstrap.php file
 [ ] create php docs for all WP public APIs
 [ ] enum for all capabilities
 [ ] enum for all settings pages existing in wp
