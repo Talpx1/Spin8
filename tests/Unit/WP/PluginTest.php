@@ -18,8 +18,10 @@ class PluginTest extends TestCase {
     #[Test]
     public function test_activation_hooks_gets_registered(): void {
         $plugin = new Plugin();
+        Config::set('plugin', 'slug', 'test_plugin');
+        $plugin_file = vfsStream::newFile('test_plugin.php')->at($this->filesystem_root);
 
-        WP_Mock::userFunction('register_activation_hook')->once()->with(pluginFilePath(), [$plugin, 'onActivation']);
+        WP_Mock::userFunction('register_activation_hook')->once()->with($plugin_file->url(), [$plugin, 'activation']);
         WP_Mock::userFunction('register_deactivation_hook');
 
         $plugin->registerLifecycleHooks();
@@ -28,8 +30,10 @@ class PluginTest extends TestCase {
     #[Test]
     public function test_deactivation_hooks_gets_registered(): void {
         $plugin = new Plugin();
+        Config::set('plugin', 'slug', 'test_plugin');
+        $plugin_file = vfsStream::newFile('test_plugin.php')->at($this->filesystem_root);
 
-        WP_Mock::userFunction('register_deactivation_hook')->once()->with(pluginFilePath(), [$plugin, 'onDeactivation']);
+        WP_Mock::userFunction('register_deactivation_hook')->once()->with($plugin_file->url(), [$plugin, 'deactivation']);
         WP_Mock::userFunction('register_activation_hook');
 
         $plugin->registerLifecycleHooks();
