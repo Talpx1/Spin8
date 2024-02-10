@@ -23,9 +23,9 @@ class Plugin {//TODO: test
             throw new RuntimeException(sprintf(__('In order to run this plugin, WordPress version %s (or higher) is required. Your current WordPress version is %s. Please update WordPress.'), config('environment', 'min_wordpress_version'), wpVersion()));
         }
 
-        $this->requireIfExists(pluginPath().'menus.php');
-        $this->requireIfExists(pluginPath().'settings.php');
-        $this->requireIfExists(pluginPath().'activation.php');
+        requireIfExists(pluginPath('menus.php'));
+        requireIfExists(pluginPath('settings.php'));
+        requireIfExists(pluginPath('activation.php'));
 
     }
 
@@ -34,13 +34,7 @@ class Plugin {//TODO: test
             return;
         }
 
-        $this->requireIfExists(pluginPath().'deactivation.php');
-    }
-
-    protected function requireIfExists(string $path, bool $use_require_once = true): void {
-        if(file_exists($path)) {
-            $use_require_once ? require_once $path : require $path;
-        }
+        requireIfExists(pluginPath().'deactivation.php');
     }
 
 }

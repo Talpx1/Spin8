@@ -309,3 +309,17 @@ function envOr(string $name, mixed $default = null): mixed {
 function wpVersion(): string {
     return get_bloginfo('version');
 }
+
+/**
+ * Require a file only if exists.
+ * 
+ * @param string $path path of the file to require.
+ * @param bool $use_require_once if true (default) require_once will be used, require otherwise. 
+ */
+function requireIfExists(string $path, bool $use_require_once = true): void {
+    if(!file_exists($path)) {
+        return;
+    }
+
+    $use_require_once ? require_once $path : require $path;
+}
