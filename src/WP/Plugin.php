@@ -3,14 +3,14 @@
 namespace Spin8\WP;
 use RuntimeException;
 
-class Plugin {//TODO: test
+class Plugin {
 
     public function registerLifecycleHooks(): void {
-        register_activation_hook(pluginFilePath(), [$this, 'onActivation']);
-        register_deactivation_hook(pluginFilePath(), [$this, 'onDeactivation']);
+        register_activation_hook(pluginFilePath(), [$this, 'activation']);
+        register_deactivation_hook(pluginFilePath(), [$this, 'deactivation']);
     }
 
-    protected function onActivation(): void {
+    public function activation(): void {
         if (!current_user_can('activate_plugins')) {
             return;
         }
@@ -29,12 +29,12 @@ class Plugin {//TODO: test
 
     }
 
-    protected function onDeactivation(): void {
+    public function deactivation(): void {
         if (!current_user_can('activate_plugins')) {
             return;
         }
 
-        requireIfExists(pluginPath().'deactivation.php');
+        requireIfExists(pluginPath('deactivation.php'));
     }
 
 }

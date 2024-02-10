@@ -25,5 +25,8 @@ $container->get(ConfigRepository::class)->loadAll();
 
 
 // PLUGIN
+/** @var Plugin  */
 $plugin = $container->singleton(Plugin::class);
 $container->alias('plugin', Plugin::class);
+
+$plugin->registerLifecycleHooks();
