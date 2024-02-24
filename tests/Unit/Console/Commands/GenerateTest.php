@@ -59,7 +59,7 @@ final class GenerateTest extends TestCase {
     #[Test]
     public function test_it_shows_correct_help_message(): void {
         $this->expectOutputString(<<<HELP
-        Usage: php spin8 generate [subject] [<flags>]
+        Usage: spin8 generate [subject] [<flags>]
 
         Description: run the generation of the specified subject.
 
@@ -121,18 +121,20 @@ final class GenerateTest extends TestCase {
         
         (new Generate(args: ['headers']))->execute();
 
-        $this->assertStringContainsString('Name Test', $plugin_file->getContent()); 
-        $this->assertStringContainsString('NameSpaceTest', $plugin_file->getContent()); 
-        $this->assertStringContainsString('Author Test', $plugin_file->getContent()); 
-        $this->assertStringContainsString('License Test', $plugin_file->getContent());
-        $this->assertStringContainsString('https://plugin-uri.test', $plugin_file->getContent());
-        $this->assertStringContainsString('Description Test', $plugin_file->getContent());
-        $this->assertStringContainsString('0.1', $plugin_file->getContent());
-        $this->assertStringContainsString('8.3', $plugin_file->getContent());
-        $this->assertStringContainsString('6.4.2', $plugin_file->getContent());
-        $this->assertStringContainsString('https://author-uri.test', $plugin_file->getContent());
-        $this->assertStringContainsString('https://license-uri.test', $plugin_file->getContent());
-        $this->assertStringContainsString('slug-test', $plugin_file->getContent());
-        $this->assertStringContainsString('https://update-uri.test', $plugin_file->getContent());
+        $plugin_file_content = $plugin_file->getContent();
+
+        $this->assertStringContainsString('Name Test', $plugin_file_content); 
+        $this->assertStringContainsString('NameSpaceTest', $plugin_file_content); 
+        $this->assertStringContainsString('Author Test', $plugin_file_content); 
+        $this->assertStringContainsString('License Test', $plugin_file_content);
+        $this->assertStringContainsString('https://plugin-uri.test', $plugin_file_content);
+        $this->assertStringContainsString('Description Test', $plugin_file_content);
+        $this->assertStringContainsString('0.1', $plugin_file_content);
+        $this->assertStringContainsString('8.3', $plugin_file_content);
+        $this->assertStringContainsString('6.4.2', $plugin_file_content);
+        $this->assertStringContainsString('https://author-uri.test', $plugin_file_content);
+        $this->assertStringContainsString('https://license-uri.test', $plugin_file_content);
+        $this->assertStringContainsString('slug-test', $plugin_file_content);
+        $this->assertStringContainsString('https://update-uri.test', $plugin_file_content);
     }
 }

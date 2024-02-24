@@ -124,7 +124,7 @@ class ContainerConfigurator extends AbstractContainerConfigurator {
                 }
 
                 if(! $value instanceof $id) {
-                    throw new ConfigurationException("A singleton binding value an instance of the class string key when using <class string => binding> in a container configuration. {$id} => ".$value::class." passed.");
+                    throw new ConfigurationException("A singleton binding value must be an instance of the class string key when using <class string => binding> in a container configuration. {$id} => ".$value::class." passed.");
                 }
                 
                 $this->container->singleton($id, $value);

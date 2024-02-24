@@ -37,7 +37,7 @@ final class HelpTest extends TestCase {
     #[Test]
     public function test_it_shows_correct_help_message(): void {
         $this->expectOutputString(<<<HELP
-        Usage: php spin8 [command] [<flags>]
+        Usage: spin8 [command] [<flags>]
 
         Description: execute a Spin8 command.
 

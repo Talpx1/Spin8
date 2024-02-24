@@ -19,7 +19,7 @@ namespace Spin8\Facades;
  * @see \Spin8\Facades\Facade
  */
 final class Config extends Facade {
-    /** @var string[] $allowed */
+    /** @var string[] */
     protected static array $allowed = ['get', 'set', 'setFrom', 'has', 'fileLoaded', 'getOr', 'clear'];
 
     protected static function implementor() : string {

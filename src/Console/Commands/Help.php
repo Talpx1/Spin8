@@ -12,7 +12,7 @@ class Help extends Command {
 
     public function showHelp(): void {
         echo <<<HELP
-        Usage: php spin8 [command] [<flags>]
+        Usage: spin8 [command] [<flags>]
 
         Description: execute a Spin8 command.
 

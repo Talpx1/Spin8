@@ -257,7 +257,8 @@ function vendorPath(string $path = ""): string {
  * @return string
  */
 function pluginFilePath(): string {
-    return rootPath(config('plugin', 'slug').".php");
+    $plugin_file = config('plugin', 'slug').".php";
+    return rootPath($plugin_file);
 }
 
 /**

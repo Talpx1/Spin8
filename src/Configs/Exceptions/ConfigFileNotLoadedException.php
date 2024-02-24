@@ -6,7 +6,7 @@ use Throwable;
 
 class ConfigFileNotLoadedException extends Exception {
     public function __construct(string $file_name, int $code = 0, ?Throwable $previous = null) {
-        $message = "Unable to access config file {$file_name}. The file has not loaded.";
+        $message = "Unable to access config file {$file_name}. The file has not been loaded.";
         parent::__construct($message, $code, $previous);
     }
 }

@@ -27,7 +27,7 @@ class Generate extends Command {
 
     public function showHelp(): void {
         echo <<<HELP
-        Usage: php spin8 generate [subject] [<flags>]
+        Usage: spin8 generate [subject] [<flags>]
 
         Description: run the generation of the specified subject.
 

@@ -16,7 +16,7 @@ final class ConfigFileNotLoadedExceptionTest extends TestCase {
     public function test_it_build_message_with_the_given_file_name(): void {
         $exception = new ConfigFileNotLoadedException('test');
 
-        $this->assertSame("Unable to access config file test. The file has not loaded.", $exception->getMessage());
+        $this->assertSame("Unable to access config file test. The file has not been loaded.", $exception->getMessage());
     }
 
     #[Test]
