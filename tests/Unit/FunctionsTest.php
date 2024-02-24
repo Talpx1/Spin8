@@ -33,6 +33,7 @@ use WP_Mock;
 #[CoversFunction("storagePath")]
 #[CoversFunction("frameworkTempPath")]
 #[CoversFunction("pluginPath")]
+#[CoversFunction("vendorPath")]
 #[CoversFunction("pluginFilePath")]
 #[CoversFunction("environment")]
 #[CoversFunction("env")]
@@ -353,6 +354,26 @@ final class FunctionsTest extends TestCase {
     #[Test]
     public function test_pluginPath_helper_correctly_formatted_path_when_path_passed_in_param_eds_with_dir_separator(): void {        
         $this->assertEquals(vfsStream::url("root/plugin/test"), pluginPath("test".DIRECTORY_SEPARATOR));
+    }
+
+    #[Test]
+    public function test_vendorPath_helper_points_to_right_directory(): void {        
+        $this->assertEquals(vfsStream::url("root/vendor"), vendorPath());
+    }
+
+    #[Test]
+    public function test_vendorPath_helper_appends_path_passed_in_param(): void {        
+        $this->assertEquals(vfsStream::url("root/vendor/test"), vendorPath("test"));
+    }
+
+    #[Test]
+    public function test_vendorPath_helper_correctly_appends_dir_separator_prefixed_path_passed_in_param(): void {        
+        $this->assertEquals(vfsStream::url("root/vendor/test"), vendorPath(DIRECTORY_SEPARATOR."test"));
+    }
+
+    #[Test]
+    public function test_vendorPath_helper_correctly_formatted_path_when_path_passed_in_param_eds_with_dir_separator(): void {        
+        $this->assertEquals(vfsStream::url("root/vendor/test"), vendorPath("test".DIRECTORY_SEPARATOR));
     }
 
     #[Test]

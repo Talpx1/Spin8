@@ -238,6 +238,17 @@ function storagePath(string $path = ""): string {
 function pluginPath(string $path = ""): string {
     return Path::append(rootPath("plugin"), $path);
 }
+
+/**
+ * Returns the vendor path of this project.
+ * The trailing slash is not included, and if provided in {@param $path} it will be removed.
+ * 
+ * @param string $path if provided, it will be appended.
+ *
+ * @return string
+ */
+function vendorPath(string $path = ""): string {
+    return Path::append(rootPath("vendor"), $path);
 }
 
 /**
