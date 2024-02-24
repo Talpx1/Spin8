@@ -42,7 +42,7 @@ class Generate extends Command {
     }
 
     protected function generateHeaders(): void {
-        $file = spin8()->project_root_path."/".Config::get('plugin', 'slug').".php";
+        $file = rootPath(config('plugin', 'slug').".php");
 
         $content = \Safe\file_get_contents($file);
 
