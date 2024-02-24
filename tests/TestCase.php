@@ -87,7 +87,7 @@ class TestCase extends \PHPUnit\Framework\TestCase {
             "configs" => [],
             "plugin" => [],
             "storage" => ["framework" => ["temp" => []]],
-            "vendor" => ["talp1" => ["spin8" => ["framework" => ["src" => []]]]],
+            "vendor" => ["spin8" => ["framework" => ["assets" => [], "bin" => [], "src" => []]]],
         ]);
         
 
