@@ -7,7 +7,7 @@ namespace Spin8\Facades;
 /**
  * @mixin \Spin8\Support\Filesystem
  *
- * @method static string copyDir(string $from, string $to) 
+ * @method static string copy(string $from, string $to) 
  *
  * @see \Spin8\Support\Filesystem
  * @see \Spin8\Facades\Facade

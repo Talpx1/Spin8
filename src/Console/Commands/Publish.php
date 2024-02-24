@@ -6,7 +6,7 @@ use Spin8\Console\Command;
 use Spin8\Console\Exceptions\CommandException;
 use Spin8\Facades\Filesystem;
 
-class Publish extends Command { //TODO: test
+class Publish extends Command {
 
     protected const string VENDOR_PUBLISHABLES_MANIFEST = 'publishables.php';
 
@@ -26,7 +26,7 @@ class Publish extends Command { //TODO: test
         $publishable  = $this->args[0];
         
         if(in_array($publishable, array_keys(self::publishables()))) { //TODO: check if already published and avoid override
-            Filesystem::copyDir(frameworkPath($publishable), self::publishables()[$publishable]); 
+            Filesystem::copy(frameworkPath($publishable), self::publishables()[$publishable]); 
             return;
         }
 
@@ -111,7 +111,7 @@ class Publish extends Command { //TODO: test
             );
         }
 
-        Filesystem::copyDir($publishable_path, $copy_destination);
+        Filesystem::copy($publishable_path, $copy_destination);
     }
 
     public function showHelp(): void {
