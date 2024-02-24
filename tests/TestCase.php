@@ -219,4 +219,16 @@ class TestCase extends \PHPUnit\Framework\TestCase {
             ->onlyMethods($methods)
             ->getMock();
     }
+
+    public function assertIsSymlink(string $path): void {
+        $this->assertTrue(is_link($path), "Failed asserting that {$path} is a symlink");
+    }
+
+    public function assertIsFile(string $path): void {
+        $this->assertTrue(is_file($path), "Failed asserting that {$path} is a file");
+    }
+
+    public function assertIsDir(string $path): void {
+        $this->assertTrue(is_dir($path), "Failed asserting that {$path} is a directory");
+    }
 }

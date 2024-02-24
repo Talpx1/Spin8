@@ -2,6 +2,7 @@
 
 namespace Spin8\WP;
 use RuntimeException;
+use Spin8\Facades\Filesystem;
 
 class Plugin {
 
@@ -17,9 +18,9 @@ class Plugin {
 
         $this->checkEnvironment();
 
-        requireIfExists(pluginPath('menus.php'));
-        requireIfExists(pluginPath('settings.php'));
-        requireIfExists(pluginPath('activation.php'));
+        Filesystem::requireOnceIfExists(pluginPath('menus.php'));
+        Filesystem::requireOnceIfExists(pluginPath('settings.php'));
+        Filesystem::requireOnceIfExists(pluginPath('activation.php'));
 
     }
 
@@ -28,7 +29,7 @@ class Plugin {
             return;
         }
 
-        requireIfExists(pluginPath('deactivation.php'));
+        Filesystem::requireOnceIfExists(pluginPath('deactivation.php'));
     }
 
     protected function checkEnvironment(): void {

@@ -8,6 +8,8 @@ namespace Spin8\Facades;
  * @mixin \Spin8\Support\Filesystem
  *
  * @method static string copy(string $from, string $to) 
+ * @method static void requireIfExists(string $path, bool $use_require_once = false)
+ * @method static void requireOnceIfExists(string $path)
  *
  * @see \Spin8\Support\Filesystem
  * @see \Spin8\Facades\Facade
