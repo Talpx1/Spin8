@@ -17,7 +17,7 @@ abstract class Command {
     public function __construct(protected array $flags = [], protected array $args = []) {}
 
     public function maybeExecute(): void {        
-        if(!empty(array_intersect($this->flags, self::HELP_FLAGS)) || in_array('help', $this->args)) {
+        if($this->shouldShowHelp()) {
             $this->showHelp();
             return;
         }
@@ -27,6 +27,10 @@ abstract class Command {
         }
         
         container()->call([$this, 'execute']);
+    }
+
+    private function shouldShowHelp(): bool {        
+        return !empty(array_intersect($this->flags, self::HELP_FLAGS)) || in_array('help', $this->args);
     }
 
     public abstract function showHelp(): void;
