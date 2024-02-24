@@ -6,6 +6,7 @@ use Spin8\Exceptions\EnvironmentVariableNotFoundException;
 use Spin8\Facades\Config;
 use Spin8\Spin8;
 use Spin8\Guards\GuardAgainstEmptyParameter;
+use Spin8\Facades\Path;
 use Spin8\WP\Plugin;
 
 /**
@@ -151,8 +152,7 @@ function isRunningTest(): bool {
  * @return string
  */
 function rootPath(string $path = ""): string {
-    $path = ltrim($path, DIRECTORY_SEPARATOR);
-    return rtrim(spin8()->project_root_path ."/{$path}", DIRECTORY_SEPARATOR);
+    return Path::append(spin8()->project_root_path, $path);
 }
 
 /**
@@ -164,8 +164,7 @@ function rootPath(string $path = ""): string {
  * @return string
  */
 function assetsPath(string $path = ""): string {
-    $path = ltrim($path, DIRECTORY_SEPARATOR);
-    return rtrim(rootPath("assets/{$path}"), DIRECTORY_SEPARATOR);
+    return Path::append(rootPath("assets"), $path);
 }
 
 /**
@@ -177,8 +176,7 @@ function assetsPath(string $path = ""): string {
  * @return string
  */
 function frameworkPath(string $path = ""): string {
-    $path = ltrim($path, DIRECTORY_SEPARATOR);
-    return rtrim(rootPath("vendor/spin8/framework/{$path}"), DIRECTORY_SEPARATOR);
+    return Path::append(rootPath("vendor/spin8/framework"), $path);
 }
 
 /**
@@ -190,8 +188,7 @@ function frameworkPath(string $path = ""): string {
  * @return string
  */
 function frameworkSrcPath(string $path = ""): string {
-    $path = ltrim($path, DIRECTORY_SEPARATOR);
-    return rtrim(frameworkPath("src/{$path}"), DIRECTORY_SEPARATOR);
+    return Path::append(frameworkPath("src"), $path);
 }
 
 /**
@@ -203,8 +200,7 @@ function frameworkSrcPath(string $path = ""): string {
  * @return string
  */
 function frameworkTempPath(string $path = ""): string {
-    $path = ltrim($path, DIRECTORY_SEPARATOR);
-    return rtrim(storagePath("framework/temp/{$path}"), DIRECTORY_SEPARATOR);
+    return Path::append(storagePath("framework/temp"), $path);
 }
 
 /**
@@ -216,8 +212,7 @@ function frameworkTempPath(string $path = ""): string {
  * @return string
  */
 function configPath(string $path = ""): string {
-    $path = ltrim($path, DIRECTORY_SEPARATOR);
-    return rtrim(rootPath("configs/{$path}"), DIRECTORY_SEPARATOR);
+    return Path::append(rootPath("configs"), $path);
 }
 
 /**
@@ -229,8 +224,7 @@ function configPath(string $path = ""): string {
  * @return string
  */
 function storagePath(string $path = ""): string {
-    $path = ltrim($path, DIRECTORY_SEPARATOR);
-    return rtrim(rootPath("storage/{$path}"), DIRECTORY_SEPARATOR);
+    return Path::append(rootPath("storage"), $path);
 }
 
 /**
@@ -242,8 +236,8 @@ function storagePath(string $path = ""): string {
  * @return string
  */
 function pluginPath(string $path = ""): string {
-    $path = ltrim($path, DIRECTORY_SEPARATOR);
-    return rtrim(rootPath("plugin/{$path}"), DIRECTORY_SEPARATOR);
+    return Path::append(rootPath("plugin"), $path);
+}
 }
 
 /**
