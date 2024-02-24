@@ -1,6 +1,7 @@
 FRAMEWORK:
 [ ] avoid initializing spin8 and bootstrapping in unit tests
 [ ] add support for nestable configs
+[ ] config helper accepts array to set configs
 [X] implement DI Container, instantiate it before Spin8, load templating engine via container in Spin8
 [X] test DI Container
 [X] implement DI support for interfaces
