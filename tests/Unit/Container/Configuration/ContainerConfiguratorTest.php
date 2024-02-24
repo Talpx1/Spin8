@@ -365,7 +365,7 @@ final class ContainerConfiguratorTest extends \PHPUnit\Framework\TestCase {
     #[Test]
     public function test_if_binding_key_is_valid_class_string_and_binding_value_is_not_an_instance_of_the_binding_value_in_singletons_configuration_it_throws_ConfigurationException(): void {        
         $this->expectException(ConfigurationException::class);
-        $this->expectExceptionMessage("A singleton binding value an instance of the class string key when using <class string => binding> in a container configuration. ".\ArrayObject::class." => ".\Exception::class." passed.");
+        $this->expectExceptionMessage("A singleton binding value must be an instance of the class string key when using <class string => binding> in a container configuration. ".\ArrayObject::class." => ".\Exception::class." passed.");
 
         // @phpstan-ignore-next-line
         (new ContainerConfigurator(["singletons"=>[\ArrayObject::class=>new \Exception()]]))->configure($this->container);
