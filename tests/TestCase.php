@@ -14,6 +14,7 @@ use Spin8\Container\Container;
 use Spin8\Facades\Config;
 use Spin8\Spin8;
 use Spin8\Guards\GuardAgainstEmptyParameter;
+use Spin8\Support\Filesystem;
 use Spin8\Support\Path;
 use Spin8\TemplatingEngine\Engines\BasicEngine;
 use Spin8\TemplatingEngine\Engines\LatteEngine;
@@ -168,6 +169,7 @@ class TestCase extends \PHPUnit\Framework\TestCase {
 
             'aliases' => [
                 'config' => ConfigRepository::class,
+                'support.filesystem' => Filesystem::class,
                 'support.path' => Path::class,
             ]
         ];
