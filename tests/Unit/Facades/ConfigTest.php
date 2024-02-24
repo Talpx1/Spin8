@@ -1,11 +1,10 @@
 <?php
 
-namespace Spin8\Tests\Unit\Configs\Facades;
+namespace Spin8\Tests\Unit\Facades;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
-use Spin8\Configs\ConfigRepository;
 use Spin8\Configs\Exceptions\ConfigFileNotLoadedException;
 use Spin8\Configs\Exceptions\ConfigKeyMissingException;
 use Spin8\Facades\Config;
