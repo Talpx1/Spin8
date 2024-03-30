@@ -37,7 +37,7 @@ class Setting {
         
         $this->setSectionAndPage($section);
         $this->title = $title;
-        $this->name = config('plugin', 'name') . '-' . slugify($name);
+        $this->name = config('plugin.name') . '-' . slugify($name);
         
     }
 

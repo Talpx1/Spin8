@@ -71,7 +71,7 @@ class SettingsSectionTest extends TestCase {
         WP_Mock::userFunction('sanitize_title_with_dashes')->twice()->with($slug, '', 'save')->andReturn($slug);
 
         $settings_section = SettingsSection::create($this->faker->word(), $slug, 'test');
-        $this->assertTrue(config('plugin', 'name') . '-' . slugify($slug) === $settings_section->slug());
+        $this->assertTrue(config('plugin.name') . '-' . slugify($slug) === $settings_section->slug());
     }
 
     #[Test]

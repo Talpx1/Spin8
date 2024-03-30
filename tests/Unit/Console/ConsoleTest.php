@@ -32,14 +32,14 @@ final class ConsoleTest extends TestCase {
 
     #[Test]
     public function test_it_handles_user_defined_command() : void {
-        Config::set('plugin', 'namespace', 'TestNamespace');
+        Config::set('plugin.namespace', 'TestNamespace');
 
         $command = new class() extends Command{
             public function showHelp(): void {echo 'test help';}
             public function execute(): void {echo 'test execute';}
         };
 
-        \Safe\class_alias($command::class, "\\".config('plugin', 'namespace')."\\Console\\Commands\\Test");
+        \Safe\class_alias($command::class, "\\".config('plugin.namespace')."\\Console\\Commands\\Test");
         
         $this->expectOutputString('test execute');
 

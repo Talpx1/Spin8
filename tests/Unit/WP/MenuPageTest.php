@@ -37,7 +37,7 @@ class MenuPageTest extends TestCase {
         WP_Mock::userFunction('remove_accents')->twice()->with($title)->andReturn($title);
         WP_Mock::userFunction('sanitize_title_with_dashes')->twice()->with($title, '', 'save')->andReturn($title);
         $menu_page = MenuPage::create($title, $this->faker->slug());
-        $this->assertTrue(config('plugin', 'name') . '-' . slugify($title) === $menu_page->slug());
+        $this->assertTrue(config('plugin.name') . '-' . slugify($title) === $menu_page->slug());
     }
 
     #[Test]
@@ -81,7 +81,7 @@ class MenuPageTest extends TestCase {
         WP_Mock::userFunction('sanitize_title_with_dashes')->twice()->with($title, '', 'save')->andReturn($title);
         $menu_page = MenuPage::create($title, $this->faker->slug());
         
-        $this->assertTrue($menu_page->slug() === config('plugin', 'name') . '-' . slugify($title));
+        $this->assertTrue($menu_page->slug() === config('plugin.name') . '-' . slugify($title));
         
         $slug = $this->faker->slug();
 
@@ -89,7 +89,7 @@ class MenuPageTest extends TestCase {
         WP_Mock::userFunction('sanitize_title_with_dashes')->twice()->with($slug, '', 'save')->andReturn($slug);
         $menu_page->setSlug($slug);
         
-        $this->assertTrue($menu_page->slug() === config('plugin', 'name') . '-' . slugify($slug));
+        $this->assertTrue($menu_page->slug() === config('plugin.name') . '-' . slugify($slug));
     }
 
     #[Test]

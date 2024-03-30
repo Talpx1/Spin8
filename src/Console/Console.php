@@ -26,7 +26,7 @@ final class Console {
         $class = '\\Spin8\\Console\\Commands\\'.ucfirst($this->command_name);
 
         if(!class_exists($class)) {
-            $class = '\\'.config('plugin', 'namespace').'\\Console\\Commands\\'.ucfirst($this->command_name);
+            $class = '\\'.config('plugin.namespace').'\\Console\\Commands\\'.ucfirst($this->command_name);
         }
 
         if(!class_exists($class) || !is_subclass_of($class, Command::class)) {

@@ -77,19 +77,19 @@ final class GenerateTest extends TestCase {
 
     #[Test]
     public function test_it_generates_headers(): void {
-        Config::set('plugin', 'name', 'Name Test'); 
-        Config::set('plugin', 'namespace', 'NameSpaceTest'); 
-        Config::set('plugin', 'author', 'Author Test'); 
-        Config::set('plugin', 'license', 'License Test');
-        Config::set('plugin', 'uri', 'https://plugin-uri.test');
-        Config::set('plugin', 'description', 'Description Test');
-        Config::set('plugin', 'version', '0.1');
-        Config::set('environment', 'min_wordpress_version', '8.3');
-        Config::set('environment', 'min_php_version', '6.4.2');
-        Config::set('plugin', 'author_uri', 'https://author-uri.test');
-        Config::set('plugin', 'license_uri', 'https://license-uri.test');
-        Config::set('plugin', 'slug', 'slug-test');
-        Config::set('plugin', 'update_uri', 'https://update-uri.test');
+        Config::set('plugin.name', 'Name Test'); 
+        Config::set('plugin.namespace', 'NameSpaceTest'); 
+        Config::set('plugin.author', 'Author Test'); 
+        Config::set('plugin.license', 'License Test');
+        Config::set('plugin.uri', 'https://plugin-uri.test');
+        Config::set('plugin.description', 'Description Test');
+        Config::set('plugin.version', '0.1');
+        Config::set('environment.min_wordpress_version', '8.3');
+        Config::set('environment.min_php_version', '6.4.2');
+        Config::set('plugin.author_uri', 'https://author-uri.test');
+        Config::set('plugin.license_uri', 'https://license-uri.test');
+        Config::set('plugin.slug', 'slug-test');
+        Config::set('plugin.update_uri', 'https://update-uri.test');
 
         $plugin_file = vfsStream::newFile('slug-test.php')->at($this->filesystem_root)->setContent(<<<CONTENT
         <?php declare(strict_types=1);

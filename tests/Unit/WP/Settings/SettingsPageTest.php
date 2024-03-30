@@ -38,7 +38,7 @@ class SettingsPageTest extends TestCase {
         $this->assertSame($title, $settings_page->pageTitle());
         $this->assertSame($title, $settings_page->menuTitle());
         $this->assertSame('edit_posts', $settings_page->capability());
-        $this->assertSame(config('plugin', 'name') . '-' . slugify($title), $settings_page->slug());
+        $this->assertSame(config('plugin.name') . '-' . slugify($title), $settings_page->slug());
         $this->assertSame($template, $settings_page->template());
         $this->assertSame('', $settings_page->icon());
         $this->assertSame([], $settings_page->data());

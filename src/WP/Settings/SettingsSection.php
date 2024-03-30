@@ -21,7 +21,7 @@ class SettingsSection {
         // @phpstan-ignore-next-line
         $this->page = is_a($page, SettingsPage::class) ? $page->slug() : $page;
 
-        $this->slug = config('plugin', 'name') . '-' . slugify($slug);
+        $this->slug = config('plugin.name') . '-' . slugify($slug);
     }
 
     public function setDescription(string $description): self {

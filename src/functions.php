@@ -97,11 +97,11 @@ function buildSettings(string $page_slug, string $submit_text = null): string {
     }
     
     if (isset($_GET['settings-updated'])) {
-        add_settings_error(config('plugin', 'name') . '-messages', config('plugin', 'name') . '_message', __('Settings Saved'), 'updated');
+        add_settings_error(config('plugin.name') . '-messages', config('plugin.name') . '_message', __('Settings Saved'), 'updated');
     }
 
     Safe\ob_start();
-    settings_errors(config('plugin', 'name') . '_message');
+    settings_errors(config('plugin.name') . '_message');
     $buffered_settings_errors = ob_get_clean();
 
     if($buffered_settings_errors === false) {
@@ -122,15 +122,19 @@ function buildSettings(string $page_slug, string $submit_text = null): string {
 }
 
 /**
- * Retrieve and returns the value of the specified config. If the file or the config key is not found, @var $default is returned.
+ * Retrieve and returns the value of the specified config. If the config key is not found, @var $default is returned.
  *
- * @param string $file_name name, with no extension, of the file in the 'configs' directory that contains the specified config value.
- * @param string $config_key the key of the desired config to retrieve.
- * @param mixed $default the fallback value to return in case the specified config can not be found.
+ * @param string|array<string,mixed> $key_or_array the config to retrive if string, the configs to set if array.
+ * @param mixed $default the fallback value to return in case the specified config can not be found. Ignored if @param $key is an array.
  * @return mixed
  */
-function config(string $file_name, string $config_key, mixed $default = null): mixed {
-    return Config::getOr($file_name, $config_key, $default);
+function config(string|array $key_or_array, mixed $default = null): mixed {
+    if(is_array($key_or_array)) {
+        Config::setFrom($key_or_array);
+        return $key_or_array;
+    }
+
+    return Config::getOr($key_or_array, $default);
 }
 
 /**
@@ -257,7 +261,7 @@ function vendorPath(string $path = ""): string {
  * @return string
  */
 function pluginFilePath(): string {
-    $plugin_file = config('plugin', 'slug').".php";
+    $plugin_file = config('plugin.slug').".php";
     return rootPath($plugin_file);
 }
 
@@ -269,7 +273,7 @@ function pluginFilePath(): string {
  * @return \Spin8\Configs\Enums\Environments
  */
 function environment(): Environments {
-    return isRunningTest() ? Environments::TESTING : config('environment', 'environment');
+    return isRunningTest() ? Environments::TESTING : config('environment.environment');
 }
 
 /**

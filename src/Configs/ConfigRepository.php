@@ -3,6 +3,8 @@
 namespace Spin8\Configs;
 
 use InvalidArgumentException;
+use RecursiveArrayIterator;
+use RecursiveIteratorIterator;
 use Spin8\Configs\Exceptions\ConfigFileNotLoadedException;
 use Spin8\Configs\Exceptions\ConfigFileNotReadableException;
 use Spin8\Configs\Exceptions\ConfigKeyMissingException;
@@ -18,9 +20,6 @@ class ConfigRepository{
      * @var array<string, array<string, mixed>>
      */
     protected array $configs = [];
-
-    
-    public function __construct(){}
     
 
     public function loadAll(): void {
@@ -51,40 +50,32 @@ class ConfigRepository{
     /**
      * set the specified config to the specified value
      *
-     * @param string $file_name file to set the @var $config_key in
-     * @param string $config_key key of the config to set
+     * @param string $key key of the config to set
      * @param mixed $value value to assign to the config key
      */
-    public function set(string $file_name, string $config_key, mixed $value): void {
-        GuardAgainstEmptyParameter::check($file_name);
-        GuardAgainstEmptyParameter::check($config_key);
+    public function set(string $key, mixed $value): void {
+        GuardAgainstEmptyParameter::check($key);
 
-        $this->configs[$file_name][$config_key] = $value;
+        $this->configs[$key] = $value;
     }
 
     /**
      * massively set the specified configs to the specified values
      * 
      * format:
-     * ```['file_name' => ['config_key' => value, ...], ...]```
+     * ```['file.config.key' => 'value', ...]```
      *
-     * @param array<string, array<string, mixed>> $configs to massively set.
+     * @param array<string, mixed> $configs to massively set.
      */
     public function setFrom(array $configs): void {
         GuardAgainstEmptyParameter::check($configs);
 
-        foreach($configs as $file_name => $configs_group){
-            if(! is_string($file_name)) {
-                throw new InvalidArgumentException("{$file_name} is not a valid config file name. It should be string, ".gettype($file_name)." passed.");
+        foreach($configs as $key => $value){
+            if(! is_string($key)) {
+                throw new InvalidArgumentException("{$key} is not a valid config file name. It should be string, ".gettype($key)." passed.");
             }
 
-            foreach($configs_group as $config_key => $value) {
-                if(! is_string($config_key)) {
-                    throw new InvalidArgumentException("{$config_key} is not a valid config key. It should be string, ".gettype($file_name)." passed.");
-                }
-
-                $this->set($file_name, $config_key, $value);
-            }
+            $this->set($key, $value);
         }
     }
 
@@ -94,7 +85,6 @@ class ConfigRepository{
         }
         
         $config_file_name = pathinfo($config_file, PATHINFO_FILENAME);
-        $this->configs[$config_file_name] = [];
         
         /**
          * @var array<string, mixed>
@@ -104,9 +94,14 @@ class ConfigRepository{
         /**
          * @var string $config_key
          */
-        foreach($configs as $config_key => $config_value) {
-            $this->configs[$config_file_name][$config_key] = $config_value;
-        }
+        $recursive_iterator = new RecursiveIteratorIterator(new RecursiveArrayIterator($configs));
+        foreach ($recursive_iterator as $leaf) {
+            $keys = [$config_file_name];
+            foreach (range(0, $recursive_iterator->getDepth()) as $depth) {
+                $keys[] = $recursive_iterator->getSubIterator($depth)->key();
+            }
+            $this->configs[ implode('.', $keys) ] = $leaf;
+        }        
     }
 
     /**
@@ -121,72 +116,47 @@ class ConfigRepository{
     /**
      * get the specified config
      *
-     * @param string $file_name file to retrieve the `@param $config_key` from
-     * @param string $config_key key of the config to retrieve
+     * @param string $key key of the config to retrieve
      *
      * @throws ConfigKeyMissingException
      */
-    public function get(string $file_name, string $config_key): mixed {
-        GuardAgainstEmptyParameter::check($file_name);
-        GuardAgainstEmptyParameter::check($config_key);
+    public function get(string $key): mixed {
+        GuardAgainstEmptyParameter::check($key);
 
-        if(! $this->has($file_name, $config_key)) {
-            throw new ConfigKeyMissingException($config_key, $file_name);
+        if(! $this->has($key)) {
+            throw new ConfigKeyMissingException($key);
         }
         
-        return $this->getAll()[$file_name][$config_key];
+        return $this->configs[$key];
     }
 
     /**
-     * check whether the specified config exists in the specified file
+     * check whether the specified config has been loaded
      *
-     * @param string $file_name file to look into to check if the @var $config_key exists
-     * @param string $config_key key of the config to check
+     * @param string $key key of the config to check
      *
      * @throws ConfigFileNotLoadedException
      */
-    public function has(string $file_name, string $config_key): bool {
-        GuardAgainstEmptyParameter::check($file_name);
-        GuardAgainstEmptyParameter::check($config_key);
-
-        if(!$this->fileLoaded($file_name)) {
-            throw new ConfigFileNotLoadedException($file_name);
-        }
+    public function has(string $key): bool {
+        GuardAgainstEmptyParameter::check($key);
         
-        return array_key_exists($config_key, $this->getAll()[$file_name]);
-    }
-
-    /**
-     * check whether the specified config file has been loaded
-     *
-     * @param string $file_name file to check
-     */
-    public function fileLoaded(string $file_name): bool {
-        GuardAgainstEmptyParameter::check($file_name);
-        
-        return array_key_exists($file_name, $this->getAll());
+        return array_key_exists($key, $this->configs);
     }
 
     /**
      * get the specified config or return the provided fallback
      *
-     * @param string $file_name file to retrieve the @var $config_key from
-     * @param string $config_key key of the config to retrieve
+     * @param string $key key of the config to retrieve
      * @param mixed $default fallback in case the specified config key can't be found in the specified file
      */
-    public function getOr(string $file_name, string $config_key, mixed $default = null): mixed {
-        GuardAgainstEmptyParameter::check($file_name);
-        GuardAgainstEmptyParameter::check($config_key);
+    public function getOr(string $key, mixed $default = null): mixed {
+        GuardAgainstEmptyParameter::check($key);
 
-        try{
-            if($this->has($file_name, $config_key)) {
-                return $this->getAll()[$file_name][$config_key];
-            }
-
-            return $default;
-        } catch(ConfigFileNotLoadedException){
-            return $default;
+        if($this->has($key)) {
+            return $this->configs[$key];
         }
+
+        return $default;
     }
 
 }

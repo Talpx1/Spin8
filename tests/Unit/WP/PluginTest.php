@@ -18,7 +18,7 @@ class PluginTest extends TestCase {
     #[Test]
     public function test_activation_hooks_gets_registered(): void {
         $plugin = new Plugin();
-        Config::set('plugin', 'slug', 'test_plugin');
+        Config::set('plugin.slug', 'test_plugin');
         $plugin_file = vfsStream::newFile('test_plugin.php')->at($this->filesystem_root);
 
         WP_Mock::userFunction('register_activation_hook')->once()->with($plugin_file->url(), [$plugin, 'activation']);
@@ -30,7 +30,7 @@ class PluginTest extends TestCase {
     #[Test]
     public function test_deactivation_hooks_gets_registered(): void {
         $plugin = new Plugin();
-        Config::set('plugin', 'slug', 'test_plugin');
+        Config::set('plugin.slug', 'test_plugin');
         $plugin_file = vfsStream::newFile('test_plugin.php')->at($this->filesystem_root);
 
         WP_Mock::userFunction('register_deactivation_hook')->once()->with($plugin_file->url(), [$plugin, 'deactivation']);
@@ -51,7 +51,7 @@ class PluginTest extends TestCase {
     #[Test]
     public function test_it_throws_RuntimeException_on_activation_if_installed_php_version_is_older_than_min_php_version_set_in_configs(): void {
         $plugin = new Plugin();
-        Config::set('environment', 'min_php_version', "999");
+        Config::set('environment.min_php_version', "999");
         
         WP_Mock::userFunction('current_user_can')->andReturn(true);
         
@@ -63,8 +63,8 @@ class PluginTest extends TestCase {
     #[Test]
     public function test_it_throws_RuntimeException_on_activation_if_installed_wp_version_is_older_than_min_php_version_set_in_configs(): void {
         $plugin = new Plugin();
-        Config::set('environment', 'min_php_version', "1");
-        Config::set('environment', 'min_wordpress_version', "999");
+        Config::set('environment.min_php_version', "1");
+        Config::set('environment.min_wordpress_version', "999");
 
         WP_Mock::userFunction('current_user_can')->andReturn(true);
         WP_Mock::userFunction('get_bloginfo')->andReturn("1");
@@ -76,8 +76,8 @@ class PluginTest extends TestCase {
 
     #[Test]
     public function test_it_loads_user_defined_menus_on_activation(): void {
-        Config::set('environment', 'min_php_version', "1");
-        Config::set('environment', 'min_wordpress_version', "1");
+        Config::set('environment.min_php_version', "1");
+        Config::set('environment.min_wordpress_version', "1");
 
         WP_Mock::userFunction('current_user_can')->andReturn(true);
         WP_Mock::userFunction('get_bloginfo')->andReturn("999");
@@ -93,8 +93,8 @@ class PluginTest extends TestCase {
 
     #[Test]
     public function test_it_loads_user_defined_settings_on_activation(): void {
-        Config::set('environment', 'min_php_version', "1");
-        Config::set('environment', 'min_wordpress_version', "1");
+        Config::set('environment.min_php_version', "1");
+        Config::set('environment.min_wordpress_version', "1");
 
         WP_Mock::userFunction('current_user_can')->andReturn(true);
         WP_Mock::userFunction('get_bloginfo')->andReturn("999");
@@ -110,8 +110,8 @@ class PluginTest extends TestCase {
 
     #[Test]
     public function test_it_loads_user_defined_activation_hook_on_activation(): void {
-        Config::set('environment', 'min_php_version', "1");
-        Config::set('environment', 'min_wordpress_version', "1");
+        Config::set('environment.min_php_version', "1");
+        Config::set('environment.min_wordpress_version', "1");
 
         WP_Mock::userFunction('current_user_can')->andReturn(true);
         WP_Mock::userFunction('get_bloginfo')->andReturn("999");

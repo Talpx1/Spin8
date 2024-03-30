@@ -123,7 +123,7 @@ final class FunctionsTest extends TestCase {
         $fake_plugin_name = 'test_plugin';
         $fake_page_slug = 'test_page_slug';
 
-        Config::set('plugin', 'name', $fake_plugin_name);
+        Config::set('plugin.name', $fake_plugin_name);
 
         WP_Mock::userFunction('settings_errors')->once()->with("{$fake_plugin_name}_message");
         WP_Mock::userFunction('settings_fields')->once()->with($fake_page_slug);
@@ -136,45 +136,55 @@ final class FunctionsTest extends TestCase {
 
     #[Test]
     public function test_config_helper_returns_specified_configuration(): void {        
-        Config::set('test', 'cfg_test', '123');
+        Config::set('test.cfg_test', '123');
 
-        $this->assertEquals('123', config('test', 'cfg_test'));
+        $this->assertEquals('123', config('test.cfg_test'));
     }
 
     #[Test]
     public function test_config_helper_returns_specified_fallback_if_configuration_key_cant_be_found(): void {        
-        $this->makeConfigFile('test', ['a'=>1]);
-        $this->assertEquals('fallback', config('test', 'cfg_test', 'fallback'));
+        Config::set('test.cfg_test', '123');
+
+        $this->assertEquals('fallback', config('test.non_existent', 'fallback'));
+    }
+
+    #[Test]
+    public function test_config_helper_returns_dot_notation_specified_configuration(): void {        
+        Config::set('test.a.b.c', 'd');
+
+        $this->assertEquals('d', config('test.a.b.c', 'fallback'));
+    }
+
+    #[Test]
+    public function test_config_helper_massively_sets_config_if_first_param_is_Array(): void {        
+        config(['a.b.c'=>'d', '1.2.3'=>4]);
+
+        $this->assertEquals('d', config('a.b.c'));
+        $this->assertEquals(4, config('1.2.3'));
     }
 
     #[Test]
     public function test_config_helper_returns_specified_fallback_if_configuration_file_cant_be_found(): void {        
         //no configs exists right now, so every config we try to fetch is going to fallback
-        $this->assertEquals('fallback', config('test', 'cfg_test', 'fallback'));
+        $this->assertEquals('fallback', config('test.cfg_test', 'fallback'));
     }
 
     #[Test]
     public function test_config_helper_returns_null_if_configuration_file_cant_be_found_and_no_fallback_is_specified(): void {        
         //no configs exists right now, so every config we try to fetch is going to fallback
-        $this->assertNull(config('test', 'cfg_test'));
+        $this->assertNull(config('test.cfg_test'));
     }
 
     #[Test]
     public function test_config_helper_returns_null_if_configuration_key_cant_be_found_and_no_fallback_is_specified(): void {        
         $this->makeConfigFile('test', ['a'=>1]);
-        $this->assertNull(config('test', 'cfg_test'));
-    }
-
-    #[Test]
-    public function test_config_helper_throws_InvalidArgumentException_if_file_name_is_an_empty_string(): void {  
-        $this->expectException(InvalidArgumentException::class);      
-        config('', 'cfg_test');
+        $this->assertNull(config('test.cfg_test'));
     }
 
     #[Test]
     public function test_config_helper_throws_InvalidArgumentException_if_config_key_is_an_empty_string(): void {  
         $this->expectException(InvalidArgumentException::class);      
-        config('test', '');
+        config('');
     }
 
     #[Test]
@@ -378,7 +388,7 @@ final class FunctionsTest extends TestCase {
 
     #[Test]
     public function test_pluginFilePath_returns_the_plugin_main_file_path(): void {   
-        Config::set('plugin', 'slug', 'test_123');
+        Config::set('plugin.slug', 'test_123');
         $this->assertEquals(vfsStream::url("root/test_123.php"), pluginFilePath());
     }
 
@@ -394,11 +404,11 @@ final class FunctionsTest extends TestCase {
         $this->assertFalse(isRunningTest());
         $this->assertFalse(array_key_exists("TESTING", $_ENV) && $_ENV['TESTING'] === '1');
 
-        Config::set('environment', 'environment', Environments::PRODUCTION);
-        $this->assertEquals(config('environment', 'environment'), environment());
+        Config::set('environment.environment', Environments::PRODUCTION);
+        $this->assertEquals(config('environment.environment'), environment());
         $this->assertEquals(Environments::PRODUCTION, environment());
 
-        Config::set('environment', 'environment', Environments::LOCAL);
+        Config::set('environment.environment', Environments::LOCAL);
         $this->assertEquals(Environments::LOCAL, environment());
     }
     

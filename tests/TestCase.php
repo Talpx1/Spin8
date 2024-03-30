@@ -145,8 +145,7 @@ class TestCase extends \PHPUnit\Framework\TestCase {
     public function generateRandomConfigs(int $amount): void {
         for($i = 0; $i < $amount; $i++){
             Config::set(
-                $this->faker->unique()->slug(),
-                $this->faker->unique()->word(),
+                $this->faker->unique()->slug().$this->faker->unique()->word(),
                 $this->faker->randomFloat(),
             );
         }

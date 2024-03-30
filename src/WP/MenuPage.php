@@ -22,7 +22,7 @@ class MenuPage {
     protected function __construct(string $menu_title, string $template) {
         $this->menu_title = $menu_title;
         $this->page_title = $menu_title;
-        $this->menu_slug = config('plugin', 'name') . '-' . slugify($menu_title);
+        $this->menu_slug = config('plugin.name') . '-' . slugify($menu_title);
         $this->template = $template;
     }
 
@@ -37,7 +37,7 @@ class MenuPage {
     }
 
     public function setSlug(string $menu_slug): self {
-        $this->menu_slug = config('plugin', 'name') . '-' . slugify($menu_slug);
+        $this->menu_slug = config('plugin.name') . '-' . slugify($menu_slug);
         return $this;
     }
 

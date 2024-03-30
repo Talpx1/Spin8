@@ -13,15 +13,15 @@ use Spin8\Tests\TestCase;
 final class ConfigKeyMissingExceptionTest extends TestCase {
 
     #[Test]
-    public function test_it_build_message_with_the_given_config_key_and_file_name(): void {
-        $exception = new ConfigKeyMissingException('test_key', 'test_file');
+    public function test_it_build_message_with_the_given_config_key(): void {
+        $exception = new ConfigKeyMissingException('test_file.test_key');
 
-        $this->assertSame("Unable to retrieve test_key in test_file config file. There's no key named test_key.", $exception->getMessage());
+        $this->assertSame("Unable to retrieve config: there's no loaded config named test_file.test_key.", $exception->getMessage());
     }
 
     #[Test]
     public function test_it_accepts_code(): void {
-        $exception = new ConfigKeyMissingException('test_key', 'test_file', 500);
+        $exception = new ConfigKeyMissingException('test_file.test_key', 500);
 
         $this->assertSame(500, $exception->getCode());
     }
@@ -29,7 +29,7 @@ final class ConfigKeyMissingExceptionTest extends TestCase {
     #[Test]
     public function test_it_accepts_previous_exception(): void {
         $prev_exception = new Exception('prev');
-        $exception = new ConfigKeyMissingException('test_key', 'test_file', previous: $prev_exception);
+        $exception = new ConfigKeyMissingException('test_file.test_key', previous: $prev_exception);
 
         $this->assertSame($prev_exception, $exception->getPrevious());
         $this->assertSame('prev', $exception->getPrevious()->getMessage());

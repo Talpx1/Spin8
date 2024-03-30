@@ -69,7 +69,7 @@ class SettingTest extends TestCase {
         WP_Mock::userFunction('sanitize_title_with_dashes')->twice()->with($name, '', 'save')->andReturn($name);
 
         $setting = Setting::create($settingSection, $this->faker->word(), $name);
-        $this->assertSame(config('plugin', 'name') . '-' . slugify($name), $setting->name());
+        $this->assertSame(config('plugin.name') . '-' . slugify($name), $setting->name());
     }
 
     #[Test]
