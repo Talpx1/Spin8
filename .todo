@@ -1,7 +1,7 @@
 FRAMEWORK:
 [ ] avoid initializing spin8 and bootstrapping in unit tests
-[ ] add support for nestable configs
-[ ] config helper accepts array to set configs
+[X] add support for nestable configs
+[X] config helper accepts array to set configs
 [ ] converts Guards into facades: Guard::empty(), Guard::classExists(), ...
 [X] implement DI Container, instantiate it before Spin8, load templating engine via container in Spin8
 [X] test DI Container
