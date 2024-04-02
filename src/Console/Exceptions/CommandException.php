@@ -5,7 +5,7 @@ namespace Spin8\Console\Exceptions;
 use Exception;
 use Throwable;
 
-class CommandException extends Exception {//TODO: test
+class CommandException extends Exception {
 
     public function __construct(string $message = "", int $code = 0, Throwable $previous = null) {
         $caller = debug_backtrace()[1];
