@@ -2,15 +2,18 @@
 
 namespace Spin8\Tests\Unit\Facades;
 
+use BadMethodCallException;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use Spin8\Configs\Exceptions\ConfigFileNotLoadedException;
 use Spin8\Configs\Exceptions\ConfigKeyMissingException;
 use Spin8\Facades\Config;
+use Spin8\Facades\Facade;
 use Spin8\Tests\TestCase;
 
 #[CoversClass(Config::class)]
+#[CoversClass(Facade::class)]
 final class ConfigTest extends TestCase {
 
     #[Test]
@@ -84,6 +87,24 @@ final class ConfigTest extends TestCase {
     public function test_it_throws_InvalidArgumentException_if_passed_config_key_is_empty_string_while_getting_config_with_fallback(): void {
         $this->expectException(InvalidArgumentException::class);
         Config::getOr('', 'abc');
+    }
+
+    #[Test]
+    public function test_it_can_call_all_allowed_methods(): void {
+        try{ Config::get('test'); } catch(ConfigKeyMissingException){}
+        Config::set('test', 'abc');
+        Config::setFrom(['a'=>'b']);
+        Config::has('test');
+        Config::getOr('test', 'abc');
+        Config::clear();
+
+        $this->expectNotToPerformAssertions();
+    }
+    
+    #[Test]
+    public function test_it_throws_BadMethodCallException_calling_non_allowed_method(): void {
+        $this->expectException(BadMethodCallException::class);
+        Config::loadAll();
     }
     
 }

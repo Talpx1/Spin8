@@ -7,7 +7,7 @@ abstract class Facade {
 
     /** @var string[] */
     protected static array $allowed = [];
-    protected static bool $implementor_uses_mixins = false; //TODO: test
+    protected static bool $implementor_uses_mixins = false;
 
     /**
      * This method must return a class-string reference to the class that implements the methods proxied by the facade.
@@ -27,7 +27,7 @@ abstract class Facade {
         return call_user_func_array([$implementor_instance, $method], $args);
     }
 
-    private static function isMethodAllowed(string $method): bool{ //TODO: test
+    private static function isMethodAllowed(string $method): bool{
         return in_array($method, static::$allowed) || in_array('*', static::$allowed);
     }
 
