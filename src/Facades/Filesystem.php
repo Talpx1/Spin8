@@ -14,7 +14,7 @@ namespace Spin8\Facades;
  * @see \Spin8\Support\Filesystem
  * @see \Spin8\Facades\Facade
  */
-final class Filesystem extends Facade { //TODO: test
+final class Filesystem extends Facade {
     /** @var string[] */
     protected static array $allowed = ['*'];
 

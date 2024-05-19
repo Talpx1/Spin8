@@ -18,7 +18,7 @@ use Spin8\Support\Path as PathSupport;
  * @see \Spin8\Support\Path
  * @see \Spin8\Facades\Facade
  */
-final class Path extends Facade { ///TODO: test
+final class Path extends Facade {
     /** @var string[] */
     protected static array $allowed = ['*'];
 

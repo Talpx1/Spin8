@@ -2,7 +2,6 @@
 
 namespace Spin8\Support;
 
-//TODO: tests
 class Path {
 
     /** @var string[] */
