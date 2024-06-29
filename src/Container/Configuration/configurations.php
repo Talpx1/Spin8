@@ -11,7 +11,7 @@ return [
         'config' => ConfigRepository::class,
         'latte' => LatteEngine::class,
         'support.path' => Path::class,
-        'support.filesystem', Filesystem::class
+        'support.filesystem' => Filesystem::class
     ],
 
     'templating_engines' => [
